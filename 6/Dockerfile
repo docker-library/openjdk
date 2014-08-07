@@ -5,7 +5,7 @@ FROM debian:wheezy
 #  2. Compiling OpenJDK also requires the JDK to be installed, and it gets
 #       really hairy.
 
-RUN apt-get update && apt-get install -y curl openjdk-6-jdk=6b32* wget
+RUN apt-get update && apt-get install -y curl openjdk-6-jdk=6b32* unzip wget
 
 # If you're reading this and have any feedback on how this image could be
 #   improved, please open an issue or a pull request so we can discuss it!

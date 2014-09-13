@@ -5,7 +5,7 @@ FROM debian:experimental
 #  2. Compiling OpenJDK also requires the JDK to be installed, and it gets
 #       really hairy.
 
-ENV JAVA_VERSION 8u20
+ENV JAVA_VERSION 8u40
 
 RUN apt-get update && apt-get install -y curl openjdk-8-jdk="$JAVA_VERSION"* unzip wget
 

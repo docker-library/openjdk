@@ -1,4 +1,4 @@
-FROM debian:experimental
+FROM debian:sid
 
 # A few problems with compiling Java from source:
 #  1. Oracle.  Licensing prevents us from redistributing the official JDK.

@@ -3,21 +3,43 @@ set -e
 
 declare -A aliases
 aliases=(
-	[7]='latest'
+	[openjdk-7-jdk]='jdk latest'
+	[openjdk-7-jre]='jre'
 )
+defaultType='jdk'
+defaultFlavor='openjdk'
 
 cd "$(dirname "$(readlink -f "$BASH_SOURCE")")"
 
 versions=( */ )
 versions=( "${versions[@]%/}" )
-url='git://github.com/docker-library/docker-java'
+url='git://github.com/docker-library/java'
 
 echo '# maintainer: InfoSiftr <github@infosiftr.com> (@infosiftr)'
 
 for version in "${versions[@]}"; do
-	commit="$(git log -1 --format='format:%H' "$version")"
+	commit="$(git log -1 --format='format:%H' -- "$version")"
+	
+	flavor="${version%%-*}" # "openjdk"
+	javaVersion="${version#*-}" # "6-jdk"
+	javaType="${javaVersion##*-}" # "jdk"
+	javaVersion="${javaVersion%-*}" # "6"
+	
 	fullVersion="$(grep -m1 'ENV JAVA_VERSION ' "$version/Dockerfile" | cut -d' ' -f3)"
-	versionAliases=( $fullVersion $version ${aliases[$version]} )
+	
+	bases=( $flavor-$fullVersion $flavor-$javaVersion )
+	if [ "$flavor" = "$defaultFlavor" ]; then
+		bases+=( $fullVersion $javaVersion )
+	fi
+	
+	versionAliases=()
+	for base in "${bases[@]}"; do
+		versionAliases+=( "$base-$javaType" )
+		if [ "$javaType" = "$defaultType" ]; then
+			versionAliases+=( "$base" )
+		fi
+	done
+	versionAliases+=( ${aliases[$version]} )
 	
 	echo
 	for va in "${versionAliases[@]}"; do

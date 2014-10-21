@@ -25,11 +25,17 @@ for version in "${versions[@]}"; do
 	javaType="${javaVersion##*-}" # "jdk"
 	javaVersion="${javaVersion%-*}" # "6"
 	
-	fullVersion="$(grep -m1 'ENV JAVA_VERSION ' "$version/Dockerfile" | cut -d' ' -f3)"
+	fullVersion="$(grep -m1 'ENV JAVA_VERSION ' "$version/Dockerfile" | cut -d' ' -f3 | tr '~' '-')"
 	
-	bases=( $flavor-$fullVersion $flavor-$javaVersion )
+	bases=( $flavor-$fullVersion )
+	if [ "${fullVersion%-*}" != "$fullVersion" ]; then
+		bases+=( $flavor-${fullVersion%-*} ) # like "8u40-b09
+	fi
+	bases+=( $flavor-$javaVersion )
 	if [ "$flavor" = "$defaultFlavor" ]; then
-		bases+=( $fullVersion $javaVersion )
+		for base in "${bases[@]}"; do
+			bases+=( "${base#$flavor-}" )
+		done
 	fi
 	
 	versionAliases=()

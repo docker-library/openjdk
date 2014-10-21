@@ -22,7 +22,7 @@ for version in "${versions[@]}"; do
 	case "$flavor" in
 		openjdk)
 			fullVersion="$(set -x; docker run --rm debian:"$dist" bash -c "apt-get update &> /dev/null && apt-cache show $flavor-$javaVersion-$javaType | grep '^Version: ' | head -1 | cut -d' ' -f2")"
-			fullVersion="${fullVersion%%[-~]*}"
+			fullVersion="${fullVersion%%-*}"
 			;;
 	esac
 	

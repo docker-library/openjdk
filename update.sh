@@ -21,15 +21,18 @@ for version in "${versions[@]}"; do
 	fullVersion=
 	case "$flavor" in
 		openjdk)
-			fullVersion="$(set -x; docker run --rm debian:"$dist" bash -c "apt-get update &> /dev/null && apt-cache show $flavor-$javaVersion-$javaType | grep '^Version: ' | head -1 | cut -d' ' -f2")"
-			fullVersion="${fullVersion%%-*}"
+			debianVersion="$(set -x; docker run --rm debian:"$dist" bash -c "apt-get update &> /dev/null && apt-cache show $flavor-$javaVersion-$javaType | grep '^Version: ' | head -1 | cut -d' ' -f2")"
+			fullVersion="${debianVersion%%-*}"
 			;;
 	esac
 	
 	if [ "$fullVersion" ]; then
 		(
 			set -x
-			sed -ri 's/(ENV JAVA_VERSION) .*/\1 '"$fullVersion"'/g' "$version/Dockerfile"
+			sed -ri '
+				s/(ENV JAVA_VERSION) .*/\1 '"$fullVersion"'/g;
+				s/(ENV JAVA_DEBIAN_VERSION) .*/\1 '"$debianVersion"'/g;
+			' "$version/Dockerfile"
 		)
 	fi
 done

@@ -6,8 +6,9 @@ FROM debian:jessie
 #       really hairy.
 
 ENV JAVA_VERSION 7u71
+ENV JAVA_DEBIAN_VERSION 7u71-2.5.3-2
 
-RUN apt-get update && apt-get install -y curl openjdk-7-jre-headless="$JAVA_VERSION"* unzip wget
+RUN apt-get update && apt-get install -y curl openjdk-7-jre-headless="$JAVA_DEBIAN_VERSION" unzip wget
 
 # If you're reading this and have any feedback on how this image could be
 #   improved, please open an issue or a pull request so we can discuss it!

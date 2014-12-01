@@ -5,9 +5,10 @@ FROM debian:wheezy
 #  2. Compiling OpenJDK also requires the JDK to be installed, and it gets
 #       really hairy.
 
-ENV JAVA_VERSION 6b32
+ENV JAVA_VERSION 6b33
+ENV JAVA_DEBIAN_VERSION 6b33-1.13.5-2~deb7u1
 
-RUN apt-get update && apt-get install -y curl openjdk-6-jre-headless="$JAVA_VERSION"* unzip wget
+RUN apt-get update && apt-get install -y curl openjdk-6-jre-headless="$JAVA_DEBIAN_VERSION" unzip wget
 
 # If you're reading this and have any feedback on how this image could be
 #   improved, please open an issue or a pull request so we can discuss it!

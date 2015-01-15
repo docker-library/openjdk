@@ -16,12 +16,12 @@ for version in "${versions[@]}"; do
 	javaType="${javaVersion##*-}" # "jdk"
 	javaVersion="${javaVersion%-*}" # "6"
 	
-	dist="$(grep '^FROM debian:' "$version/Dockerfile" | cut -d: -f2)"
+	dist="$(grep '^FROM ' "$version/Dockerfile" | cut -d' ' -f2)"
 	
 	fullVersion=
 	case "$flavor" in
 		openjdk)
-			debianVersion="$(set -x; docker run --rm debian:"$dist" bash -c "apt-get update &> /dev/null && apt-cache show $flavor-$javaVersion-$javaType | grep '^Version: ' | head -1 | cut -d' ' -f2")"
+			debianVersion="$(set -x; docker run --rm "$dist" bash -c "apt-get update &> /dev/null && apt-cache show $flavor-$javaVersion-$javaType | grep '^Version: ' | head -1 | cut -d' ' -f2")"
 			fullVersion="${debianVersion%%-*}"
 			;;
 	esac

@@ -1,4 +1,4 @@
-FROM buildpack-deps:wheezy-micro
+FROM buildpack-deps:wheezy-curl
 
 # A few problems with compiling Java from source:
 #  1. Oracle.  Licensing prevents us from redistributing the official JDK.

@@ -16,6 +16,9 @@ ENV CA_CERTIFICATES_JAVA_VERSION 20140324
 
 RUN apt-get update && apt-get install -y openjdk-8-jdk="$JAVA_DEBIAN_VERSION" ca-certificates-java="$CA_CERTIFICATES_JAVA_VERSION" && rm -rf /var/lib/apt/lists/*
 
+# java-7 is installed and preferred as the target for 'alias'
+RUN update-alternatives --remove java /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/java
+
 # see CA_CERTIFICATES_JAVA_VERSION notes above
 RUN /var/lib/dpkg/info/ca-certificates-java.postinst configure
 

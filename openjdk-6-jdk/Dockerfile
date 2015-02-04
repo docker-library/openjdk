@@ -7,8 +7,8 @@ FROM buildpack-deps:wheezy-scm
 
 RUN apt-get update && apt-get install -y unzip && rm -rf /var/lib/apt/lists/*
 
-ENV JAVA_VERSION 6b33
-ENV JAVA_DEBIAN_VERSION 6b33-1.13.5-2~deb7u1
+ENV JAVA_VERSION 6b34
+ENV JAVA_DEBIAN_VERSION 6b34-1.13.6-1~deb7u1
 
 RUN apt-get update && apt-get install -y openjdk-6-jdk="$JAVA_DEBIAN_VERSION" && rm -rf /var/lib/apt/lists/*
 

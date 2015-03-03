@@ -7,8 +7,8 @@ FROM buildpack-deps:jessie-scm
 
 RUN apt-get update && apt-get install -y unzip && rm -rf /var/lib/apt/lists/*
 
-ENV JAVA_VERSION 7u71
-ENV JAVA_DEBIAN_VERSION 7u71-2.5.3-2
+ENV JAVA_VERSION 7u75
+ENV JAVA_DEBIAN_VERSION 7u75-2.5.4-2
 
 RUN apt-get update && apt-get install -y openjdk-7-jdk="$JAVA_DEBIAN_VERSION" && rm -rf /var/lib/apt/lists/*
 

@@ -10,6 +10,8 @@ RUN apt-get update && apt-get install -y unzip && rm -rf /var/lib/apt/lists/*
 # Default to UTF-8 file.encoding
 ENV LANG C.UTF-8
 
+ENV JAVA_HOME /usr/lib/jvm/java-7-openjdk-amd64
+
 ENV JAVA_VERSION 7u91
 ENV JAVA_DEBIAN_VERSION 7u91-2.6.3-1~deb8u1
 

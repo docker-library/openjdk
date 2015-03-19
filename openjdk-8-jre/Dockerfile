@@ -7,8 +7,8 @@ FROM buildpack-deps:sid-curl
 
 RUN apt-get update && apt-get install -y unzip && rm -rf /var/lib/apt/lists/*
 
-ENV JAVA_VERSION 8u40~b22
-ENV JAVA_DEBIAN_VERSION 8u40~b22-2
+ENV JAVA_VERSION 8u40
+ENV JAVA_DEBIAN_VERSION 8u40-b27-1
 
 # see https://bugs.debian.org/775775
 # and https://github.com/docker-library/java/issues/19#issuecomment-70546872

@@ -7,6 +7,9 @@ FROM buildpack-deps:sid-curl
 
 RUN apt-get update && apt-get install -y unzip && rm -rf /var/lib/apt/lists/*
 
+# Default to UTF-8 file.encoding
+ENV LANG C.UTF-8
+
 ENV JAVA_VERSION 8u40
 ENV JAVA_DEBIAN_VERSION 8u40-b27-1
 

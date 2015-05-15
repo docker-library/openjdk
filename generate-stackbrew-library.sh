@@ -25,7 +25,7 @@ for version in "${versions[@]}"; do
 	javaType="${javaVersion##*-}" # "jdk"
 	javaVersion="${javaVersion%-*}" # "6"
 	
-	fullVersion="$(grep -m1 'ENV JAVA_VERSION ' "$version/Dockerfile" | cut -d' ' -f3 | tr '~' '-')"
+	fullVersion="$(grep -m1 -E -o '\bJAVA_VERSION=[^ \t\n]*' "$version/Dockerfile" | cut -d'=' -f2 | tr '~' '-')"
 	
 	bases=( $flavor-$fullVersion )
 	if [ "${fullVersion%-*}" != "$fullVersion" ]; then

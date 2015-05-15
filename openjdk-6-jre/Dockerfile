@@ -8,10 +8,9 @@ FROM buildpack-deps:wheezy-curl
 RUN apt-get update && apt-get install -y unzip && rm -rf /var/lib/apt/lists/*
 
 # Default to UTF-8 file.encoding
-ENV LANG C.UTF-8
-
-ENV JAVA_VERSION 6b35
-ENV JAVA_DEBIAN_VERSION 6b35-1.13.7-1~deb7u1
+ENV LANG=C.UTF-8 \
+	JAVA_VERSION=6b35 \
+	JAVA_DEBIAN_VERSION=6b35-1.13.7-1~deb7u1
 
 RUN apt-get update && apt-get install -y openjdk-6-jre-headless="$JAVA_DEBIAN_VERSION" && rm -rf /var/lib/apt/lists/*
 

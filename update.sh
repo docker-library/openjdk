@@ -30,8 +30,8 @@ for version in "${versions[@]}"; do
 		(
 			set -x
 			sed -ri '
-				s/(ENV JAVA_VERSION) .*/\1 '"$fullVersion"'/g;
-				s/(ENV JAVA_DEBIAN_VERSION) .*/\1 '"$debianVersion"'/g;
+				s/\b(JAVA_VERSION)=[^ \t\n]*/\1='"$fullVersion"'/g
+				s/\b(JAVA_DEBIAN_VERSION)=[^ \t\n]*/\1='"$debianVersion"'/g;
 			' "$version/Dockerfile"
 		)
 	fi

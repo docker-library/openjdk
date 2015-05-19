@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y unzip && rm -rf /var/lib/apt/lists/*
 ENV LANG C.UTF-8
 
 ENV JAVA_VERSION 8u45
-ENV JAVA_DEBIAN_VERSION 8u45-b14-2
+ENV JAVA_DEBIAN_VERSION 8u45-b14-3
 
 # see https://bugs.debian.org/775775
 # and https://github.com/docker-library/java/issues/19#issuecomment-70546872

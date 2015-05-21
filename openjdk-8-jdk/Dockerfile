@@ -1,4 +1,4 @@
-FROM buildpack-deps:sid-scm
+FROM buildpack-deps:jessie-scm
 
 # A few problems with compiling Java from source:
 #  1. Oracle.  Licensing prevents us from redistributing the official JDK.
@@ -7,11 +7,13 @@ FROM buildpack-deps:sid-scm
 
 RUN apt-get update && apt-get install -y unzip && rm -rf /var/lib/apt/lists/*
 
+RUN echo 'deb http://httpredir.debian.org/debian jessie-backports main' > /etc/apt/sources.list.d/jessie-backports.list
+
 # Default to UTF-8 file.encoding
 ENV LANG C.UTF-8
 
 ENV JAVA_VERSION 8u45
-ENV JAVA_DEBIAN_VERSION 8u45-b14-3
+ENV JAVA_DEBIAN_VERSION 8u45-b14-2~bpo8+2
 
 # see https://bugs.debian.org/775775
 # and https://github.com/docker-library/java/issues/19#issuecomment-70546872

@@ -16,8 +16,14 @@ for version in "${versions[@]}"; do
 	javaType="${javaVersion##*-}" # "jdk"
 	javaVersion="${javaVersion%-*}" # "6"
 	
-	dist="$(grep '^FROM ' "$version/Dockerfile" | cut -d' ' -f2)"
-	
+	# Determine debian:SUITE based on FROM directive
+	dist="$(grep '^FROM ' "$version/Dockerfile" | cut -d' ' -f2 | sed -r 's/^buildpack-deps:(\w+)-.*$/debian:\1/')"
+
+	# Use debian:SUITE-backports if backports packages are required
+	if grep -q backports "$version/Dockerfile"; then
+		dist+="-backports"
+	fi
+
 	fullVersion=
 	case "$flavor" in
 		openjdk)
@@ -25,7 +31,7 @@ for version in "${versions[@]}"; do
 			fullVersion="${debianVersion%%-*}"
 			;;
 	esac
-	
+
 	if [ "$fullVersion" ]; then
 		(
 			set -x

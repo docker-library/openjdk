@@ -3,8 +3,8 @@ set -e
 
 declare -A aliases
 aliases=(
-	[openjdk-7-jdk]='jdk latest'
-	[openjdk-7-jre]='jre'
+	[openjdk-8-jdk]='jdk latest'
+	[openjdk-8-jre]='jre'
 )
 defaultType='jdk'
 defaultFlavor='openjdk'

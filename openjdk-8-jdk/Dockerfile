@@ -12,8 +12,8 @@ RUN echo 'deb http://httpredir.debian.org/debian jessie-backports main' > /etc/a
 # Default to UTF-8 file.encoding
 ENV LANG C.UTF-8
 
-ENV JAVA_VERSION 8u45
-ENV JAVA_DEBIAN_VERSION 8u45-b14-2~bpo8+2
+ENV JAVA_VERSION 8u66
+ENV JAVA_DEBIAN_VERSION 8u66-b01-1~bpo8+1
 
 # see https://bugs.debian.org/775775
 # and https://github.com/docker-library/java/issues/19#issuecomment-70546872

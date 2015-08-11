@@ -18,7 +18,7 @@ url='git://github.com/docker-library/java'
 echo '# maintainer: InfoSiftr <github@infosiftr.com> (@infosiftr)'
 
 for version in "${versions[@]}"; do
-	commit="$(git log -1 --format='format:%H' -- "$version")"
+	commit="$(cd "$version" && git log -1 --format='format:%H' -- Dockerfile $(awk 'toupper($1) == "COPY" { for (i = 2; i < NF; i++) { print $i } }' Dockerfile))"
 	
 	flavor="${version%%-*}" # "openjdk"
 	javaVersion="${version#*-}" # "6-jdk"

@@ -9,7 +9,6 @@ if [ ${#versions[@]} -eq 0 ]; then
 fi
 versions=( "${versions[@]%/}" )
 
-
 travisEnv=
 for version in "${versions[@]}"; do
 	flavor="${version%%-*}" # "openjdk"

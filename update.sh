@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -eo pipefail
 
 cd "$(dirname "$(readlink -f "$BASH_SOURCE")")"
 
@@ -10,12 +10,13 @@ fi
 versions=( "${versions[@]%/}" )
 
 
+travisEnv=
 for version in "${versions[@]}"; do
 	flavor="${version%%-*}" # "openjdk"
 	javaVersion="${version#*-}" # "6-jdk"
 	javaType="${javaVersion##*-}" # "jdk"
 	javaVersion="${javaVersion%-*}" # "6"
-	
+
 	# Determine debian:SUITE based on FROM directive
 	dist="$(grep '^FROM ' "$version/Dockerfile" | cut -d' ' -f2 | sed -r 's/^buildpack-deps:(\w+)-.*$/debian:\1/')"
 
@@ -41,5 +42,9 @@ for version in "${versions[@]}"; do
 			' "$version/Dockerfile"
 		)
 	fi
+
+	travisEnv='\n  - VERSION='"$version$travisEnv"
 done
 
+travis="$(awk -v 'RS=\n\n' '$1 == "env:" { $0 = "env:'"$travisEnv"'" } { printf "%s%s", $0, RS }' .travis.yml)"
+echo "$travis" > .travis.yml

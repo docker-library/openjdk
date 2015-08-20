@@ -10,8 +10,8 @@ RUN apt-get update && apt-get install -y unzip && rm -rf /var/lib/apt/lists/*
 # Default to UTF-8 file.encoding
 ENV LANG C.UTF-8
 
-ENV JAVA_VERSION 6b35
-ENV JAVA_DEBIAN_VERSION 6b35-1.13.7-1~deb7u1
+ENV JAVA_VERSION 6b36
+ENV JAVA_DEBIAN_VERSION 6b36-1.13.8-1~deb7u1
 
 RUN apt-get update && apt-get install -y openjdk-6-jdk="$JAVA_DEBIAN_VERSION" && rm -rf /var/lib/apt/lists/*
 

@@ -31,7 +31,9 @@ for version in "${versions[@]}"; do
 	if [ "${fullVersion%-*}" != "$fullVersion" ]; then
 		bases+=( $flavor-${fullVersion%-*} ) # like "8u40-b09
 	fi
-	bases+=( $flavor-$javaVersion )
+	if [ "$javaVersion" != "${fullVersion%-*}" ]; then
+		bases+=( $flavor-$javaVersion )
+	fi
 	if [ "$flavor" = "$defaultFlavor" ]; then
 		for base in "${bases[@]}"; do
 			bases+=( "${base#$flavor-}" )

@@ -24,10 +24,15 @@ for version in "${versions[@]}"; do
 		dist+="-backports"
 	fi
 
+	# we don't have buildpack-deps:experimental-* so we use sid and add a source
+	if grep -q experimental "$version/Dockerfile"; then
+		dist="${dist%:sid}:experimental"
+	fi
+
 	fullVersion=
 	case "$flavor" in
 		openjdk)
-			debianVersion="$(set -x; docker run --rm "$dist" bash -c "apt-get update &> /dev/null && apt-cache show $flavor-$javaVersion-$javaType | grep '^Version: ' | head -1 | cut -d' ' -f2")"
+			debianVersion="$(set -x; docker run --rm "$dist" bash -c "apt-get update -qq && apt-cache show $flavor-$javaVersion-$javaType | awk -F ': ' '\$1 == \"Version\" { print \$2; exit }'")"
 			fullVersion="${debianVersion%%-*}"
 			;;
 	esac

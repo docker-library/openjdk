@@ -2,6 +2,8 @@ language: bash
 services: docker
 
 env:
+  - VERSION=openjdk-9-jre
+  - VERSION=openjdk-9-jdk
   - VERSION=openjdk-8-jre
   - VERSION=openjdk-8-jdk
   - VERSION=openjdk-7-jre

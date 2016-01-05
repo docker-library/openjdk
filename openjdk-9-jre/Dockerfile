@@ -28,7 +28,7 @@ RUN { \
 	} > /usr/local/bin/docker-java-home \
 	&& chmod +x /usr/local/bin/docker-java-home
 
-ENV JAVA_HOME /usr/lib/jvm/java-9-openjdk-amd64/jre
+ENV JAVA_HOME /usr/lib/jvm/java-9-openjdk-amd64
 
 ENV JAVA_VERSION 9~b96
 ENV JAVA_DEBIAN_VERSION 9~b96-1

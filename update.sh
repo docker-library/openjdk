@@ -40,7 +40,8 @@ for version in "${versions[@]}"; do
 	variant="${variants[$javaType]}"
 
 	javaHome="/usr/lib/jvm/java-$javaVersion-$flavor-$(dpkg --print-architecture)"
-	if [ "$javaType" = 'jre' ]; then
+	if [ "$javaType" = 'jre' -a "$javaVersion" -lt 9 ]; then
+		# woot, this hackery stopped in OpenJDK 9+!
 		javaHome+='/jre'
 	fi
 

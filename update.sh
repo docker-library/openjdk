@@ -26,6 +26,8 @@ declare -A variants=(
 	[jdk]='scm'
 )
 
+declare -A debCache=()
+
 travisEnv=
 for version in "${versions[@]}"; do
 	flavor="${version%%-*}" # "openjdk"
@@ -52,7 +54,12 @@ for version in "${versions[@]}"; do
 	if [ "$javaType" = 'jre' ]; then
 		debianPackage+='-headless'
 	fi
-	debianVersion="$(set -x; docker run --rm "$dist" bash -c 'apt-get update -qq && apt-cache show "$@"' -- "$debianPackage" |tac|tac| awk -F ': ' '$1 == "Version" { print $2; exit }')"
+	debCacheKey="$dist-$flavor-$javaVersion"
+	debianVersion="${debCache[$debCacheKey]}"
+	if [ -z "$debianVersion" ]; then
+		debianVersion="$(set -x; docker run --rm "$dist" bash -c 'apt-get update -qq && apt-cache show "$@"' -- "$debianPackage" |tac|tac| awk -F ': ' '$1 == "Version" { print $2; exit }')"
+		debCache["$debCacheKey"]="$debianVersion"
+	fi
 	fullVersion="${debianVersion%%-*}"
 
 	cat > "$version/Dockerfile" <<-EOD

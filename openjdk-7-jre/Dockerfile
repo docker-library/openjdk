@@ -1,3 +1,9 @@
+#
+# NOTE: THIS DOCKERFILE IS GENERATED VIA "update.sh"
+#
+# PLEASE DO NOT EDIT IT DIRECTLY.
+#
+
 FROM buildpack-deps:jessie-curl
 
 # A few problems with compiling Java from source:
@@ -10,12 +16,16 @@ RUN apt-get update && apt-get install -y unzip && rm -rf /var/lib/apt/lists/*
 # Default to UTF-8 file.encoding
 ENV LANG C.UTF-8
 
-ENV JAVA_HOME /usr/lib/jvm/java-7-openjdk-amd64
+ENV JAVA_HOME /usr/lib/jvm/java-7-openjdk-amd64/jre
 
 ENV JAVA_VERSION 7u91
 ENV JAVA_DEBIAN_VERSION 7u91-2.6.3-1~deb8u1
 
-RUN apt-get update && apt-get install -y openjdk-7-jre-headless="$JAVA_DEBIAN_VERSION" && rm -rf /var/lib/apt/lists/*
+RUN set -x \
+	&& apt-get update \
+	&& apt-get install -y \
+		openjdk-7-jre-headless="$JAVA_DEBIAN_VERSION" \
+	&& rm -rf /var/lib/apt/lists/*
 
 # If you're reading this and have any feedback on how this image could be
 #   improved, please open an issue or a pull request so we can discuss it!

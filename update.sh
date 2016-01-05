@@ -9,6 +9,23 @@ if [ ${#versions[@]} -eq 0 ]; then
 fi
 versions=( "${versions[@]%/}" )
 
+declare -A suites=(
+	[openjdk-6]='wheezy'
+	[openjdk-7]='jessie'
+	[openjdk-8]='jessie'
+	[openjdk-9]='sid'
+)
+
+declare -A addSuites=(
+	[openjdk-8]='jessie-backports'
+	[openjdk-9]='experimental'
+)
+
+declare -A variants=(
+	[jre]='curl'
+	[jdk]='scm'
+)
+
 travisEnv=
 for version in "${versions[@]}"; do
 	flavor="${version%%-*}" # "openjdk"
@@ -16,36 +33,101 @@ for version in "${versions[@]}"; do
 	javaType="${javaVersion##*-}" # "jdk"
 	javaVersion="${javaVersion%-*}" # "6"
 
-	# Determine debian:SUITE based on FROM directive
-	dist="$(grep '^FROM ' "$version/Dockerfile" | cut -d' ' -f2 | sed -r 's/^buildpack-deps:(\w+)-.*$/debian:\1/')"
+	suite="${suites[$flavor-$javaVersion]}"
+	addSuite="${addSuites[$flavor-$javaVersion]}"
+	variant="${variants[$javaType]}"
 
-	# Use debian:SUITE-backports if backports packages are required
-	if grep -q backports "$version/Dockerfile"; then
-		dist+="-backports"
+	javaHome="/usr/lib/jvm/java-$javaVersion-$flavor-$(dpkg --print-architecture)"
+	if [ "$javaType" = 'jre' ]; then
+		javaHome+='/jre'
 	fi
 
-	# we don't have buildpack-deps:experimental-* so we use sid and add a source
-	if grep -q experimental "$version/Dockerfile"; then
-		dist="${dist%:sid}:experimental"
+	needCaHack=
+	if [ "$javaVersion" -ge 8 ]; then
+		needCaHack=1
 	fi
 
-	fullVersion=
-	case "$flavor" in
-		openjdk)
-			debianVersion="$(set -x; docker run --rm "$dist" bash -c "apt-get update -qq && apt-cache show $flavor-$javaVersion-$javaType | awk -F ': ' '\$1 == \"Version\" { print \$2; exit }'")"
-			fullVersion="${debianVersion%%-*}"
-			;;
-	esac
-
-	if [ "$fullVersion" ]; then
-		(
-			set -x
-			sed -ri '
-				s/(ENV JAVA_VERSION) .*/\1 '"$fullVersion"'/g;
-				s/(ENV JAVA_DEBIAN_VERSION) .*/\1 '"$debianVersion"'/g;
-			' "$version/Dockerfile"
-		)
+	dist="debian:${addSuite:-$suite}"
+	debianPackage="$flavor-$javaVersion-$javaType"
+	if [ "$javaType" = 'jre' ]; then
+		debianPackage+='-headless'
 	fi
+	debianVersion="$(set -x; docker run --rm "$dist" bash -c 'apt-get update -qq && apt-cache show "$@"' -- "$debianPackage" |tac|tac| awk -F ': ' '$1 == "Version" { print $2; exit }')"
+	fullVersion="${debianVersion%%-*}"
+
+	cat > "$version/Dockerfile" <<-EOD
+		#
+		# NOTE: THIS DOCKERFILE IS GENERATED VIA "update.sh"
+		#
+		# PLEASE DO NOT EDIT IT DIRECTLY.
+		#
+
+		FROM buildpack-deps:$suite-$variant
+
+		# A few problems with compiling Java from source:
+		#  1. Oracle.  Licensing prevents us from redistributing the official JDK.
+		#  2. Compiling OpenJDK also requires the JDK to be installed, and it gets
+		#       really hairy.
+
+		RUN apt-get update && apt-get install -y unzip && rm -rf /var/lib/apt/lists/*
+	EOD
+
+	if [ "$addSuite" ]; then
+		cat >> "$version/Dockerfile" <<-EOD
+
+			RUN echo 'deb http://httpredir.debian.org/debian $addSuite main' > /etc/apt/sources.list.d/$addSuite.list
+		EOD
+	fi
+
+	cat >> "$version/Dockerfile" <<-EOD
+
+		# Default to UTF-8 file.encoding
+		ENV LANG C.UTF-8
+
+		ENV JAVA_HOME $javaHome
+
+		ENV JAVA_VERSION $fullVersion
+		ENV JAVA_DEBIAN_VERSION $debianVersion
+	EOD
+
+	if [ "$needCaHack" ]; then
+		cat >> "$version/Dockerfile" <<-EOD
+
+			# see https://bugs.debian.org/775775
+			# and https://github.com/docker-library/java/issues/19#issuecomment-70546872
+			ENV CA_CERTIFICATES_JAVA_VERSION 20140324
+		EOD
+	fi
+
+	cat >> "$version/Dockerfile" <<EOD
+
+RUN set -x \\
+	&& apt-get update \\
+	&& apt-get install -y \\
+		$debianPackage="\$JAVA_DEBIAN_VERSION" \\
+EOD
+	if [ "$needCaHack" ]; then
+		cat >> "$version/Dockerfile" <<EOD
+		ca-certificates-java="\$CA_CERTIFICATES_JAVA_VERSION" \\
+EOD
+	fi
+	cat >> "$version/Dockerfile" <<EOD
+	&& rm -rf /var/lib/apt/lists/*
+EOD
+
+	if [ "$needCaHack" ]; then
+		cat >> "$version/Dockerfile" <<-EOD
+
+			# see CA_CERTIFICATES_JAVA_VERSION notes above
+			RUN /var/lib/dpkg/info/ca-certificates-java.postinst configure
+		EOD
+	fi
+
+	cat >> "$version/Dockerfile" <<-EOD
+
+		# If you're reading this and have any feedback on how this image could be
+		#   improved, please open an issue or a pull request so we can discuss it!
+	EOD
 
 	travisEnv='\n  - VERSION='"$version$travisEnv"
 done

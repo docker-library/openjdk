@@ -1,3 +1,9 @@
+#
+# NOTE: THIS DOCKERFILE IS GENERATED VIA "update.sh"
+#
+# PLEASE DO NOT EDIT IT DIRECTLY.
+#
+
 FROM buildpack-deps:jessie-curl
 
 # A few problems with compiling Java from source:
@@ -12,7 +18,7 @@ RUN echo 'deb http://httpredir.debian.org/debian jessie-backports main' > /etc/a
 # Default to UTF-8 file.encoding
 ENV LANG C.UTF-8
 
-ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
+ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/jre
 
 ENV JAVA_VERSION 8u66
 ENV JAVA_DEBIAN_VERSION 8u66-b17-1~bpo8+1
@@ -30,10 +36,6 @@ RUN set -x \
 
 # see CA_CERTIFICATES_JAVA_VERSION notes above
 RUN /var/lib/dpkg/info/ca-certificates-java.postinst configure
-
-# see https://bugs.debian.org/793210
-# and https://github.com/docker-library/java/issues/46#issuecomment-119026586
-RUN apt-get update && apt-get install -y --no-install-recommends libfontconfig1 && rm -rf /var/lib/apt/lists/*
 
 # If you're reading this and have any feedback on how this image could be
 #   improved, please open an issue or a pull request so we can discuss it!

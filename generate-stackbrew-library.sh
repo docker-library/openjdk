@@ -13,7 +13,7 @@ cd "$(dirname "$(readlink -f "$BASH_SOURCE")")"
 
 versions=( */ )
 versions=( "${versions[@]%/}" )
-url='git://github.com/docker-library/java'
+url='git://github.com/docker-library/openjdk'
 
 echo '# maintainer: InfoSiftr <github@infosiftr.com> (@infosiftr)'
 

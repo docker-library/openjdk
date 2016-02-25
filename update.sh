@@ -77,7 +77,7 @@ for version in "${versions[@]}"; do
 		#  2. Compiling OpenJDK also requires the JDK to be installed, and it gets
 		#       really hairy.
 
-		RUN apt-get update && apt-get install -y unzip && rm -rf /var/lib/apt/lists/*
+		RUN apt-get update && apt-get install -y unzip && apt-get clean && rm -rf /var/lib/apt/lists/*
 	EOD
 
 	if [ "$addSuite" ]; then
@@ -136,6 +136,7 @@ EOD
 EOD
 	fi
 	cat >> "$version/Dockerfile" <<EOD
+	&& apt-get clean \\
 	&& rm -rf /var/lib/apt/lists/* \\
 	&& [ "\$JAVA_HOME" = "\$(docker-java-home)" ]
 EOD

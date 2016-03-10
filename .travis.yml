@@ -18,7 +18,7 @@ install:
 
 before_script:
   - env | sort
-  - cd "${VERSION}${VARIANT:+-$VARIANT}"
+  - cd "${VERSION}${VARIANT:+/$VARIANT}"
   - image="java:${VERSION}${VARIANT:+-$VARIANT}"
 
 script:

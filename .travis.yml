@@ -9,7 +9,9 @@ env:
   - VERSION=8-jdk
   - VERSION=8-jdk VARIANT=alpine
   - VERSION=7-jre
+  - VERSION=7-jre VARIANT=alpine
   - VERSION=7-jdk
+  - VERSION=7-jdk VARIANT=alpine
   - VERSION=6-jre
   - VERSION=6-jdk
 

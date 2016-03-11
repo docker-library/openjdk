@@ -23,13 +23,13 @@ RUN { \
 		echo 'dirname "$(dirname "$(readlink -f "$(which javac || which java)")")"'; \
 	} > /usr/local/bin/docker-java-home \
 	&& chmod +x /usr/local/bin/docker-java-home
-ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk/jre
+ENV JAVA_HOME /usr/lib/jvm/java-1.7-openjdk
 ENV PATH $PATH:$JAVA_HOME/bin
 
-ENV JAVA_VERSION 8u72
-ENV JAVA_ALPINE_VERSION 8.72.15-r2
+ENV JAVA_VERSION 7u91
+ENV JAVA_ALPINE_VERSION 7.91.2.6.3-r1
 
 RUN set -x \
 	&& apk add --no-cache \
-		openjdk8-jre="$JAVA_ALPINE_VERSION" \
+		openjdk7="$JAVA_ALPINE_VERSION" \
 	&& [ "$JAVA_HOME" = "$(docker-java-home)" ]

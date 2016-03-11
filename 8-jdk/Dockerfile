@@ -11,7 +11,11 @@ FROM buildpack-deps:jessie-scm
 #  2. Compiling OpenJDK also requires the JDK to be installed, and it gets
 #       really hairy.
 
-RUN apt-get update && apt-get install -y unzip && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends \
+		bzip2 \
+		unzip \
+		xz-utils \
+	&& rm -rf /var/lib/apt/lists/*
 
 RUN echo 'deb http://httpredir.debian.org/debian jessie-backports main' > /etc/apt/sources.list.d/jessie-backports.list
 

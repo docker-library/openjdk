@@ -153,6 +153,12 @@ EOD
 		#   improved, please open an issue or a pull request so we can discuss it!
 	EOD
 
+	variant='alpine'
+	if [ -d "$version/$variant" ]; then
+		# TODO ...
+		travisEnv='\n  - VERSION='"$version"' VARIANT='"$variant$travisEnv"
+	fi
+
 	travisEnv='\n  - VERSION='"$version$travisEnv"
 done
 

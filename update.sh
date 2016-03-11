@@ -94,9 +94,16 @@ for version in "${versions[@]}"; do
 		#  1. Oracle.  Licensing prevents us from redistributing the official JDK.
 		#  2. Compiling OpenJDK also requires the JDK to be installed, and it gets
 		#       really hairy.
-
-		RUN apt-get update && apt-get install -y unzip && rm -rf /var/lib/apt/lists/*
 	EOD
+
+	cat >> "$version/Dockerfile" <<'EOD'
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+		bzip2 \
+		unzip \
+		xz-utils \
+	&& rm -rf /var/lib/apt/lists/*
+EOD
 
 	if [ "$addSuite" ]; then
 		cat >> "$version/Dockerfile" <<-EOD

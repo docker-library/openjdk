@@ -10,15 +10,15 @@ fi
 versions=( "${versions[@]%/}" )
 
 declare -A suites=(
-	[openjdk-6]='wheezy'
-	[openjdk-7]='jessie'
-	[openjdk-8]='jessie'
-	[openjdk-9]='sid'
+	[6]='wheezy'
+	[7]='jessie'
+	[8]='jessie'
+	[9]='sid'
 )
 
 declare -A addSuites=(
-	[openjdk-8]='jessie-backports'
-	[openjdk-9]='experimental'
+	[8]='jessie-backports'
+	[9]='experimental'
 )
 
 declare -A variants=(
@@ -30,16 +30,15 @@ declare -A debCache=()
 
 travisEnv=
 for version in "${versions[@]}"; do
-	flavor="${version%%-*}" # "openjdk"
-	javaVersion="${version#*-}" # "6-jdk"
+	javaVersion="$version" # "6-jdk"
 	javaType="${javaVersion##*-}" # "jdk"
 	javaVersion="${javaVersion%-*}" # "6"
 
-	suite="${suites[$flavor-$javaVersion]}"
-	addSuite="${addSuites[$flavor-$javaVersion]}"
+	suite="${suites[$javaVersion]}"
+	addSuite="${addSuites[$javaVersion]}"
 	variant="${variants[$javaType]}"
 
-	javaHome="/usr/lib/jvm/java-$javaVersion-$flavor-$(dpkg --print-architecture)"
+	javaHome="/usr/lib/jvm/java-$javaVersion-openjdk-$(dpkg --print-architecture)"
 	if [ "$javaType" = 'jre' -a "$javaVersion" -lt 9 ]; then
 		# woot, this hackery stopped in OpenJDK 9+!
 		javaHome+='/jre'
@@ -51,11 +50,11 @@ for version in "${versions[@]}"; do
 	fi
 
 	dist="debian:${addSuite:-$suite}"
-	debianPackage="$flavor-$javaVersion-$javaType"
+	debianPackage="openjdk-$javaVersion-$javaType"
 	if [ "$javaType" = 'jre' ]; then
 		debianPackage+='-headless'
 	fi
-	debCacheKey="$dist-$flavor-$javaVersion"
+	debCacheKey="$dist-openjdk-$javaVersion"
 	debianVersion="${debCache[$debCacheKey]}"
 	if [ -z "$debianVersion" ]; then
 		debianVersion="$(set -x; docker run --rm "$dist" bash -c 'apt-get update -qq && apt-cache show "$@"' -- "$debianPackage" |tac|tac| awk -F ': ' '$1 == "Version" { print $2; exit }')"

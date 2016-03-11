@@ -3,11 +3,10 @@ set -e
 
 declare -A aliases
 aliases=(
-	[openjdk-8-jdk]='jdk latest'
-	[openjdk-8-jre]='jre'
+	[8-jdk]='jdk latest'
+	[8-jre]='jre'
 )
 defaultType='jdk'
-defaultFlavor='openjdk'
 
 cd "$(dirname "$(readlink -f "$BASH_SOURCE")")"
 
@@ -20,25 +19,20 @@ echo '# maintainer: InfoSiftr <github@infosiftr.com> (@infosiftr)'
 for version in "${versions[@]}"; do
 	commit="$(cd "$version" && git log -1 --format='format:%H' -- Dockerfile $(awk 'toupper($1) == "COPY" { for (i = 2; i < NF; i++) { print $i } }' Dockerfile))"
 	
-	flavor="${version%%-*}" # "openjdk"
-	javaVersion="${version#*-}" # "6-jdk"
+	javaVersion="$version" # "6-jdk"
 	javaType="${javaVersion##*-}" # "jdk"
 	javaVersion="${javaVersion%-*}" # "6"
 	
 	fullVersion="$(grep -m1 'ENV JAVA_VERSION ' "$version/Dockerfile" | cut -d' ' -f3 | tr '~' '-')"
 	
-	bases=( $flavor-$fullVersion )
+	bases=( $fullVersion )
 	if [ "${fullVersion%-*}" != "$fullVersion" ]; then
-		bases+=( $flavor-${fullVersion%-*} ) # like "8u40-b09
+		bases+=( ${fullVersion%-*} ) # like "8u40-b09
 	fi
 	if [ "$javaVersion" != "${fullVersion%-*}" ]; then
-		bases+=( $flavor-$javaVersion )
+		bases+=( $javaVersion )
 	fi
-	if [ "$flavor" = "$defaultFlavor" ]; then
-		for base in "${bases[@]}"; do
-			bases+=( "${base#$flavor-}" )
-		done
-	fi
+	bases=( "${bases[@]/#/openjdk-}" "${bases[@]}" )
 	
 	versionAliases=()
 	for base in "${bases[@]}"; do

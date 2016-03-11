@@ -2,16 +2,14 @@ language: bash
 services: docker
 
 env:
-  - VERSION=openjdk-9-jre
-  - VERSION=openjdk-9-jdk
-  - VERSION=openjdk-8-jre VARIANT=alpine
-  - VERSION=openjdk-8-jdk VARIANT=alpine
-  - VERSION=openjdk-8-jre
-  - VERSION=openjdk-8-jdk
-  - VERSION=openjdk-7-jre
-  - VERSION=openjdk-7-jdk
-  - VERSION=openjdk-6-jre
-  - VERSION=openjdk-6-jdk
+  - VERSION=9-jre
+  - VERSION=9-jdk
+  - VERSION=8-jre
+  - VERSION=8-jdk
+  - VERSION=7-jre
+  - VERSION=7-jdk
+  - VERSION=6-jre
+  - VERSION=6-jdk
 
 install:
   - git clone https://github.com/docker-library/official-images.git ~/official-images

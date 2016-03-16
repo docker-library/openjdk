@@ -81,6 +81,8 @@ for version in "${versions[@]}"; do
 	fi
 	fullVersion="${debianVersion%%-*}"
 
+  cp docker-jvm-opts.sh "$version"
+
 	cat > "$version/Dockerfile" <<-EOD
 		#
 		# NOTE: THIS DOCKERFILE IS GENERATED VIA "update.sh"
@@ -163,6 +165,8 @@ EOD
 	fi
 
 	cat >> "$version/Dockerfile" <<-EOD
+
+COPY docker-jvm-opts.sh /usr/local/bin/docker-jvm-opts.sh
 
 		# If you're reading this and have any feedback on how this image could be
 		#   improved, please open an issue or a pull request so we can discuss it!

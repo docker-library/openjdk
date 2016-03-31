@@ -26,8 +26,8 @@ RUN { \
 ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk/jre
 ENV PATH $PATH:$JAVA_HOME/bin
 
-ENV JAVA_VERSION 8u72
-ENV JAVA_ALPINE_VERSION 8.72.15-r2
+ENV JAVA_VERSION 8u77
+ENV JAVA_ALPINE_VERSION 8.77.03-r0
 
 RUN set -x \
 	&& apk add --no-cache \

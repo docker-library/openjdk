@@ -60,7 +60,7 @@ for version in "${versions[@]}"; do
 		[ -f "$version/$variant/Dockerfile" ] || continue
 		commit="$(cd "$version/$variant" && git log -1 --format='format:%H' -- Dockerfile $(awk 'toupper($1) == "COPY" { for (i = 2; i < NF; i++) { print $i } }' Dockerfile))"
 
-		fullVersion="$(grep -m1 'ENV JAVA_VERSION ' "$version/Dockerfile" | cut -d' ' -f3 | tr '~' '-')"
+		fullVersion="$(grep -m1 'ENV JAVA_VERSION ' "$version/$variant/Dockerfile" | cut -d' ' -f3 | tr '~' '-')"
 
 		versionAliases=( $(aliases "$javaVersion" "$javaType" "$fullVersion" ) ${aliases[$version]} )
 		versionAliases=( "${versionAliases[@]/%/-$variant}" )

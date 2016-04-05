@@ -71,7 +71,8 @@ for version in "${versions[@]}"; do
 
 	dist="debian:${addSuite:-$suite}"
 	debianPackage="openjdk-$javaVersion-$javaType"
-	if [ "$javaType" = 'jre' ]; then
+	if [ "$javaType" = 'jre' -o "$javaVersion" -ge 9 ]; then
+		# "openjdk-9" in Debian introduced an "openjdk-9-jdk-headless" package \o/
 		debianPackage+='-headless'
 	fi
 	debCacheKey="$dist-openjdk-$javaVersion"

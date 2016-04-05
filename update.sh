@@ -64,7 +64,8 @@ for version in "${versions[@]}"; do
 	fi
 
 	needCaHack=
-	if [ "$javaVersion" -ge 8 ]; then
+	if [ "$javaVersion" -ge 8 -a "$suite" != 'sid' ]; then
+		# "20140324" is broken (jessie), but "20160321" is fixed (sid)
 		needCaHack=1
 	fi
 

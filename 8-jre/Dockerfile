@@ -34,8 +34,8 @@ RUN { \
 
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/jre
 
-ENV JAVA_VERSION 8u72
-ENV JAVA_DEBIAN_VERSION 8u72-b15-1~bpo8+1
+ENV JAVA_VERSION 8u91
+ENV JAVA_DEBIAN_VERSION 8u91-b14-1~bpo8+1
 
 # see https://bugs.debian.org/775775
 # and https://github.com/docker-library/java/issues/19#issuecomment-70546872

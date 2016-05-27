@@ -20,6 +20,7 @@ aliases() {
 	local javaVersion="$1"; shift
 	local javaType="$1"; shift
 	local fullVersion="$1"; shift
+	local variant="$1" # optional
 
 	bases=( $fullVersion )
 	if [ "${fullVersion%-*}" != "$fullVersion" ]; then
@@ -28,7 +29,6 @@ aliases() {
 	if [ "$javaVersion" != "${fullVersion%-*}" ]; then
 		bases+=( $javaVersion )
 	fi
-	bases=( "${bases[@]/#/openjdk-}" "${bases[@]}" )
 
 	versionAliases=()
 	for base in "${bases[@]}"; do
@@ -37,6 +37,18 @@ aliases() {
 			versionAliases+=( "$base" )
 		fi
 	done
+
+	# add "openjdk" prefixes
+	openjdkPrefix=( "${versionAliases[@]/#/openjdk-}" )
+
+	# add aliases and the prefixed versions (so the silly prefix versions come dead last)
+	versionAliases+=( ${aliases[$javaVersion-$javaType]} "${openjdkPrefix[@]}" )
+
+	if [ "$variant" ]; then
+		versionAliases=( "${versionAliases[@]/%/-$variant}" )
+		versionAliases=( "${versionAliases[@]//latest-/}" )
+	fi
+
 	echo "${versionAliases[@]}"
 }
 
@@ -49,7 +61,7 @@ for version in "${versions[@]}"; do
 
 	fullVersion="$(grep -m1 'ENV JAVA_VERSION ' "$version/Dockerfile" | cut -d' ' -f3 | tr '~' '-')"
 
-	versionAliases=( $(aliases "$javaVersion" "$javaType" "$fullVersion" ) ${aliases[$version]} )
+	versionAliases=( $(aliases "$javaVersion" "$javaType" "$fullVersion") )
 
 	echo
 	for va in "${versionAliases[@]}"; do
@@ -62,9 +74,7 @@ for version in "${versions[@]}"; do
 
 		fullVersion="$(grep -m1 'ENV JAVA_VERSION ' "$version/$variant/Dockerfile" | cut -d' ' -f3 | tr '~' '-')"
 
-		versionAliases=( $(aliases "$javaVersion" "$javaType" "$fullVersion" ) ${aliases[$version]} )
-		versionAliases=( "${versionAliases[@]/%/-$variant}" )
-		versionAliases=( "${versionAliases[@]//latest-/}" )
+		versionAliases=( $(aliases "$javaVersion" "$javaType" "$fullVersion" "$variant") )
 
 		echo
 		for va in "${versionAliases[@]}"; do

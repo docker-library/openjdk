@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -eu
 
 declare -A aliases
 aliases=(
@@ -8,21 +8,56 @@ aliases=(
 )
 defaultType='jdk'
 
+self="$(basename "$BASH_SOURCE")"
 cd "$(dirname "$(readlink -f "$BASH_SOURCE")")"
 
 versions=( */ )
 versions=( "${versions[@]%/}" )
-url='git://github.com/docker-library/openjdk'
 
-echo '# maintainer: InfoSiftr <github@infosiftr.com> (@infosiftr)'
+# get the most recent commit which modified any of "$@"
+fileCommit() {
+	git log -1 --format='format:%H' HEAD -- "$@"
+}
+
+# get the most recent commit which modified "$1/Dockerfile" or any file COPY'd from "$1/Dockerfile"
+dirCommit() {
+	local dir="$1"; shift
+	(
+		cd "$dir"
+		fileCommit \
+			Dockerfile \
+			$(git show HEAD:./Dockerfile | awk '
+				toupper($1) == "COPY" {
+					for (i = 2; i < NF; i++) {
+						print $i
+					}
+				}
+			')
+	)
+}
+
+cat <<-EOH
+# this file is generated via https://github.com/docker-library/openjdk/blob/$(fileCommit "$self")/$self
+
+Maintainers: Tianon Gravi <admwiggin@gmail.com> (@tianon),
+             Joseph Ferguson <yosifkit@gmail.com> (@yosifkit)
+GitRepo: https://github.com/docker-library/openjdk.git
+EOH
+
+# prints "$2$1$3$1...$N"
+join() {
+	local sep="$1"; shift
+	local out; printf -v out "${sep//%/%%}%s" "$@"
+	echo "${out#$sep}"
+}
 
 aliases() {
 	local javaVersion="$1"; shift
 	local javaType="$1"; shift
 	local fullVersion="$1"; shift
-	local variant="$1" # optional
+	local variant="${1:-}" # optional
 
-	bases=( $fullVersion )
+	local bases=( $fullVersion )
 	if [ "${fullVersion%-*}" != "$fullVersion" ]; then
 		bases+=( ${fullVersion%-*} ) # like "8u40-b09
 	fi
@@ -30,7 +65,7 @@ aliases() {
 		bases+=( $javaVersion )
 	fi
 
-	versionAliases=()
+	local versionAliases=()
 	for base in "${bases[@]}"; do
 		versionAliases+=( "$base-$javaType" )
 		if [ "$javaType" = "$defaultType" ]; then
@@ -39,10 +74,10 @@ aliases() {
 	done
 
 	# add "openjdk" prefixes
-	openjdkPrefix=( "${versionAliases[@]/#/openjdk-}" )
+	local openjdkPrefix=( "${versionAliases[@]/#/openjdk-}" )
 
 	# add aliases and the prefixed versions (so the silly prefix versions come dead last)
-	versionAliases+=( ${aliases[$javaVersion-$javaType]} "${openjdkPrefix[@]}" )
+	versionAliases+=( ${aliases[$javaVersion-$javaType]:-} "${openjdkPrefix[@]}" )
 
 	if [ "$variant" ]; then
 		versionAliases=( "${versionAliases[@]/%/-$variant}" )
@@ -53,32 +88,33 @@ aliases() {
 }
 
 for version in "${versions[@]}"; do
-	commit="$(cd "$version" && git log -1 --format='format:%H' -- Dockerfile $(awk 'toupper($1) == "COPY" { for (i = 2; i < NF; i++) { print $i } }' Dockerfile))"
+	commit="$(dirCommit "$version")"
 
 	javaVersion="$version" # "6-jdk"
 	javaType="${javaVersion##*-}" # "jdk"
 	javaVersion="${javaVersion%-$javaType}" # "6"
 
-	fullVersion="$(grep -m1 'ENV JAVA_VERSION ' "$version/Dockerfile" | cut -d' ' -f3 | tr '~' '-')"
-
-	versionAliases=( $(aliases "$javaVersion" "$javaType" "$fullVersion") )
+	fullVersion="$(git show "$commit":"$version/Dockerfile" | awk '$1 == "ENV" && $2 == "JAVA_VERSION" { gsub(/~/, "-", $3); print $3; exit }')"
 
 	echo
-	for va in "${versionAliases[@]}"; do
-		echo "$va: ${url}@${commit} $version"
-	done
+	cat <<-EOE
+		Tags: $(join ', ' $(aliases "$javaVersion" "$javaType" "$fullVersion"))
+		GitCommit: $commit
+		Directory: $version
+	EOE
 
 	for variant in alpine; do
 		[ -f "$version/$variant/Dockerfile" ] || continue
-		commit="$(cd "$version/$variant" && git log -1 --format='format:%H' -- Dockerfile $(awk 'toupper($1) == "COPY" { for (i = 2; i < NF; i++) { print $i } }' Dockerfile))"
 
-		fullVersion="$(grep -m1 'ENV JAVA_VERSION ' "$version/$variant/Dockerfile" | cut -d' ' -f3 | tr '~' '-')"
+		commit="$(dirCommit "$version/$variant")"
 
-		versionAliases=( $(aliases "$javaVersion" "$javaType" "$fullVersion" "$variant") )
+		fullVersion="$(git show "$commit":"$version/$variant/Dockerfile" | awk '$1 == "ENV" && $2 == "JAVA_VERSION" { gsub(/~/, "-", $3); print $3; exit }')"
 
 		echo
-		for va in "${versionAliases[@]}"; do
-			echo "$va: ${url}@${commit} $version/$variant"
-		done
+		cat <<-EOE
+			Tags: $(join ', ' $(aliases "$javaVersion" "$javaType" "$fullVersion" "$variant"))
+			GitCommit: $commit
+			Directory: $version/$variant
+		EOE
 	done
 done

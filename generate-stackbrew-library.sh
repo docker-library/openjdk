@@ -1,8 +1,7 @@
 #!/bin/bash
 set -eu
 
-declare -A aliases
-aliases=(
+declare -A aliases=(
 	[8-jdk]='jdk latest'
 	[8-jre]='jre'
 )

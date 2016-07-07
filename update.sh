@@ -174,6 +174,7 @@ EOD
 	if [ -d "$version/$variant" ]; then
 		alpinePackage="openjdk$javaVersion"
 		alpineJavaHome="/usr/lib/jvm/java-1.${javaVersion}-openjdk"
+		alpinePathAdd="$alpineJavaHome/jre/bin:$alpineJavaHome/bin"
 		case "$javaType" in
 			jdk)
 				;;
@@ -208,9 +209,7 @@ EOD
 
 		cat >> "$version/$variant/Dockerfile" <<-EOD
 			ENV JAVA_HOME $alpineJavaHome
-		EOD
-		cat >> "$version/$variant/Dockerfile" <<-'EOD'
-			ENV PATH $PATH:$JAVA_HOME/bin
+			ENV PATH \$PATH:$alpinePathAdd
 		EOD
 		cat >> "$version/$variant/Dockerfile" <<-EOD
 

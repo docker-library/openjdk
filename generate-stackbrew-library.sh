@@ -7,6 +7,8 @@ declare -A aliases=(
 )
 defaultType='jdk'
 
+image="${1:-openjdk}"
+
 self="$(basename "$BASH_SOURCE")"
 cd "$(dirname "$(readlink -f "$BASH_SOURCE")")"
 
@@ -72,11 +74,16 @@ aliases() {
 		fi
 	done
 
-	# add "openjdk" prefixes
+	# generate "openjdkPrefix" before adding aliases ("latest") so we avoid tags like "openjdk-latest"
 	local openjdkPrefix=( "${versionAliases[@]/#/openjdk-}" )
 
 	# add aliases and the prefixed versions (so the silly prefix versions come dead last)
-	versionAliases+=( ${aliases[$javaVersion-$javaType]:-} "${openjdkPrefix[@]}" )
+	versionAliases+=( ${aliases[$javaVersion-$javaType]:-} )
+
+	if [ "$image" = 'java' ]; then
+		# add "openjdk" prefixes (these should stay very last so their use is properly discouraged)
+		versionAliases+=( "${openjdkPrefix[@]}" )
+	fi
 
 	if [ "$variant" ]; then
 		versionAliases=( "${versionAliases[@]/%/-$variant}" )

@@ -110,7 +110,7 @@ EOD
 	if [ "$addSuite" ]; then
 		cat >> "$version/Dockerfile" <<-EOD
 
-			RUN echo 'deb http://httpredir.debian.org/debian $addSuite main' > /etc/apt/sources.list.d/$addSuite.list
+			RUN echo 'deb http://deb.debian.org/debian $addSuite main' > /etc/apt/sources.list.d/$addSuite.list
 		EOD
 	fi
 

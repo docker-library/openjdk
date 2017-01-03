@@ -26,7 +26,7 @@ declare -A variants=(
 	[jdk]='scm'
 )
 
-alpineVersion='3.4'
+alpineVersion='3.5'
 alpineMirror="http://dl-cdn.alpinelinux.org/alpine/v${alpineVersion}/community/x86_64"
 curl -fsSL'#' "$alpineMirror/APKINDEX.tar.gz" | tar -zxv APKINDEX
 

@@ -21,7 +21,7 @@ install:
 before_script:
   - env | sort
   - cd "${VERSION}${VARIANT:+/$VARIANT}"
-  - image="java:${VERSION}${VARIANT:+-$VARIANT}"
+  - image="openjdk:${VERSION}${VARIANT:+-$VARIANT}"
 
 script:
   - docker build -t "$image" .

@@ -236,6 +236,44 @@ EOD
 		travisEnv='\n  - VERSION='"$version"' VARIANT='"$variant$travisEnv"
 	fi
 
+	if [ -d "$version/windows" ]; then
+		ojdkbuildVersion="$(
+			git ls-remote --tags 'https://github.com/ojdkbuild/ojdkbuild' \
+				| cut -d/ -f3 \
+				| grep -E '^1[.]'"$javaVersion"'[.]' \
+				| sort -V \
+				| tail -1
+		)"
+		if [ -z "$ojdkbuildVersion" ]; then
+			echo >&2 "error: '$version/windows' exists, but Java $javaVersion doesn't appear to have a corresponding ojdkbuild release"
+			exit 1
+		fi
+		ojdkbuildZip="$(
+			curl -fsSL "https://github.com/ojdkbuild/ojdkbuild/releases/tag/$ojdkbuildVersion" \
+				| grep --only-matching -E 'java-'"$(echo "$ojdkbuildVersion" | cut -d. -f1-3)"'-openjdk-'"$ojdkbuildVersion"'[.][b0-9]+[.]ojdkbuild[.]windows[.]x86_64[.]zip' \
+				| sort -u
+		)"
+		if [ -z "$ojdkbuildZip" ]; then
+			echo >&2 "error: $ojdkbuildVersion doesn't appear to have the release file we need (yet?)"
+			exit 1
+		fi
+		ojdkbuildSha256="$(curl -fsSL "https://github.com/ojdkbuild/ojdkbuild/releases/download/${ojdkbuildVersion}/${ojdkbuildZip}.sha256" | cut -d' ' -f1)"
+		if [ -z "$ojdkbuildSha256" ]; then
+			echo >&2 "error: $ojdkbuildVersion seems to have $ojdkbuildZip, but no sha256 for it"
+			exit 1
+		fi
+		ojdkJavaVersion="$(echo "$ojdkbuildVersion" | cut -d. -f2,4 | cut -d- -f1 | tr . u)" # convert "1.8.0.111-3" into "8u111"
+		(
+			set -x
+			sed -ri \
+				-e 's/^(ENV JAVA_VERSION) .*/\1 '"$ojdkJavaVersion"'/' \
+				-e 's/^(ENV JAVA_OJDKBUILD_VERSION) .*/\1 '"$ojdkbuildVersion"'/' \
+				-e 's/^(ENV JAVA_OJDKBUILD_ZIP) .*/\1 '"$ojdkbuildZip"'/' \
+				-e 's/^(ENV JAVA_OJDKBUILD_SHA256) .*/\1 '"$ojdkbuildSha256"'/' \
+				"$version"/windows/*/Dockerfile
+		)
+	fi
+
 	travisEnv='\n  - VERSION='"$version$travisEnv"
 done
 

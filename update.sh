@@ -64,12 +64,6 @@ for version in "${versions[@]}"; do
 		javaHome+='/jre'
 	fi
 
-	needCaHack=
-	if [ "$javaVersion" -ge 8 -a "$suite" != 'sid' ]; then
-		# "20140324" is broken (jessie), but "20160321" is fixed (sid)
-		needCaHack=1
-	fi
-
 	dist="debian:${addSuite:-$suite}"
 	debianPackage="openjdk-$javaVersion-$javaType"
 	if [ "$javaType" = 'jre' -o "$javaVersion" -ge 9 ]; then
@@ -83,6 +77,21 @@ for version in "${versions[@]}"; do
 		debCache["$debCacheKey"]="$debianVersion"
 	fi
 	fullVersion="${debianVersion%%-*}"
+	shopt -s extglob
+	minorVersion="${fullVersion##[6-9]+([-~bu])}"
+	shopt -u extglob
+
+	needCaHack=
+	if [ "$javaVersion" -ge 8 -a "$suite" != 'sid' ]; then
+		# "20140324" is broken (jessie), but "20160321" is fixed (sid)
+		needCaHack=1
+
+		if [ "${minorVersion:-0}" -lt 121 ]; then
+			caCertsJavaVersion=20140324
+		else
+			caCertsJavaVersion=20161107~bpo8+1
+		fi
+	fi
 
 	cat > "$version/Dockerfile" <<-EOD
 		#
@@ -136,7 +145,7 @@ EOD
 
 			# see https://bugs.debian.org/775775
 			# and https://github.com/docker-library/java/issues/19#issuecomment-70546872
-			ENV CA_CERTIFICATES_JAVA_VERSION 20140324
+			ENV CA_CERTIFICATES_JAVA_VERSION $caCertsJavaVersion
 		EOD
 	fi
 

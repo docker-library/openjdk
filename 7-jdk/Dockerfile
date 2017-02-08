@@ -32,8 +32,8 @@ RUN { \
 
 ENV JAVA_HOME /usr/lib/jvm/java-7-openjdk-amd64
 
-ENV JAVA_VERSION 7u111
-ENV JAVA_DEBIAN_VERSION 7u111-2.6.7-2~deb8u1
+ENV JAVA_VERSION 7u121
+ENV JAVA_DEBIAN_VERSION 7u121-2.6.8-2~deb8u1
 
 RUN set -x \
 	&& apt-get update \

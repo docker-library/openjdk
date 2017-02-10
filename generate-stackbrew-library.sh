@@ -109,18 +109,25 @@ for version in "${versions[@]}"; do
 		Directory: $version
 	EOE
 
-	for variant in alpine; do
-		[ -f "$version/$variant/Dockerfile" ] || continue
+	for v in \
+		alpine \
+		windows/windowsservercore windows/nanoserver \
+	; do
+		dir="$version/$v"
+		variant="$(basename "$v")"
 
-		commit="$(dirCommit "$version/$variant")"
+		[ -f "$dir/Dockerfile" ] || continue
 
-		fullVersion="$(git show "$commit":"$version/$variant/Dockerfile" | awk '$1 == "ENV" && $2 == "JAVA_VERSION" { gsub(/~/, "-", $3); print $3; exit }')"
+		commit="$(dirCommit "$dir")"
+
+		fullVersion="$(git show "$commit":"$dir/Dockerfile" | awk '$1 == "ENV" && $2 == "JAVA_VERSION" { gsub(/~/, "-", $3); print $3; exit }')"
 
 		echo
 		cat <<-EOE
 			Tags: $(join ', ' $(aliases "$javaVersion" "$javaType" "$fullVersion" "$variant"))
 			GitCommit: $commit
-			Directory: $version/$variant
+			Directory: $dir
 		EOE
+		[ "$variant" = "$v" ] || echo "Constraints: $variant"
 	done
 done

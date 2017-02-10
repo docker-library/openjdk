@@ -342,15 +342,15 @@ EOD
 			exit 1
 		fi
 		ojdkJavaVersion="$(echo "$ojdkbuildVersion" | cut -d. -f2,4 | cut -d- -f1 | tr . u)" # convert "1.8.0.111-3" into "8u111"
-		(
-			set -x
-			sed -ri \
-				-e 's/^(ENV JAVA_VERSION) .*/\1 '"$ojdkJavaVersion"'/' \
-				-e 's/^(ENV JAVA_OJDKBUILD_VERSION) .*/\1 '"$ojdkbuildVersion"'/' \
-				-e 's/^(ENV JAVA_OJDKBUILD_ZIP) .*/\1 '"$ojdkbuildZip"'/' \
-				-e 's/^(ENV JAVA_OJDKBUILD_SHA256) .*/\1 '"$ojdkbuildSha256"'/' \
-				"$version"/windows/*/Dockerfile
-		)
+
+		echo "$version: $ojdkJavaVersion (windows ojdkbuild $ojdkbuildVersion)"
+
+		sed -ri \
+			-e 's/^(ENV JAVA_VERSION) .*/\1 '"$ojdkJavaVersion"'/' \
+			-e 's/^(ENV JAVA_OJDKBUILD_VERSION) .*/\1 '"$ojdkbuildVersion"'/' \
+			-e 's/^(ENV JAVA_OJDKBUILD_ZIP) .*/\1 '"$ojdkbuildZip"'/' \
+			-e 's/^(ENV JAVA_OJDKBUILD_SHA256) .*/\1 '"$ojdkbuildSha256"'/' \
+			"$version"/windows/*/Dockerfile
 	fi
 
 	travisEnv='\n  - VERSION='"$version$travisEnv"

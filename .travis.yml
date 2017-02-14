@@ -5,15 +5,21 @@ env:
   - VERSION=9-jre
   - VERSION=9-jdk
   - VERSION=8-jre
+  - VERSION=8-jre VARIANT=centos
   - VERSION=8-jre VARIANT=alpine
   - VERSION=8-jdk
+  - VERSION=8-jdk VARIANT=centos
   - VERSION=8-jdk VARIANT=alpine
   - VERSION=7-jre
+  - VERSION=7-jre VARIANT=centos
   - VERSION=7-jre VARIANT=alpine
   - VERSION=7-jdk
+  - VERSION=7-jdk VARIANT=centos
   - VERSION=7-jdk VARIANT=alpine
   - VERSION=6-jre
+  - VERSION=6-jre VARIANT=centos
   - VERSION=6-jdk
+  - VERSION=6-jdk VARIANT=centos
 
 install:
   - git clone https://github.com/docker-library/official-images.git ~/official-images

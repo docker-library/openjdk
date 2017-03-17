@@ -34,8 +34,8 @@ RUN { \
 
 ENV JAVA_HOME /usr/lib/jvm/java-9-openjdk-amd64
 
-ENV JAVA_VERSION 9~b159
-ENV JAVA_DEBIAN_VERSION 9~b159-1
+ENV JAVA_VERSION 9~b161
+ENV JAVA_DEBIAN_VERSION 9~b161-1
 
 RUN set -x \
 	&& apt-get update \

@@ -125,6 +125,7 @@ EOD
 }
 
 travisEnv=
+appveyorEnv=
 for version in "${versions[@]}"; do
 	javaVersion="$version" # "6-jdk"
 	javaType="${javaVersion##*-}" # "jdk"
@@ -351,6 +352,10 @@ EOD
 			-e 's/^(ENV JAVA_OJDKBUILD_ZIP) .*/\1 '"$ojdkbuildZip"'/' \
 			-e 's/^(ENV JAVA_OJDKBUILD_SHA256) .*/\1 '"$ojdkbuildSha256"'/' \
 			"$version"/windows/*/Dockerfile
+
+		for df in "$version"/windows/*/Dockerfile; do
+			appveyorEnv='\n    - version: '"$version"'\n      variant: '"$(basename "$(dirname "$df")")$appveyorEnv"
+		done
 	fi
 
 	travisEnv='\n  - VERSION='"$version$travisEnv"
@@ -358,3 +363,6 @@ done
 
 travis="$(awk -v 'RS=\n\n' '$1 == "env:" { $0 = "env:'"$travisEnv"'" } { printf "%s%s", $0, RS }' .travis.yml)"
 echo "$travis" > .travis.yml
+
+appveyor="$(awk -v 'RS=\n\n' '$1 == "environment:" { $0 = "environment:\n  matrix:'"$appveyorEnv"'" } { printf "%s%s", $0, RS }' .appveyor.yml)"
+echo "$appveyor" > .appveyor.yml

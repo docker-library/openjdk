@@ -1,0 +1,153 @@
+#!/usr/bin/env bash
+
+if [ "${BASH_VERSINFO[0]}" -lt 4 ]; then
+    echo "Bash 4 or later is required"
+    exit 1
+fi
+
+# Get the version of the system commands
+set +e
+DOCKER_COMPOSE_COMMAND=$(which docker-compose)
+TERRAFORM_COMMAND=$(which terraform)
+set -e
+
+### Logs
+
+info() {
+  test "x$BUILDKITE" = "xtrue" && printf "%s\n" "--- $@" || printf "\e[1m%s\e[0m\n" "$@"
+}
+
+debug() {
+  printf "➜ %s\n" "$@"
+}
+
+success() {
+  printf "\e[32m✔ %s\n\e[0m" "$@"
+}
+
+warn() {
+  test "x$BUILDKITE" = "xtrue" && echo "^^^ +++"
+  printf "\e[33m✖ %s\n\e[0m" "$@"
+}
+
+error() {
+  test "x$BUILDKITE" = "xtrue" && echo "^^^ +++"
+  printf "\e[1m\e[31m✖ %s\n\e[0m" "$@"
+}
+
+### Utils
+
+function has_item() {
+    local i
+    for i in "${@:2}"; do
+        [[ "$i" == "$1" ]] && return 0
+    done
+    return 1
+}
+
+function merge_map() {
+    local -n dest_var=$1
+    shift
+    local -n src_var
+    local key
+    for src_var in $@; do
+        for key in "${!src_var[@]}"; do
+            dest_var[$key]="${src_var[$key]}"
+        done
+    done
+}
+
+function realpath (){
+  f=$@;
+  if [ -d "$f" ]; then
+      base="";
+      dir="$f";
+  else
+      base="/$(basename "$f")";
+      dir=$(dirname "$f");
+  fi;
+  dir=$(cd "$dir" && /bin/pwd);
+  echo "$dir$base"
+}
+
+function reverse(){
+  local arr=(${@})
+  for (( idx=${#arr[@]}-1 ; idx>=0 ; idx-- )) ; do
+      echo ${arr[idx]}
+  done
+}
+
+### Remote scripts
+
+function release_docker(){
+  curl -Ls https://s3.amazonaws.com/bit-ops-artifacts/scripts/release/${SCRIPTS_VERSION:-stable}/docker.sh | bash -s
+}
+
+function release_github(){
+  curl -Ls https://s3.amazonaws.com/bit-ops-artifacts/scripts/release/${SCRIPTS_VERSION:-stable}/github.sh | bash -s
+}
+
+function release_lambda(){
+  curl -Ls https://s3.amazonaws.com/bit-ops-artifacts/scripts/release/${SCRIPTS_VERSION:-stable}/docker_zip.sh | bash -s
+}
+
+function deploy_service(){
+  curl -Ls https://s3.amazonaws.com/bit-ops-artifacts/scripts/deploy/${SCRIPTS_VERSION:-stable}/service.sh | bash -s
+}
+
+### Commands as Docker containers
+
+function docker-compose(){
+  if [ "xtrue" != "x${DOCKER_COMPOSE_IN_DOCKER}" ]; then
+    test -n "${DOCKER_COMPOSE_COMMAND}" || { error "Please install Docker Compose."; exit 1;}
+    ${DOCKER_COMPOSE_COMMAND} $@
+    return $?
+  fi
+
+  # Get the latest version based on the Github release
+  local LATEST=$(curl -sI https://github.com/docker/compose/releases/latest | grep "Location:" | awk -v FS=/ '{print $NF}' | tr -d '\r')
+  local IMAGE="docker/compose:${DOCKER_COMPOSE_VERSION:-${LATEST}}"
+
+  # Setup options for connecting to docker host
+  test -z "$DOCKER_HOST" && DOCKER_HOST="/var/run/docker.sock"
+  test -S "$DOCKER_HOST" && DOCKER_ADDR="-v $DOCKER_HOST:$DOCKER_HOST -e DOCKER_HOST" || DOCKER_ADDR="-e DOCKER_HOST -e DOCKER_TLS_VERIFY -e DOCKER_CERT_PATH"
+
+  # Setup volume mounts for compose config and context
+  test "$(pwd)" != '/' &&  VOLUMES="-v $(pwd):$(pwd)"
+  test -n "$COMPOSE_FILE" && compose_dir=$(realpath $(dirname $COMPOSE_FILE))
+  test -n "$compose_dir" && VOLUMES="$VOLUMES -v $compose_dir:$compose_dir"
+  test -n "$HOME" && VOLUMES="$VOLUMES -v $HOME:$HOME -v $HOME:/root" # mount $HOME in /root to share docker.config
+
+  # Only allocate tty if we detect one
+  test -t 1 && DOCKER_RUN_OPTIONS="-t"
+  test -t 0 && DOCKER_RUN_OPTIONS="$DOCKER_RUN_OPTIONS -i"
+
+  # Run docker compose
+  docker run --rm $DOCKER_RUN_OPTIONS $DOCKER_ADDR $COMPOSE_OPTIONS $VOLUMES -w "$(pwd)" $IMAGE "$@"
+}
+
+function terraform(){
+  if [ "xtrue" != "x${TERRAFORM_IN_DOCKER}" ]; then
+    test -n "${TERRAFORM_COMMAND}" || { error "Please install Terraform."; exit 1;}
+    ${TERRAFORM_COMMAND} $@
+    return $?
+  fi
+
+  local IMAGE="hashicorp/terraform:${TERRAFORM_VERSION:-latest}"
+
+  # Setup volume mounts for compose config and context
+  test "$(pwd)" != '/' &&  VOLUMES="-v $(pwd):$(pwd)"
+  test -n "$HOME" && VOLUMES="$VOLUMES -v $HOME:$HOME -v $HOME:/root" # mount $HOME in /root to share .ssh and .aws
+
+  # Environment variables
+  test -n "$AWS_ACCESS_KEY_ID" && DOCKER_ENV="-e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID"
+  test -n "$AWS_SECRET_ACCESS_KEY" && DOCKER_ENV="$DOCKER_ENV -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY"
+  test -n "$AWS_DEFAULT_REGION" && DOCKER_ENV="$DOCKER_ENV -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION"
+
+  # Only allocate tty if we detect one
+  test -t 1 && DOCKER_RUN_OPTIONS="-t"
+  test -t 0 && DOCKER_RUN_OPTIONS="$DOCKER_RUN_OPTIONS -i"
+
+  # Run terraform
+  docker run --rm $DOCKER_RUN_OPTIONS $DOCKER_ENV $VOLUMES -w "$(pwd)" $IMAGE "$@"
+}

@@ -10,6 +10,8 @@ See a change merged here that doesn't show up on the Docker Hub yet? Check [the 
 
 -	[Travis CI:  
 	![build status badge](https://img.shields.io/travis/docker-library/openjdk/master.svg)](https://travis-ci.org/docker-library/openjdk/branches)
+-	[AppVeyor (Windows):  
+	![build status badge](https://ci.appveyor.com/api/projects/status/github/docker-library/openjdk?branch=master&svg=true)](https://ci.appveyor.com/project/docker-library/openjdk)
 -	[Automated `update.sh`:  
 	![build status badge](https://doi-janky.infosiftr.net/job/update.sh/job/openjdk/badge/icon)](https://doi-janky.infosiftr.net/job/update.sh/job/openjdk)
 

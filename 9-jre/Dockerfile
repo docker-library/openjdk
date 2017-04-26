@@ -37,12 +37,21 @@ ENV JAVA_HOME /usr/lib/jvm/java-9-openjdk-amd64
 ENV JAVA_VERSION 9~b161
 ENV JAVA_DEBIAN_VERSION 9~b161-1
 
-RUN set -x \
-	&& apt-get update \
-	&& apt-get install -y \
+RUN set -ex; \
+	\
+	apt-get update; \
+	apt-get install -y \
 		openjdk-9-jre-headless="$JAVA_DEBIAN_VERSION" \
-	&& rm -rf /var/lib/apt/lists/* \
-	&& [ "$JAVA_HOME" = "$(docker-java-home)" ]
+	; \
+	rm -rf /var/lib/apt/lists/*; \
+	\
+# verify that "docker-java-home" returns what we expect
+	[ "$JAVA_HOME" = "$(docker-java-home)" ]; \
+	\
+# update-alternatives so that future installs of other OpenJDK versions don't change /usr/bin/java
+	update-alternatives --get-selections | awk -v home="$JAVA_HOME" 'index($3, home) == 1 { $2 = "manual"; print | "update-alternatives --set-selections" }'; \
+# ... and verify that it actually worked for one of the alternatives we care about
+	update-alternatives --query java | grep -q 'Status: manual'
 
 # If you're reading this and have any feedback on how this image could be
 #   improved, please open an issue or a pull request so we can discuss it!

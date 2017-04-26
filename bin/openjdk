@@ -85,7 +85,11 @@ build(){
 
 
 release(){
+  test -n "${DOCKERHUB_USERNAME}" || { error "Please set the variable DOCKERHUB_USERNAME to release."; exit 1;}
+  test -n "${DOCKERHUB_PASSWORD}" || { error "Please set the variable DOCKERHUB_PASSWORD to release."; exit 1;}
   build
+  info "Login to Docker Hub..."
+  docker login --username "${DOCKERHUB_USERNAME}" --password "${DOCKERHUB_PASSWORD}"
   for VERSION in "${VERSIONS[@]}"; do
     info "Releasing '$IMAGE:$VERSION' ..."
     run_command="docker push $IMAGE:$VERSION"

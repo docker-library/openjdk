@@ -72,6 +72,9 @@ parse_opts(){
 
 build(){
  for VERSION in "${VERSIONS[@]}"; do
+    info "Pulling the base image..."
+    run_command="$(cat versions/${VERSION}/Dockerfile | head -n 1 | sed 's/FROM/docker pull/')"
+    ${run_command}
     info "Building image '$IMAGE:$VERSION' ..."
     run_command="docker build -t $IMAGE:$VERSION -f versions/$VERSION/Dockerfile ."
     test "xtrue" = "x${verbose}" && debug "${run_command}"

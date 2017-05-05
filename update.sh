@@ -135,12 +135,6 @@ for version in "${versions[@]}"; do
 	addSuite="${addSuites[$javaVersion]}"
 	variant="${variants[$javaType]}"
 
-	javaHome="/usr/lib/jvm/java-$javaVersion-openjdk-$dpkgArch"
-	if [ "$javaType" = 'jre' -a "$javaVersion" -lt 9 ]; then
-		# woot, this hackery stopped in OpenJDK 9+!
-		javaHome+='/jre'
-	fi
-
 	needCaHack=
 	if [ "$javaVersion" -ge 8 -a "$suite" != 'sid' ]; then
 		# "20140324" is broken (jessie), but "20160321" is fixed (sid)
@@ -199,9 +193,16 @@ EOD
 
 	java-home-script >> "$version/Dockerfile"
 
+	jreSuffix=
+	if [ "$javaType" = 'jre' -a "$javaVersion" -lt 9 ]; then
+		# woot, this hackery stopped in OpenJDK 9+!
+		jreSuffix='/jre'
+	fi
 	cat >> "$version/Dockerfile" <<-EOD
 
-		ENV JAVA_HOME $javaHome
+		# do some fancy footwork to create a JAVA_HOME that's cross-architecture-safe
+		RUN ln -svT "/usr/lib/jvm/java-$javaVersion-openjdk-\$(dpkg --print-architecture)" /docker-java-home
+		ENV JAVA_HOME /docker-java-home$jreSuffix
 
 		ENV JAVA_VERSION $fullVersion
 		ENV JAVA_DEBIAN_VERSION $debianVersion
@@ -236,10 +237,10 @@ EOD
 	rm -rf /var/lib/apt/lists/*; \\
 	\\
 # verify that "docker-java-home" returns what we expect
-	[ "\$JAVA_HOME" = "\$(docker-java-home)" ]; \\
+	[ "\$(readlink -f "\$JAVA_HOME")" = "\$(docker-java-home)" ]; \\
 	\\
 # update-alternatives so that future installs of other OpenJDK versions don't change /usr/bin/java
-	update-alternatives --get-selections | awk -v home="\$JAVA_HOME" 'index(\$3, home) == 1 { \$2 = "manual"; print | "update-alternatives --set-selections" }'; \\
+	update-alternatives --get-selections | awk -v home="\$(readlink -f "\$JAVA_HOME")" 'index(\$3, home) == 1 { \$2 = "manual"; print | "update-alternatives --set-selections" }'; \\
 # ... and verify that it actually worked for one of the alternatives we care about
 	update-alternatives --query java | grep -q 'Status: manual'
 EOD

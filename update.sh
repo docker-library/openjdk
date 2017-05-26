@@ -17,7 +17,7 @@ declare -A suites=(
 )
 declare -A alpineVersions=(
 	[7]='3.4'
-	[8]='3.5'
+	[8]='3.6'
 	[9]='3.5'
 )
 

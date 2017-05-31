@@ -16,9 +16,9 @@ declare -A suites=(
 	[9]='sid'
 )
 declare -A alpineVersions=(
-	[7]='3.4'
-	[8]='3.5'
-	[9]='3.5'
+	[7]='3.6'
+	[8]='3.6'
+	#[9]='TBD' # there is no openjdk9 in Alpine yet (https://pkgs.alpinelinux.org/packages?name=openjdk9*&arch=x86_64)
 )
 
 declare -A addSuites=(

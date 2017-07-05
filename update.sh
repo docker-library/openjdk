@@ -12,7 +12,7 @@ versions=( "${versions[@]%/}" )
 declare -A suites=(
 	[6]='wheezy'
 	[7]='jessie'
-	[8]='jessie'
+	[8]='stretch'
 	[9]='sid'
 )
 declare -A alpineVersions=(
@@ -22,7 +22,6 @@ declare -A alpineVersions=(
 )
 
 declare -A addSuites=(
-	[8]='jessie-backports'
 	[9]='experimental'
 )
 

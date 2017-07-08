@@ -37,7 +37,7 @@ RUN ln -svT "/usr/lib/jvm/java-9-openjdk-$(dpkg --print-architecture)" /docker-j
 ENV JAVA_HOME /docker-java-home
 
 ENV JAVA_VERSION 9~b177
-ENV JAVA_DEBIAN_VERSION 9~b177-1
+ENV JAVA_DEBIAN_VERSION 9~b177-3
 
 RUN set -ex; \
 	\

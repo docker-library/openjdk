@@ -329,7 +329,7 @@ EOD
 		ojdkbuildVersion="$(
 			git ls-remote --tags 'https://github.com/ojdkbuild/ojdkbuild' \
 				| cut -d/ -f3 \
-				| grep -E '^1[.]'"$javaVersion"'[.]' \
+				| grep -E '^(1[.])?'"$javaVersion"'[.-]' \
 				| sort -V \
 				| tail -1
 		)"
@@ -339,7 +339,7 @@ EOD
 		fi
 		ojdkbuildZip="$(
 			curl -fsSL "https://github.com/ojdkbuild/ojdkbuild/releases/tag/$ojdkbuildVersion" \
-				| grep --only-matching -E 'java-'"$(echo "$ojdkbuildVersion" | cut -d. -f1-3)"'-openjdk-'"$ojdkbuildVersion"'[.][b0-9]+[.]ojdkbuild[.]windows[.]x86_64[.]zip' \
+				| grep --only-matching -E 'java-[0-9.]+-openjdk-[b0-9.-]+[.]ojdkbuild(ea)?[.]windows[.]x86_64[.]zip' \
 				| sort -u
 		)"
 		if [ -z "$ojdkbuildZip" ]; then

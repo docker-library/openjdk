@@ -3,6 +3,10 @@ image: Visual Studio 2017
 
 environment:
   matrix:
+    - version: 9-jdk
+      variant: windowsservercore
+    - version: 9-jdk
+      variant: nanoserver
     - version: 8-jdk
       variant: windowsservercore
     - version: 8-jdk

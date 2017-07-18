@@ -10,7 +10,7 @@ RUN $newPath = ('{0}\bin;{1}' -f $env:JAVA_HOME, $env:PATH); \
 	setx /M PATH $newPath;
 
 # https://github.com/ojdkbuild/ojdkbuild/releases
-ENV JAVA_VERSION 9
+ENV JAVA_VERSION 9-b154
 ENV JAVA_OJDKBUILD_VERSION 9-ea-b154-1
 ENV JAVA_OJDKBUILD_ZIP java-9-openjdk-9.0.0-1.b154.ojdkbuildea.windows.x86_64.zip
 ENV JAVA_OJDKBUILD_SHA256 bb0177ada6d4061b1223882db20ba04f3f39c3da7dd695a1e1004e93a65fcfd6

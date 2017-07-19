@@ -150,6 +150,8 @@ for version in "${versions[@]}"; do
 	debianVersion="$(debian-latest-version "$debianPackage" "$debSuite")"
 	fullVersion="${debianVersion%%-*}"
 	fullVersion="${fullVersion#*:}"
+	tilde='~'
+	fullVersion="${fullVersion//$tilde/-}"
 
 	echo "$version: $fullVersion (debian $debianVersion)"
 
@@ -329,7 +331,7 @@ EOD
 		ojdkbuildVersion="$(
 			git ls-remote --tags 'https://github.com/ojdkbuild/ojdkbuild' \
 				| cut -d/ -f3 \
-				| grep -E '^1[.]'"$javaVersion"'[.]' \
+				| grep -E '^(1[.])?'"$javaVersion"'[.-]' \
 				| sort -V \
 				| tail -1
 		)"
@@ -339,7 +341,7 @@ EOD
 		fi
 		ojdkbuildZip="$(
 			curl -fsSL "https://github.com/ojdkbuild/ojdkbuild/releases/tag/$ojdkbuildVersion" \
-				| grep --only-matching -E 'java-'"$(echo "$ojdkbuildVersion" | cut -d. -f1-3)"'-openjdk-'"$ojdkbuildVersion"'[.][b0-9]+[.]ojdkbuild[.]windows[.]x86_64[.]zip' \
+				| grep --only-matching -E 'java-[0-9.]+-openjdk-[b0-9.-]+[.]ojdkbuild(ea)?[.]windows[.]x86_64[.]zip' \
 				| sort -u
 		)"
 		if [ -z "$ojdkbuildZip" ]; then
@@ -351,7 +353,14 @@ EOD
 			echo >&2 "error: $ojdkbuildVersion seems to have $ojdkbuildZip, but no sha256 for it"
 			exit 1
 		fi
-		ojdkJavaVersion="$(echo "$ojdkbuildVersion" | cut -d. -f2,4 | cut -d- -f1 | tr . u)" # convert "1.8.0.111-3" into "8u111"
+
+		if [[ "$ojdkbuildVersion" == *-ea-* ]]; then
+			# convert "9-ea-b154-1" into "9-b154"
+			ojdkJavaVersion="$(echo "$ojdkbuildVersion" | sed -r 's/-ea-/-/' | cut -d- -f1,2)"
+		else
+			# convert "1.8.0.111-3" into "8u111"
+			ojdkJavaVersion="$(echo "$ojdkbuildVersion" | cut -d. -f2,4 | cut -d- -f1 | tr . u)"
+		fi
 
 		echo "$version: $ojdkJavaVersion (windows ojdkbuild $ojdkbuildVersion)"
 

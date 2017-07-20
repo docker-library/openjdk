@@ -25,7 +25,7 @@ declare -A addSuites=(
 	[9]='experimental'
 )
 
-declare -A variants=(
+declare -A buildpackDepsVariants=(
 	[jre]='curl'
 	[jdk]='scm'
 )
@@ -132,7 +132,7 @@ for version in "${versions[@]}"; do
 
 	suite="${suites[$javaVersion]}"
 	addSuite="${addSuites[$javaVersion]}"
-	variant="${variants[$javaType]}"
+	buildpackDepsVariant="${buildpackDepsVariants[$javaType]}"
 
 	needCaHack=
 	if [ "$javaVersion" -ge 8 -a "$suite" != 'sid' ]; then
@@ -162,7 +162,7 @@ for version in "${versions[@]}"; do
 		# PLEASE DO NOT EDIT IT DIRECTLY.
 		#
 
-		FROM buildpack-deps:$suite-$variant
+		FROM buildpack-deps:$suite-$buildpackDepsVariant
 
 		# A few problems with compiling Java from source:
 		#  1. Oracle.  Licensing prevents us from redistributing the official JDK.
@@ -260,8 +260,7 @@ EOD
 		#   improved, please open an issue or a pull request so we can discuss it!
 	EOD
 
-	variant='alpine'
-	if [ -d "$version/$variant" ]; then
+	if [ -d "$version/alpine" ]; then
 		alpineVersion="${alpineVersions[$javaVersion]}"
 		alpinePackage="openjdk$javaVersion"
 		alpineJavaHome="/usr/lib/jvm/java-1.${javaVersion}-openjdk"
@@ -287,7 +286,7 @@ EOD
 
 		echo "$version: $alpineFullVersion (alpine $alpinePackageVersion)"
 
-		cat > "$version/$variant/Dockerfile" <<-EOD
+		cat > "$version/alpine/Dockerfile" <<-EOD
 			#
 			# NOTE: THIS DOCKERFILE IS GENERATED VIA "update.sh"
 			#
@@ -305,18 +304,18 @@ EOD
 			ENV LANG C.UTF-8
 		EOD
 
-		java-home-script >> "$version/$variant/Dockerfile"
+		java-home-script >> "$version/alpine/Dockerfile"
 
-		cat >> "$version/$variant/Dockerfile" <<-EOD
+		cat >> "$version/alpine/Dockerfile" <<-EOD
 			ENV JAVA_HOME $alpineJavaHome
 			ENV PATH \$PATH:$alpinePathAdd
 		EOD
-		cat >> "$version/$variant/Dockerfile" <<-EOD
+		cat >> "$version/alpine/Dockerfile" <<-EOD
 
 			ENV JAVA_VERSION $alpineFullVersion
 			ENV JAVA_ALPINE_VERSION $alpinePackageVersion
 		EOD
-		cat >> "$version/$variant/Dockerfile" <<EOD
+		cat >> "$version/alpine/Dockerfile" <<EOD
 
 RUN set -x \\
 	&& apk add --no-cache \\
@@ -324,7 +323,7 @@ RUN set -x \\
 	&& [ "\$JAVA_HOME" = "\$(docker-java-home)" ]
 EOD
 
-		travisEnv='\n  - VERSION='"$version"' VARIANT='"$variant$travisEnv"
+		travisEnv='\n  - VERSION='"$version"' VARIANT=alpine'"$travisEnv"
 	fi
 
 	if [ -d "$version/windows" ]; then

@@ -4,7 +4,7 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM buildpack-deps:stretch-curl
+FROM debian:sid-slim
 
 # A few reasons for installing distribution-provided OpenJDK:
 #
@@ -14,13 +14,15 @@ FROM buildpack-deps:stretch-curl
 #     really hairy.
 #
 #     For some sample build times, see Debian's buildd logs:
-#       https://buildd.debian.org/status/logs.php?pkg=openjdk-8
+#       https://buildd.debian.org/status/logs.php?pkg=openjdk-9
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
 		bzip2 \
 		unzip \
 		xz-utils \
 	&& rm -rf /var/lib/apt/lists/*
+
+RUN echo 'deb http://deb.debian.org/debian experimental main' > /etc/apt/sources.list.d/experimental.list
 
 # Default to UTF-8 file.encoding
 ENV LANG C.UTF-8
@@ -36,15 +38,11 @@ RUN { \
 	&& chmod +x /usr/local/bin/docker-java-home
 
 # do some fancy footwork to create a JAVA_HOME that's cross-architecture-safe
-RUN ln -svT "/usr/lib/jvm/java-8-openjdk-$(dpkg --print-architecture)" /docker-java-home
-ENV JAVA_HOME /docker-java-home/jre
+RUN ln -svT "/usr/lib/jvm/java-9-openjdk-$(dpkg --print-architecture)" /docker-java-home
+ENV JAVA_HOME /docker-java-home
 
-ENV JAVA_VERSION 8u131
-ENV JAVA_DEBIAN_VERSION 8u131-b11-2
-
-# see https://bugs.debian.org/775775
-# and https://github.com/docker-library/java/issues/19#issuecomment-70546872
-ENV CA_CERTIFICATES_JAVA_VERSION 20170531+nmu1
+ENV JAVA_VERSION 9-b177
+ENV JAVA_DEBIAN_VERSION 9~b177-3
 
 RUN set -ex; \
 	\
@@ -55,8 +53,7 @@ RUN set -ex; \
 	\
 	apt-get update; \
 	apt-get install -y \
-		openjdk-8-jre-headless="$JAVA_DEBIAN_VERSION" \
-		ca-certificates-java="$CA_CERTIFICATES_JAVA_VERSION" \
+		openjdk-9-jdk-headless="$JAVA_DEBIAN_VERSION" \
 	; \
 	rm -rf /var/lib/apt/lists/*; \
 	\
@@ -67,9 +64,6 @@ RUN set -ex; \
 	update-alternatives --get-selections | awk -v home="$(readlink -f "$JAVA_HOME")" 'index($3, home) == 1 { $2 = "manual"; print | "update-alternatives --set-selections" }'; \
 # ... and verify that it actually worked for one of the alternatives we care about
 	update-alternatives --query java | grep -q 'Status: manual'
-
-# see CA_CERTIFICATES_JAVA_VERSION notes above
-RUN /var/lib/dpkg/info/ca-certificates-java.postinst configure
 
 # If you're reading this and have any feedback on how this image could be
 # improved, please open an issue or a pull request so we can discuss it!

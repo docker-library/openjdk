@@ -108,7 +108,32 @@ debian-latest-version() {
 	echo "$latestVersion"
 }
 
-java-home-script() {
+template-generated-warning() {
+	local from="$1"; shift
+	local javaVersion="$1"; shift
+
+	cat <<-EOD
+		#
+		# NOTE: THIS DOCKERFILE IS GENERATED VIA "update.sh"
+		#
+		# PLEASE DO NOT EDIT IT DIRECTLY.
+		#
+
+		FROM $from
+
+		# A few reasons for installing distribution-provided OpenJDK:
+		#
+		#  1. Oracle.  Licensing prevents us from redistributing the official JDK.
+		#
+		#  2. Compiling OpenJDK also requires the JDK to be installed, and it gets
+		#     really hairy.
+		#
+		#     For some sample build times, see Debian's buildd logs:
+		#       https://buildd.debian.org/status/logs.php?pkg=openjdk-$javaVersion
+	EOD
+}
+
+template-java-home-script() {
 	cat <<'EOD'
 
 # add a simple script that can auto-detect the appropriate JAVA_HOME value
@@ -121,6 +146,16 @@ RUN { \
 	} > /usr/local/bin/docker-java-home \
 	&& chmod +x /usr/local/bin/docker-java-home
 EOD
+}
+
+template-contribute-footer() {
+	cat <<-'EOD'
+
+		# If you're reading this and have any feedback on how this image could be
+		# improved, please open an issue or a pull request so we can discuss it!
+		#
+		#   https://github.com/docker-library/openjdk/issues
+	EOD
 }
 
 travisEnv=
@@ -155,20 +190,7 @@ for version in "${versions[@]}"; do
 
 	echo "$version: $fullVersion (debian $debianVersion)"
 
-	cat > "$version/Dockerfile" <<-EOD
-		#
-		# NOTE: THIS DOCKERFILE IS GENERATED VIA "update.sh"
-		#
-		# PLEASE DO NOT EDIT IT DIRECTLY.
-		#
-
-		FROM buildpack-deps:$suite-$buildpackDepsVariant
-
-		# A few problems with compiling Java from source:
-		#  1. Oracle.  Licensing prevents us from redistributing the official JDK.
-		#  2. Compiling OpenJDK also requires the JDK to be installed, and it gets
-		#       really hairy.
-	EOD
+	template-generated-warning "buildpack-deps:$suite-$buildpackDepsVariant" "$javaVersion" > "$version/Dockerfile"
 
 	cat >> "$version/Dockerfile" <<'EOD'
 
@@ -192,7 +214,7 @@ EOD
 		ENV LANG C.UTF-8
 	EOD
 
-	java-home-script >> "$version/Dockerfile"
+	template-java-home-script >> "$version/Dockerfile"
 
 	jreSuffix=
 	if [ "$javaType" = 'jre' -a "$javaVersion" -lt 9 ]; then
@@ -224,6 +246,11 @@ EOD
 
 RUN set -ex; \\
 	\\
+# deal with slim variants not having man page directories (which causes "update-alternatives" to fail)
+	if [ ! -d /usr/share/man/man1 ]; then \\
+		mkdir -p /usr/share/man/man1; \\
+	fi; \\
+	\\
 	apt-get update; \\
 	apt-get install -y \\
 		$debianPackage="\$JAVA_DEBIAN_VERSION" \\
@@ -254,11 +281,7 @@ EOD
 		EOD
 	fi
 
-	cat >> "$version/Dockerfile" <<-EOD
-
-		# If you're reading this and have any feedback on how this image could be
-		#   improved, please open an issue or a pull request so we can discuss it!
-	EOD
+	template-contribute-footer >> "$version/Dockerfile"
 
 	if [ -d "$version/alpine" ]; then
 		alpineVersion="${alpineVersions[$javaVersion]}"
@@ -286,25 +309,15 @@ EOD
 
 		echo "$version: $alpineFullVersion (alpine $alpinePackageVersion)"
 
-		cat > "$version/alpine/Dockerfile" <<-EOD
-			#
-			# NOTE: THIS DOCKERFILE IS GENERATED VIA "update.sh"
-			#
-			# PLEASE DO NOT EDIT IT DIRECTLY.
-			#
+		template-generated-warning "alpine:$alpineVersion" "$javaVersion" > "$version/alpine/Dockerfile"
 
-			FROM alpine:$alpineVersion
-
-			# A few problems with compiling Java from source:
-			#  1. Oracle.  Licensing prevents us from redistributing the official JDK.
-			#  2. Compiling OpenJDK also requires the JDK to be installed, and it gets
-			#       really hairy.
+		cat >> "$version/alpine/Dockerfile" <<-'EOD'
 
 			# Default to UTF-8 file.encoding
 			ENV LANG C.UTF-8
 		EOD
 
-		java-home-script >> "$version/alpine/Dockerfile"
+		template-java-home-script >> "$version/alpine/Dockerfile"
 
 		cat >> "$version/alpine/Dockerfile" <<-EOD
 			ENV JAVA_HOME $alpineJavaHome
@@ -323,7 +336,21 @@ RUN set -x \\
 	&& [ "\$JAVA_HOME" = "\$(docker-java-home)" ]
 EOD
 
+		template-contribute-footer >> "$version/alpine/Dockerfile"
+
 		travisEnv='\n  - VERSION='"$version"' VARIANT=alpine'"$travisEnv"
+	fi
+
+	if [ -d "$version/slim" ]; then
+		# for the "slim" variants,
+		#   - swap "buildpack-deps:SUITE-xxx" for "debian:SUITE-slim"
+		#   - swap "openjdk-N-(jre|jdk) for the -headless versions, where available (openjdk-8+ only for JDK variants)
+		sed -r \
+			-e 's!^FROM buildpack-deps:([^-]+)(-.+)?!FROM debian:\1-slim!' \
+			-e 's!(openjdk-(\d+-jre|([89]\d*|\d\d+)-jdk))=!\1-headless=!g' \
+			"$version/Dockerfile" > "$version/slim/Dockerfile"
+
+		travisEnv='\n  - VERSION='"$version"' VARIANT=slim'"$travisEnv"
 	fi
 
 	if [ -d "$version/windows" ]; then

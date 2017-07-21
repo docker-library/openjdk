@@ -6,10 +6,15 @@
 
 FROM alpine:3.6
 
-# A few problems with compiling Java from source:
+# A few reasons for installing distribution-provided OpenJDK:
+#
 #  1. Oracle.  Licensing prevents us from redistributing the official JDK.
+#
 #  2. Compiling OpenJDK also requires the JDK to be installed, and it gets
-#       really hairy.
+#     really hairy.
+#
+#     For some sample build times, see Debian's buildd logs:
+#       https://buildd.debian.org/status/logs.php?pkg=openjdk-8
 
 # Default to UTF-8 file.encoding
 ENV LANG C.UTF-8
@@ -33,3 +38,8 @@ RUN set -x \
 	&& apk add --no-cache \
 		openjdk8-jre="$JAVA_ALPINE_VERSION" \
 	&& [ "$JAVA_HOME" = "$(docker-java-home)" ]
+
+# If you're reading this and have any feedback on how this image could be
+# improved, please open an issue or a pull request so we can discuss it!
+#
+#   https://github.com/docker-library/openjdk/issues

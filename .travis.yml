@@ -3,17 +3,25 @@ services: docker
 
 env:
   - VERSION=9-jre
+  - VERSION=9-jre VARIANT=slim
   - VERSION=9-jdk
+  - VERSION=9-jdk VARIANT=slim
   - VERSION=8-jre
+  - VERSION=8-jre VARIANT=slim
   - VERSION=8-jre VARIANT=alpine
   - VERSION=8-jdk
+  - VERSION=8-jdk VARIANT=slim
   - VERSION=8-jdk VARIANT=alpine
   - VERSION=7-jre
+  - VERSION=7-jre VARIANT=slim
   - VERSION=7-jre VARIANT=alpine
   - VERSION=7-jdk
+  - VERSION=7-jdk VARIANT=slim
   - VERSION=7-jdk VARIANT=alpine
   - VERSION=6-jre
+  - VERSION=6-jre VARIANT=slim
   - VERSION=6-jdk
+  - VERSION=6-jdk VARIANT=slim
 
 install:
   - git clone https://github.com/docker-library/official-images.git ~/official-images

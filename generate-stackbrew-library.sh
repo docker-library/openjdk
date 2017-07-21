@@ -130,7 +130,7 @@ for version in "${versions[@]}"; do
 	EOE
 
 	for v in \
-		alpine \
+		slim alpine \
 		windows/windowsservercore windows/nanoserver \
 	; do
 		dir="$version/$v"

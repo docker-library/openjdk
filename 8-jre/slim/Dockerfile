@@ -4,7 +4,7 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM buildpack-deps:stretch-curl
+FROM debian:stretch-slim
 
 # A few reasons for installing distribution-provided OpenJDK:
 #

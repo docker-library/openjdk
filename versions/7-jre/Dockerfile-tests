@@ -1,0 +1,18 @@
+FROM bandsintown/openjdk:7-jre
+
+ENV BATS_VERSION=0.4.0 DOCKERIZE_VERSION=v0.2.0
+
+COPY tests /tests
+WORKDIR /tests
+
+RUN exec 2>&1 && apk-install bind-tools bc jq \
+    && curl -Ls https://codeload.github.com/sstephenson/bats/zip/v$BATS_VERSION -o /tmp/bats.zip \
+	&& cd /tmp \
+	&& unzip -q bats.zip \
+	&& ./bats-${BATS_VERSION}/install.sh /usr/local \
+	&& ln -sf /usr/local/libexec/bats /usr/local/bin/bats \
+    && wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+    && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+	&& rm -f bats.zip dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+
+CMD ["bash"]

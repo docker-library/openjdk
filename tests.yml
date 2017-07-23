@@ -1,0 +1,11 @@
+version: '2'
+
+# Defines the services
+services:
+
+  # Nginx
+  test-image:
+    image: bandsintown/openjdk-test:${VERSION}
+    command: "bats ."
+    environment:
+      - VERSION=${VERSION}

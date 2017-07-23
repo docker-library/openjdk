@@ -1,0 +1,15 @@
+# This docker-compose yml describe the services to run locally
+version: '2'
+
+# Defines the services
+services:
+
+  # Nginx
+  test-image:
+    image: bandsintown/openjdk-test:${VERSION}
+    command: "bash"
+    stdin_open: true
+    tty: true
+    working_dir: /tests/
+    volumes:
+          - ./tests:/tests

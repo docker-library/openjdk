@@ -1,4 +1,10 @@
-[![Build status](https://badge.buildkite.com/ef8f8150a0338d4e54a63c45b0915795dd3410a786aab1500d.svg)](https://buildkite.com/bandsintown/docker-openjdk)
+[![dockeri.co](http://dockeri.co/image/bandsintown/openjdk)](https://hub.docker.com/r/bandsintown/openjdk/)
+
+[![Build status](https://badge.buildkite.com/f78e045c0b561ba33f80f3c996ccfe89b49ade24b832f92bfd.svg)](https://buildkite.com/bandsintown/docker-openjdk)
+[![GitHub issues](https://img.shields.io/github/issues/bandsintown/docker-openjdk.svg "GitHub issues")](https://github.com/bandsintown/docker-openjdk)
+[![GitHub stars](https://img.shields.io/github/stars/bandsintown/docker-openjdk.svg "GitHub stars")](https://github.com/bandsintown/docker-openjdk)
+[![Docker layers](https://images.microbadger.com/badges/image/bandsintown/openjdk.svg)](http://microbadger.com/images/bandsintown/openjdk)
+	
 	
 # About this Repo
 

@@ -2,7 +2,7 @@
 	
 # About this Repo
 
-This Git Repo is based from the [official repo](https://github.com/docker-library/openjdk) for Docker OpenJDK images.
+This Git Repo is based on the [official repo](https://github.com/docker-library/openjdk) for Docker OpenJDK images.
 
 We just removed the images not based on Alpine Linux and define [bandsintown/alpine](https://github.com/bandsintown/docker-alpine) image as the base image in order 
 to have Consul Template and GoDNSMasq setup.

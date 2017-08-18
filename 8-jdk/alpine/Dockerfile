@@ -19,6 +19,13 @@ FROM alpine:3.6
 # Default to UTF-8 file.encoding
 ENV LANG C.UTF-8
 
+# Add extra pak repositories that'll help resolving dependencies for version 8u141
+RUN echo "http://dl-1.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories; \
+    echo "http://dl-2.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories; \
+    echo "http://dl-3.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories; \
+    echo "http://dl-4.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories; \
+    echo "http://dl-5.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
+
 # add a simple script that can auto-detect the appropriate JAVA_HOME value
 # based on whether the JDK or only the JRE is installed
 RUN { \
@@ -31,8 +38,8 @@ RUN { \
 ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk
 ENV PATH $PATH:/usr/lib/jvm/java-1.8-openjdk/jre/bin:/usr/lib/jvm/java-1.8-openjdk/bin
 
-ENV JAVA_VERSION 8u131
-ENV JAVA_ALPINE_VERSION 8.131.11-r2
+ENV JAVA_VERSION 8u141
+ENV JAVA_ALPINE_VERSION 8.141.15-r0
 
 RUN set -x \
 	&& apk add --no-cache \

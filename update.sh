@@ -281,6 +281,15 @@ EOD
 		EOD
 	fi
 
+	if [ "$javaType" = 'jdk' ] && [ "$javaVersion" -ge 9 ]; then
+		cat >> "$version/Dockerfile" <<-'EOD'
+
+			# https://docs.oracle.com/javase/9/tools/jshell.htm
+			# https://en.wikipedia.org/wiki/JShell
+			CMD ["jshell"]
+		EOD
+	fi
+
 	template-contribute-footer >> "$version/Dockerfile"
 
 	if [ -d "$version/alpine" ]; then

@@ -41,3 +41,7 @@ RUN $url = ('https://github.com/ojdkbuild/ojdkbuild/releases/download/{0}/{1}' -
 	Remove-Item ojdkbuild.zip -Force; \
 	\
 	Write-Host 'Complete.';
+
+# https://docs.oracle.com/javase/9/tools/jshell.htm
+# https://en.wikipedia.org/wiki/JShell
+CMD ["jshell"]

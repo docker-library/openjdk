@@ -22,7 +22,7 @@ declare -A alpineVersions=(
 )
 
 declare -A addSuites=(
-	[9]='experimental'
+	#[9]='experimental'
 )
 
 declare -A buildpackDepsVariants=(

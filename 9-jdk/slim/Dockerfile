@@ -22,8 +22,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 		xz-utils \
 	&& rm -rf /var/lib/apt/lists/*
 
-RUN echo 'deb http://deb.debian.org/debian experimental main' > /etc/apt/sources.list.d/experimental.list
-
 # Default to UTF-8 file.encoding
 ENV LANG C.UTF-8
 
@@ -42,7 +40,7 @@ RUN ln -svT "/usr/lib/jvm/java-9-openjdk-$(dpkg --print-architecture)" /docker-j
 ENV JAVA_HOME /docker-java-home
 
 ENV JAVA_VERSION 9-b181
-ENV JAVA_DEBIAN_VERSION 9~b181-2
+ENV JAVA_DEBIAN_VERSION 9~b181-4
 
 RUN set -ex; \
 	\

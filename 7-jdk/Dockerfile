@@ -39,8 +39,8 @@ RUN { \
 RUN ln -svT "/usr/lib/jvm/java-7-openjdk-$(dpkg --print-architecture)" /docker-java-home
 ENV JAVA_HOME /docker-java-home
 
-ENV JAVA_VERSION 7u131
-ENV JAVA_DEBIAN_VERSION 7u131-2.6.9-2~deb8u1
+ENV JAVA_VERSION 7u151
+ENV JAVA_DEBIAN_VERSION 7u151-2.6.11-1~deb8u1
 
 RUN set -ex; \
 	\

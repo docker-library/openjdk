@@ -176,10 +176,6 @@ for version in "${versions[@]}"; do
 	fi
 
 	debianPackage="openjdk-$javaVersion-$javaType"
-	if [ "$javaType" = 'jre' -o "$javaVersion" -ge 9 ]; then
-		# "openjdk-9" in Debian introduced an "openjdk-9-jdk-headless" package \o/
-		debianPackage+='-headless'
-	fi
 	debSuite="${addSuite:-$suite}"
 	debian-latest-version "$debianPackage" "$debSuite" > /dev/null # prime the cache
 	debianVersion="$(debian-latest-version "$debianPackage" "$debSuite")"
@@ -356,7 +352,7 @@ EOD
 		#   - swap "openjdk-N-(jre|jdk) for the -headless versions, where available (openjdk-8+ only for JDK variants)
 		sed -r \
 			-e 's!^FROM buildpack-deps:([^-]+)(-.+)?!FROM debian:\1-slim!' \
-			-e 's!(openjdk-(\d+-jre|([89]\d*|\d\d+)-jdk))=!\1-headless=!g' \
+			-e 's!(openjdk-([0-9]+-jre|([89]\d*|\d\d+)-jdk))=!\1-headless=!g' \
 			"$version/Dockerfile" > "$version/slim/Dockerfile"
 
 		travisEnv='\n  - VERSION='"$version"' VARIANT=slim'"$travisEnv"

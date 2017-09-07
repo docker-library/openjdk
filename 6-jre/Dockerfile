@@ -51,7 +51,7 @@ RUN set -ex; \
 	\
 	apt-get update; \
 	apt-get install -y \
-		openjdk-6-jre-headless="$JAVA_DEBIAN_VERSION" \
+		openjdk-6-jre="$JAVA_DEBIAN_VERSION" \
 	; \
 	rm -rf /var/lib/apt/lists/*; \
 	\

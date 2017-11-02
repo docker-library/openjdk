@@ -116,7 +116,7 @@ for version in "${versions[@]}"; do
 	javaType="${javaVersion##*-}" # "jdk"
 	javaVersion="${javaVersion%-$javaType}" # "6"
 
-	fullVersion="$(git show "$commit":"$version/Dockerfile" | awk '$1 == "ENV" && $2 == "JAVA_VERSION" { gsub(/~/, "-", $3); print $3; exit }')"
+	fullVersion="$(git show "$commit":"$version/Dockerfile" | awk '$1 == "ENV" && $2 == "JAVA_VERSION" { gsub(/[~+]/, "-", $3); print $3; exit }')"
 
 	parent="$(awk 'toupper($1) == "FROM" { print $2 }' "$version/Dockerfile")"
 	arches="${parentRepoToArches[$parent]}"

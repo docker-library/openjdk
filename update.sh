@@ -388,9 +388,15 @@ EOD
 		if [[ "$ojdkbuildVersion" == *-ea-* ]]; then
 			# convert "9-ea-b154-1" into "9-b154"
 			ojdkJavaVersion="$(echo "$ojdkbuildVersion" | sed -r 's/-ea-/-/' | cut -d- -f1,2)"
-		else
+		elif [[ "$ojdkbuildVersion" == 1.* ]]; then
 			# convert "1.8.0.111-3" into "8u111"
 			ojdkJavaVersion="$(echo "$ojdkbuildVersion" | cut -d. -f2,4 | cut -d- -f1 | tr . u)"
+		elif [[ "$ojdkbuildVersion" == 9.* ]]; then
+			# convert "9.0.1-1.b01" into "9.0.1"
+			ojdkJavaVersion="${ojdkbuildVersion%%-*}"
+		else
+			echo >&2 "error: unable to parse ojdkbuild version $ojdkbuildVersion"
+			exit 1
 		fi
 
 		echo "$version: $ojdkJavaVersion (windows ojdkbuild $ojdkbuildVersion)"

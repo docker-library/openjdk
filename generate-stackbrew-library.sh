@@ -118,7 +118,8 @@ for version in "${versions[@]}"; do
 
 	for v in \
 		'' slim alpine \
-		windows/windowsservercore windows/nanoserver \
+		windows/windowsservercore-{ltsc2016,1709} \
+		windows/nanoserver-{sac2016,1709} \
 	; do
 		dir="$version${v:+/$v}"
 		[ -n "$v" ] && variant="$(basename "$v")" || variant=
@@ -137,9 +138,20 @@ for version in "${versions[@]}"; do
 				;;
 		esac
 
+		sharedTags=()
+		for windowsShared in windowsservercore nanoserver; do
+			if [[ "$variant" == "$windowsShared"* ]]; then
+				sharedTags+=( "$windowsShared" )
+				break
+			fi
+		done
+
 		echo
+		echo "Tags: $(join ', ' $(aliases "$javaVersion" "$javaType" "$fullVersion" "$variant"))"
+		if [ "${#sharedTags[@]}" -gt 0 ]; then
+			echo "SharedTags: $(join ', ' "${sharedTags[@]}")"
+		fi
 		cat <<-EOE
-			Tags: $(join ', ' $(aliases "$javaVersion" "$javaType" "$fullVersion" "$variant"))
 			Architectures: $(join ', ' $variantArches)
 			GitCommit: $commit
 			Directory: $dir

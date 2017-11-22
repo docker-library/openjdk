@@ -408,8 +408,20 @@ EOD
 			-e 's/^(ENV JAVA_OJDKBUILD_SHA256) .*/\1 '"$ojdkbuildSha256"'/' \
 			"$version"/windows/*/Dockerfile
 
-		for df in "$version"/windows/*/Dockerfile; do
-			appveyorEnv='\n    - version: '"$version"'\n      variant: '"$(basename "$(dirname "$df")")$appveyorEnv"
+		for winVariant in \
+			nanoserver-{1709,sac2016} \
+			windowsservercore-{1709,ltsc2016} \
+		; do
+			[ -f "$version/windows/$winVariant/Dockerfile" ] || continue
+
+			sed -ri \
+				-e 's!^FROM .*!FROM microsoft/'"${winVariant%%-*}"':'"${winVariant#*-}"'!' \
+				"$version/windows/$winVariant/Dockerfile"
+
+			case "$winVariant" in
+				*-1709) ;; # no AppVeyor support for 1709 yet: https://github.com/appveyor/ci/issues/1885
+				*) appveyorEnv='\n    - version: '"$version"'\n      variant: '"$winVariant$appveyorEnv" ;;
+			esac
 		done
 	fi
 

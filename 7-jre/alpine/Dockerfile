@@ -4,7 +4,7 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM alpine:3.6
+FROM alpine:3.7
 
 # A few reasons for installing distribution-provided OpenJDK:
 #
@@ -31,8 +31,8 @@ RUN { \
 ENV JAVA_HOME /usr/lib/jvm/java-1.7-openjdk/jre
 ENV PATH $PATH:/usr/lib/jvm/java-1.7-openjdk/jre/bin:/usr/lib/jvm/java-1.7-openjdk/bin
 
-ENV JAVA_VERSION 7u131
-ENV JAVA_ALPINE_VERSION 7.131.2.6.9-r1
+ENV JAVA_VERSION 7u151
+ENV JAVA_ALPINE_VERSION 7.151.2.6.11-r0
 
 RUN set -x \
 	&& apk add --no-cache \

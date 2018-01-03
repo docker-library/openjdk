@@ -72,7 +72,7 @@ aliases() {
 	local javaVersion="$1"; shift
 	local javaType="$1"; shift
 	local fullVersion="$1"; shift
-	local variant="${1:-}" # optional
+	local variants=( "$@" )
 
 	local bases=()
 	while [ "${fullVersion%[.-]*}" != "$fullVersion" ]; do
@@ -103,10 +103,17 @@ aliases() {
 		versionAliases+=( "${openjdkPrefix[@]}" )
 	fi
 
-	if [ "$variant" ]; then
-		versionAliases=( "${versionAliases[@]/%/-$variant}" )
-		versionAliases=( "${versionAliases[@]//latest-/}" )
-	fi
+	local variantAliases=()
+	local variant
+	for variant in "${variants[@]}"; do
+		if [ -n "$variant" ]; then
+			local thisVariantAliases=( "${versionAliases[@]/%/-$variant}" )
+			variantAliases+=( "${thisVariantAliases[@]//latest-/}" )
+		else
+			variantAliases+=( "${versionAliases[@]}" )
+		fi
+	done
+	versionAliases=( "${variantAliases[@]}" )
 
 	echo "${versionAliases[@]}"
 }
@@ -146,8 +153,23 @@ for version in "${versions[@]}"; do
 			fi
 		done
 
+		variantAliases=()
+		from="$(git show "$commit":"$dir/Dockerfile" | awk '$1 == "FROM" { print $2; exit }')"
+		case "$v" in
+			windows/*) ;;
+			alpine)
+				variantAliases+=( "${from//:/}" ) # "alpine3.7", "alpine3.6", etc
+				;;
+			*)
+				fromTag="${from#*:}" # peel off "debian:", "buildpack-deps:", etc
+				fromTag="${fromTag%-*}" # peel off "-scm", "-curl", etc
+				variantAliases+=( "${variant:+$variant-}$fromTag" ) # "stretch", "slim-stretch", "jessie", etc
+				;;
+		esac
+		variantAliases+=( "$variant" )
+
 		echo
-		echo "Tags: $(join ', ' $(aliases "$javaVersion" "$javaType" "$fullVersion" "$variant"))"
+		echo "Tags: $(join ', ' $(aliases "$javaVersion" "$javaType" "$fullVersion" "${variantAliases[@]}"))"
 		if [ "${#sharedTags[@]}" -gt 0 ]; then
 			echo "SharedTags: $(join ', ' "${sharedTags[@]}")"
 		fi

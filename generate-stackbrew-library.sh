@@ -15,6 +15,9 @@ cd "$(dirname "$(readlink -f "$BASH_SOURCE")")"
 versions=( */ )
 versions=( "${versions[@]%/}" )
 
+# sort version numbers with highest first
+IFS=$'\n'; versions=( $(echo "${versions[*]}" | sort -rV) ); unset IFS
+
 # get the most recent commit which modified any of "$@"
 fileCommit() {
 	git log -1 --format='format:%H' HEAD -- "$@"
@@ -154,18 +157,38 @@ for version in "${versions[@]}"; do
 		done
 
 		variantAliases=()
-		from="$(git show "$commit":"$dir/Dockerfile" | awk '$1 == "FROM" { print $2; exit }')"
-		case "$v" in
-			windows/*) ;;
-			alpine)
-				variantAliases+=( "${from//:/}" ) # "alpine3.7", "alpine3.6", etc
-				;;
-			*)
-				fromTag="${from#*:}" # peel off "debian:", "buildpack-deps:", etc
-				fromTag="${fromTag%-*}" # peel off "-scm", "-curl", etc
-				variantAliases+=( "${variant:+$variant-}$fromTag" ) # "stretch", "slim-stretch", "jessie", etc
-				;;
-		esac
+		fromTag="$(git show "$commit":"$dir/Dockerfile" | awk -v variant="$variant" '
+			$1 == "FROM" {
+				switch ($2) {
+					case /^microsoft\//:
+						$2 = ""
+						break
+					case /^alpine:/:
+						gsub(/:/, "", $2) # "alpine3.7", "alpine3.6", etc
+						break
+					default:
+						gsub(/^[^:]+:/, "", $2) # peel off "debian:", "buildpack-deps:", etc
+						gsub(/-[^-]+$/, "", $2) # peel off "-scm", "-curl", etc
+						break
+				}
+				fromTag = $2
+			}
+			$1 == "RUN" && $2 == "echo" && $4 == "http://deb.debian.org/debian" {
+				fromTag = $5 # "experimental", etc
+			}
+			END {
+				if (fromTag) {
+					if (variant && fromTag !~ /^alpine/) {
+						# "slim-stretch", "slim-jessie", etc
+						printf "%s-", variant
+					}
+					print fromTag
+				}
+			}
+		')"
+		if [ -n "$fromTag" ]; then
+			variantAliases+=( "$fromTag" )
+		fi
 		variantAliases+=( "$variant" )
 
 		echo

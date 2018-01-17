@@ -9,11 +9,16 @@ if [ ${#versions[@]} -eq 0 ]; then
 fi
 versions=( "${versions[@]%/}" )
 
+# sort version numbers with lowest first
+IFS=$'\n'; versions=( $(echo "${versions[*]}" | sort -V) ); unset IFS
+
 declare -A suites=(
+	# FROM buildpack-deps:SUITE-xxx
 	[6]='wheezy'
 	[7]='jessie'
 	[8]='stretch'
 	[9]='sid'
+	[10]='sid'
 )
 declare -A alpineVersions=(
 	[7]='3.7'
@@ -22,7 +27,8 @@ declare -A alpineVersions=(
 )
 
 declare -A addSuites=(
-	#[9]='experimental'
+	# there is no "buildpack-deps:experimental-xxx"
+	[10]='experimental'
 )
 
 declare -A buildpackDepsVariants=(
@@ -181,7 +187,14 @@ for version in "${versions[@]}"; do
 	debianVersion="$(debian-latest-version "$debianPackage" "$debSuite")"
 	fullVersion="${debianVersion%%-*}"
 	fullVersion="${fullVersion#*:}"
+
 	tilde='~'
+	case "$javaVersion" in
+		10)
+			# update Debian's "10~39" to "10-ea+39" (matching http://jdk.java.net/10/)
+			fullVersion="${fullVersion//10$tilde/10-ea+}"
+			;;
+	esac
 	fullVersion="${fullVersion//$tilde/-}"
 
 	echo "$version: $fullVersion (debian $debianVersion)"
@@ -238,6 +251,15 @@ EOD
 		EOD
 	fi
 
+	sillyCaSymlink=$'\\'
+	sillyCaSymlinkCleanup=$'\\'
+	case "$javaVersion" in
+		10)
+			sillyCaSymlink+=$'\n# ca-certificates-java does not support src:openjdk-10 yet:\n# /etc/ca-certificates/update.d/jks-keystore: 86: /etc/ca-certificates/update.d/jks-keystore: java: not found\n\tln -svT /docker-java-home/bin/java /usr/local/bin/java; \\\n\t\\'
+			sillyCaSymlinkCleanup+=$'\n\trm -v /usr/local/bin/java; \\\n\t\\'
+			;;
+	esac
+
 	cat >> "$version/Dockerfile" <<EOD
 
 RUN set -ex; \\
@@ -246,7 +268,7 @@ RUN set -ex; \\
 	if [ ! -d /usr/share/man/man1 ]; then \\
 		mkdir -p /usr/share/man/man1; \\
 	fi; \\
-	\\
+	$sillyCaSymlink
 	apt-get update; \\
 	apt-get install -y \\
 		$debianPackage="\$JAVA_DEBIAN_VERSION" \\
@@ -259,7 +281,7 @@ EOD
 	cat >> "$version/Dockerfile" <<EOD
 	; \\
 	rm -rf /var/lib/apt/lists/*; \\
-	\\
+	$sillyCaSymlinkCleanup
 # verify that "docker-java-home" returns what we expect
 	[ "\$(readlink -f "\$JAVA_HOME")" = "\$(docker-java-home)" ]; \\
 	\\

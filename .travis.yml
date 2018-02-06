@@ -22,10 +22,6 @@ env:
   - VERSION=7-jdk
   - VERSION=7-jdk VARIANT=slim
   - VERSION=7-jdk VARIANT=alpine
-  - VERSION=6-jre
-  - VERSION=6-jre VARIANT=slim
-  - VERSION=6-jdk
-  - VERSION=6-jdk VARIANT=slim
 
 install:
   - git clone https://github.com/docker-library/official-images.git ~/official-images

@@ -14,7 +14,6 @@ IFS=$'\n'; versions=( $(echo "${versions[*]}" | sort -V) ); unset IFS
 
 declare -A suites=(
 	# FROM buildpack-deps:SUITE-xxx
-	[6]='wheezy'
 	[7]='jessie'
 	[8]='stretch'
 	[9]='sid'
@@ -167,9 +166,9 @@ template-contribute-footer() {
 travisEnv=
 appveyorEnv=
 for version in "${versions[@]}"; do
-	javaVersion="$version" # "6-jdk"
+	javaVersion="$version" # "7-jdk"
 	javaType="${javaVersion##*-}" # "jdk"
-	javaVersion="${javaVersion%-*}" # "6"
+	javaVersion="${javaVersion%-*}" # "7"
 
 	suite="${suites[$javaVersion]}"
 	addSuite="${addSuites[$javaVersion]}"

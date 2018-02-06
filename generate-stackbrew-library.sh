@@ -122,9 +122,9 @@ aliases() {
 }
 
 for version in "${versions[@]}"; do
-	javaVersion="$version" # "6-jdk"
+	javaVersion="$version" # "7-jdk"
 	javaType="${javaVersion##*-}" # "jdk"
-	javaVersion="${javaVersion%-$javaType}" # "6"
+	javaVersion="${javaVersion%-$javaType}" # "7"
 
 	for v in \
 		'' slim alpine \

@@ -2,6 +2,10 @@ language: bash
 services: docker
 
 env:
+  - VERSION=11-jre
+  - VERSION=11-jre VARIANT=slim
+  - VERSION=11-jdk
+  - VERSION=11-jdk VARIANT=slim
   - VERSION=10-jre
   - VERSION=10-jre VARIANT=slim
   - VERSION=10-jdk

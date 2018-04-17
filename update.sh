@@ -18,6 +18,7 @@ declare -A suites=(
 	[8]='stretch'
 	[9]='sid'
 	[10]='sid'
+	[11]='sid'
 )
 declare -A alpineVersions=(
 	[7]='3.7'
@@ -27,7 +28,7 @@ declare -A alpineVersions=(
 
 declare -A addSuites=(
 	# there is no "buildpack-deps:experimental-xxx"
-	[10]='experimental'
+	#[11]='experimental'
 )
 
 declare -A buildpackDepsVariants=(
@@ -193,6 +194,11 @@ for version in "${versions[@]}"; do
 			# update Debian's "10~39" to "10-ea+39" (matching http://jdk.java.net/10/)
 			fullVersion="${fullVersion//10$tilde/10-ea+}"
 			;;
+		11)
+			# update Debian's "11~8" to "11-ea+8" (matching http://jdk.java.net/11/)
+			fullVersion="${fullVersion//11$tilde/11-ea+}"
+			;;
+
 	esac
 	fullVersion="${fullVersion//$tilde/-}"
 

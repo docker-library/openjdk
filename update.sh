@@ -190,15 +190,11 @@ for version in "${versions[@]}"; do
 
 	tilde='~'
 	case "$javaVersion" in
-		10)
+		10|11)
 			# update Debian's "10~39" to "10-ea+39" (matching http://jdk.java.net/10/)
-			fullVersion="${fullVersion//10$tilde/10-ea+}"
-			;;
-		11)
 			# update Debian's "11~8" to "11-ea+8" (matching http://jdk.java.net/11/)
-			fullVersion="${fullVersion//11$tilde/11-ea+}"
+			fullVersion="${fullVersion//$javaVersion$tilde/$javaVersion-ea+}"
 			;;
-
 	esac
 	fullVersion="${fullVersion//$tilde/-}"
 

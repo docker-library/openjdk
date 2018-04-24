@@ -373,9 +373,15 @@ EOD
 		# for the "slim" variants,
 		#   - swap "buildpack-deps:SUITE-xxx" for "debian:SUITE-slim"
 		#   - swap "openjdk-N-(jre|jdk) for the -headless versions, where available (openjdk-8+ only for JDK variants)
+    #   - disable assistive technologies since headless JDK does not include them
+
+		assistiveDisable="# disable assistive technologies since headless JDK does not include them\\n \
+RUN sed -i 's/assistive_technologies=.*/assistive_technologies=/g' /etc/java-${javaVersion}-openjdk/accessibility.properties"
+
 		sed -r \
 			-e 's!^FROM buildpack-deps:([^-]+)(-.+)?!FROM debian:\1-slim!' \
 			-e 's!(openjdk-([0-9]+-jre|([89]\d*|\d\d+)-jdk))=!\1-headless=!g' \
+			-e "/update-alternatives --query java/a ${assistiveDisable}" \
 			"$version/Dockerfile" > "$version/slim/Dockerfile"
 
 		travisEnv='\n  - VERSION='"$version"' VARIANT=slim'"$travisEnv"

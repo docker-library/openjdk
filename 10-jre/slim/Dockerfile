@@ -54,7 +54,7 @@ RUN set -ex; \
 	ln -svT /docker-java-home/bin/java /usr/local/bin/java; \
 	\
 	apt-get update; \
-	apt-get install -y \
+	apt-get install -y --no-install-recommends \
 		openjdk-10-jre-headless="$JAVA_DEBIAN_VERSION" \
 	; \
 	rm -rf /var/lib/apt/lists/*; \

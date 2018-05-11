@@ -54,7 +54,7 @@ RUN set -ex; \
 	fi; \
 	\
 	apt-get update; \
-	apt-get install -y \
+	apt-get install -y --no-install-recommends \
 		openjdk-8-jre-headless="$JAVA_DEBIAN_VERSION" \
 		ca-certificates-java="$CA_CERTIFICATES_JAVA_VERSION" \
 	; \

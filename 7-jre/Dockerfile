@@ -50,7 +50,7 @@ RUN set -ex; \
 	fi; \
 	\
 	apt-get update; \
-	apt-get install -y \
+	apt-get install -y --no-install-recommends \
 		openjdk-7-jre="$JAVA_DEBIAN_VERSION" \
 	; \
 	rm -rf /var/lib/apt/lists/*; \

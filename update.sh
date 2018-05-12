@@ -16,8 +16,8 @@ declare -A suites=(
 	# FROM buildpack-deps:SUITE-xxx
 	[7]='jessie'
 	[8]='stretch'
-	[9]='sid'
-	[10]='sid'
+	[9]='buster'
+	[10]='buster'
 	[11]='sid'
 )
 declare -A alpineVersions=(

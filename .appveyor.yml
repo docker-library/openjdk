@@ -3,19 +3,19 @@ image: Visual Studio 2017
 
 environment:
   matrix:
-    - version: 9-jdk
+    - version: 9
       variant: windowsservercore-ltsc2016
-    - version: 9-jdk
+    - version: 9
       variant: nanoserver-sac2016
-    - version: 8-jdk
+    - version: 8
       variant: windowsservercore-ltsc2016
-    - version: 8-jdk
+    - version: 8
       variant: nanoserver-sac2016
 
 install:
   - ps: |
       [Environment]::SetEnvironmentVariable('dockerImage', ('openjdk:{0}' -f $env:version), [EnvironmentVariableTarget]::Process);
-      [Environment]::SetEnvironmentVariable('buildDirectory', ('{0}/windows/{1}' -f $env:version, $env:variant), [EnvironmentVariableTarget]::Process);
+      [Environment]::SetEnvironmentVariable('buildDirectory', ('{0}/jdk/windows/{1}' -f $env:version, $env:variant), [EnvironmentVariableTarget]::Process);
 
 build_script:
   - cmd: appveyor-retry docker build --pull -t %dockerImage% %buildDirectory%
@@ -25,3 +25,4 @@ after_build:
 
 test_script:
   - cmd: docker run --rm %dockerImage% java -version
+  - cmd: docker run --rm %dockerImage% javac -version

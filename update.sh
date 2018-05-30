@@ -364,8 +364,6 @@ RUN set -x \\
 EOD
 
 			template-contribute-footer >> "$dir/alpine/Dockerfile"
-
-			travisEnv='\n  - VERSION='"$javaVersion"' VARIANT=alpine'"$travisEnv"
 		fi
 
 		if [ -d "$dir/slim" ]; then
@@ -376,8 +374,6 @@ EOD
 				-e 's!^FROM buildpack-deps:([^-]+)(-.+)?!FROM debian:\1-slim!' \
 				-e 's!(openjdk-([0-9]+-jre|([89]\d*|\d\d+)-jdk))=!\1-headless=!g' \
 				"$dir/Dockerfile" > "$dir/slim/Dockerfile"
-
-			travisEnv='\n  - VERSION='"$javaVersion"' VARIANT=slim'"$travisEnv"
 		fi
 
 		if [ -d "$dir/windows" ]; then
@@ -446,9 +442,15 @@ EOD
 				esac
 			done
 		fi
-
-		travisEnv='\n  - VERSION='"$javaVersion$travisEnv"
 	done
+
+	if [ -d "$javaVersion/jdk/alpine" ]; then
+		travisEnv='\n  - VERSION='"$javaVersion"' VARIANT=alpine'"$travisEnv"
+	fi
+	if [ -d "$javaVersion/jdk/slim" ]; then
+		travisEnv='\n  - VERSION='"$javaVersion"' VARIANT=slim'"$travisEnv"
+	fi
+	travisEnv='\n  - VERSION='"$javaVersion$travisEnv"
 done
 
 travis="$(awk -v 'RS=\n\n' '$1 == "env:" { $0 = "env:'"$travisEnv"'" } { printf "%s%s", $0, RS }' .travis.yml)"

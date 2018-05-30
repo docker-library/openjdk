@@ -1,5 +1,5 @@
-#!/bin/bash
-set -eu
+#!/usr/bin/env bash
+set -Eeuo pipefail
 
 declare -A aliases=(
 	[8-jdk]='jdk latest'
@@ -121,86 +121,84 @@ aliases() {
 	echo "${versionAliases[@]}"
 }
 
-for version in "${versions[@]}"; do
-	javaVersion="$version" # "7-jdk"
-	javaType="${javaVersion##*-}" # "jdk"
-	javaVersion="${javaVersion%-$javaType}" # "7"
+for javaVersion in "${versions[@]}"; do
+	for javaType in jdk jre; do
+		for v in \
+			'' slim alpine \
+			windows/windowsservercore-{ltsc2016,1709} \
+			windows/nanoserver-{sac2016,1709} \
+		; do
+			dir="$javaVersion/$javaType${v:+/$v}"
+			[ -n "$v" ] && variant="$(basename "$v")" || variant=
 
-	for v in \
-		'' slim alpine \
-		windows/windowsservercore-{ltsc2016,1709} \
-		windows/nanoserver-{sac2016,1709} \
-	; do
-		dir="$version${v:+/$v}"
-		[ -n "$v" ] && variant="$(basename "$v")" || variant=
+			[ -f "$dir/Dockerfile" ] || continue
 
-		[ -f "$dir/Dockerfile" ] || continue
+			commit="$(dirCommit "$dir")"
 
-		commit="$(dirCommit "$dir")"
+			fullVersion="$(git show "$commit":"$dir/Dockerfile" | awk '$1 == "ENV" && $2 == "JAVA_VERSION" { gsub(/[~+]/, "-", $3); print $3; exit }')"
 
-		fullVersion="$(git show "$commit":"$dir/Dockerfile" | awk '$1 == "ENV" && $2 == "JAVA_VERSION" { gsub(/[~+]/, "-", $3); print $3; exit }')"
+			case "$v" in
+				windows/*) variantArches='windows-amd64' ;;
+				*)
+					variantParent="$(awk 'toupper($1) == "FROM" { print $2 }' "$dir/Dockerfile")"
+					variantArches="${parentRepoToArches[$variantParent]}"
+					;;
+			esac
 
-		case "$v" in
-			windows/*) variantArches='windows-amd64' ;;
-			*)
-				variantParent="$(awk 'toupper($1) == "FROM" { print $2 }' "$dir/Dockerfile")"
-				variantArches="${parentRepoToArches[$variantParent]}"
-				;;
-		esac
+			sharedTags=()
+			for windowsShared in windowsservercore nanoserver; do
+				if [[ "$variant" == "$windowsShared"* ]]; then
+					sharedTags=( $(aliases "$javaVersion" "$javaType" "$fullVersion" "$windowsShared") )
+					break
+				fi
+			done
 
-		sharedTags=()
-		for windowsShared in windowsservercore nanoserver; do
-			if [[ "$variant" == "$windowsShared"* ]]; then
-				sharedTags=( $(aliases "$javaVersion" "$javaType" "$fullVersion" "$windowsShared") )
-				break
-			fi
-		done
-
-		variantAliases=()
-		fromTag="$(git show "$commit":"$dir/Dockerfile" | awk -v variant="$variant" '
-			$1 == "FROM" {
-				switch ($2) {
-					case /^microsoft\//:
-						$2 = ""
-						break
-					case /^alpine:/:
-						gsub(/:/, "", $2) # "alpine3.7", "alpine3.6", etc
-						break
-					default:
-						gsub(/^[^:]+:/, "", $2) # peel off "debian:", "buildpack-deps:", etc
-						gsub(/-[^-]+$/, "", $2) # peel off "-scm", "-curl", etc
-						break
-				}
-				fromTag = $2
-			}
-			$1 == "RUN" && $2 == "echo" && $4 == "http://deb.debian.org/debian" {
-				fromTag = $5 # "experimental", etc
-			}
-			END {
-				if (fromTag) {
-					if (variant && fromTag !~ /^alpine/) {
-						# "slim-stretch", "slim-jessie", etc
-						printf "%s-", variant
+			variantAliases=()
+			fromTag="$(git show "$commit":"$dir/Dockerfile" | awk -v variant="$variant" '
+				$1 == "FROM" {
+					switch ($2) {
+						case /^microsoft\//:
+							$2 = ""
+							break
+						case /^alpine:/:
+							gsub(/:/, "", $2) # "alpine3.7", "alpine3.6", etc
+							break
+						default:
+							gsub(/^[^:]+:/, "", $2) # peel off "debian:", "buildpack-deps:", etc
+							gsub(/-[^-]+$/, "", $2) # peel off "-scm", "-curl", etc
+							break
 					}
-					print fromTag
+					fromTag = $2
 				}
-			}
-		')"
-		if [ -n "$fromTag" ]; then
-			variantAliases+=( "$fromTag" )
-		fi
-		variantAliases+=( "$variant" )
+				$1 == "RUN" && $2 == "echo" && $4 == "http://deb.debian.org/debian" {
+					fromTag = $5 # "experimental", etc
+				}
+				END {
+					if (fromTag) {
+						if (variant && fromTag !~ /^alpine/) {
+							# "slim-stretch", "slim-jessie", etc
+							printf "%s-", variant
+						}
+						print fromTag
+					}
+				}
+			')"
+			if [ -n "$fromTag" ]; then
+				variantAliases+=( "$fromTag" )
+			fi
+			variantAliases+=( "$variant" )
 
-		echo
-		echo "Tags: $(join ', ' $(aliases "$javaVersion" "$javaType" "$fullVersion" "${variantAliases[@]}"))"
-		if [ "${#sharedTags[@]}" -gt 0 ]; then
-			echo "SharedTags: $(join ', ' "${sharedTags[@]}")"
-		fi
-		cat <<-EOE
-			Architectures: $(join ', ' $variantArches)
-			GitCommit: $commit
-			Directory: $dir
-		EOE
-		[ "$variant" = "$v" ] || echo "Constraints: $variant"
+			echo
+			echo "Tags: $(join ', ' $(aliases "$javaVersion" "$javaType" "$fullVersion" "${variantAliases[@]}"))"
+			if [ "${#sharedTags[@]}" -gt 0 ]; then
+				echo "SharedTags: $(join ', ' "${sharedTags[@]}")"
+			fi
+			cat <<-EOE
+				Architectures: $(join ', ' $variantArches)
+				GitCommit: $commit
+				Directory: $dir
+			EOE
+			[ "$variant" = "$v" ] || echo "Constraints: $variant"
+		done
 	done
 done

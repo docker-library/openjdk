@@ -103,7 +103,7 @@ debian-latest-version() {
 		) )
 		unset IFS
 		local version=
-		for version in "${versions[@]}"; do
+		for version in ${versions[@]+"${versions[@]}"}; do
 			if [ -z "$latestVersion" ] || dpkg --compare-versions "$version" '>>' "$latestVersion"; then
 				latestVersion="$version"
 			fi

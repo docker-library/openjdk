@@ -16,14 +16,13 @@ declare -A suites=(
 	# FROM buildpack-deps:SUITE-xxx
 	[7]='jessie'
 	[8]='stretch'
-	[9]='sid'
 	[10]='sid'
 	[11]='sid'
 )
 declare -A alpineVersions=(
 	[7]='3.7'
 	[8]='3.7'
-	#[9]='TBD' # there is no openjdk9 in Alpine yet (https://pkgs.alpinelinux.org/packages?name=openjdk9*&arch=x86_64)
+	#[10]='TBD' # there is no openjdk10 in Alpine yet (https://pkgs.alpinelinux.org/packages?name=openjdk10*&arch=x86_64)
 )
 
 declare -A addSuites=(
@@ -299,10 +298,10 @@ EOD
 			EOD
 		fi
 
-		if [ "$javaType" = 'jdk' ] && [ "$javaVersion" -ge 9 ]; then
+		if [ "$javaType" = 'jdk' ] && [ "$javaVersion" -ge 10 ]; then
 			cat >> "$dir/Dockerfile" <<-'EOD'
 
-				# https://docs.oracle.com/javase/9/tools/jshell.htm
+				# https://docs.oracle.com/javase/10/tools/jshell.htm
 				# https://en.wikipedia.org/wiki/JShell
 				CMD ["jshell"]
 			EOD

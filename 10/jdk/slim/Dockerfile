@@ -69,7 +69,7 @@ RUN set -ex; \
 # ... and verify that it actually worked for one of the alternatives we care about
 	update-alternatives --query java | grep -q 'Status: manual'
 
-# https://docs.oracle.com/javase/9/tools/jshell.htm
+# https://docs.oracle.com/javase/10/tools/jshell.htm
 # https://en.wikipedia.org/wiki/JShell
 CMD ["jshell"]
 

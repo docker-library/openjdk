@@ -359,6 +359,8 @@ EOD
 RUN set -x \\
 	&& apk add --no-cache \\
 		${alpinePackage}="\$JAVA_ALPINE_VERSION" \\
+		fontconfig \\
+		ttf-dejavu \\
 	&& [ "\$JAVA_HOME" = "\$(docker-java-home)" ]
 EOD
 

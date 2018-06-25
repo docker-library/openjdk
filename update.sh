@@ -371,7 +371,7 @@ EOD
 			#   - swap "openjdk-N-(jre|jdk) for the -headless versions, where available (openjdk-8+ only for JDK variants)
 			sed -r \
 				-e 's!^FROM buildpack-deps:([^-]+)(-.+)?!FROM debian:\1-slim!' \
-				-e 's!(openjdk-([0-9]+-jre|([89]\d*|\d\d+)-jdk))=!\1-headless=!g' \
+				-e 's!(openjdk-([0-9]+-jre|([89][0-9]*|[0-9][0-9]+)-jdk))=!\1-headless=!g' \
 				"$dir/Dockerfile" > "$dir/slim/Dockerfile"
 		fi
 

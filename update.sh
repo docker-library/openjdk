@@ -20,8 +20,8 @@ declare -A suites=(
 	[11]='sid'
 )
 declare -A alpineVersions=(
-	[7]='3.7'
-	[8]='3.7'
+	[7]='3.8'
+	[8]='3.8'
 	#[10]='TBD' # there is no openjdk10 in Alpine yet (https://pkgs.alpinelinux.org/packages?name=openjdk10*&arch=x86_64)
 )
 

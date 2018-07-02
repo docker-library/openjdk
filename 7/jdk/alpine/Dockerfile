@@ -31,8 +31,8 @@ RUN { \
 ENV JAVA_HOME /usr/lib/jvm/java-1.7-openjdk
 ENV PATH $PATH:/usr/lib/jvm/java-1.7-openjdk/jre/bin:/usr/lib/jvm/java-1.7-openjdk/bin
 
-ENV JAVA_VERSION 7u151
-ENV JAVA_ALPINE_VERSION 7.151.2.6.11-r0
+ENV JAVA_VERSION 7u181
+ENV JAVA_ALPINE_VERSION 7.181.2.6.14-r0
 
 RUN set -x \
 	&& apk add --no-cache \

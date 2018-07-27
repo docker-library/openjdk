@@ -23,10 +23,10 @@ RUN $newPath = ('{0}\bin;{1}' -f $env:JAVA_HOME, $env:PATH); \
 	setx /M PATH $newPath;
 
 # https://github.com/ojdkbuild/ojdkbuild/releases
-ENV JAVA_VERSION 10.0.1
-ENV JAVA_OJDKBUILD_VERSION 10.0.1-1
-ENV JAVA_OJDKBUILD_ZIP java-10-openjdk-10.0.1-1.b10.ojdkbuild.windows.x86_64.zip
-ENV JAVA_OJDKBUILD_SHA256 64664f2e28db55022d90beefd097779c59f843cacf1afeed8a7456ee64c603f1
+ENV JAVA_VERSION 10.0.2
+ENV JAVA_OJDKBUILD_VERSION 10.0.2-1
+ENV JAVA_OJDKBUILD_ZIP java-10-openjdk-10.0.2-1.b13.ojdkbuild.windows.x86_64.zip
+ENV JAVA_OJDKBUILD_SHA256 39801db76f04b9f1491b0d0a64258535f14e319a3cd08d3e161b18a6af7a842d
 
 RUN $url = ('https://github.com/ojdkbuild/ojdkbuild/releases/download/{0}/{1}' -f $env:JAVA_OJDKBUILD_VERSION, $env:JAVA_OJDKBUILD_ZIP); \
 	Write-Host ('Downloading {0} ...' -f $url); \

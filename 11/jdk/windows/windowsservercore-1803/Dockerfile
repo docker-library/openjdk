@@ -3,7 +3,7 @@ FROM microsoft/windowsservercore:1803
 # $ProgressPreference: https://github.com/PowerShell/PowerShell/issues/2138#issuecomment-251261324
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
-ENV JAVA_HOME C:\\jdk-11
+ENV JAVA_HOME C:\\openjdk-11
 RUN $newPath = ('{0}\bin;{1}' -f $env:JAVA_HOME, $env:PATH); \
 	Write-Host ('Updating PATH: {0}' -f $newPath); \
 # Nano Server does not have "[Environment]::SetEnvironmentVariable()"
@@ -11,7 +11,7 @@ RUN $newPath = ('{0}\bin;{1}' -f $env:JAVA_HOME, $env:PATH); \
 
 # http://jdk.java.net/
 ENV JAVA_VERSION 11
-ENV JAVA_URL https://download.java.net/java/GA/jdk11/28/GPL/openjdk-11+28_windows-x64_bin.zip
+ENV JAVA_URL https://download.java.net/java/ga/jdk11/openjdk-11_windows-x64_bin.zip
 ENV JAVA_SHA256 fde3b28ca31b86a889c37528f17411cd0b9651beb6fa76cac89a223417910f4b
 
 RUN Write-Host ('Downloading {0} ...' -f $env:JAVA_URL); \
@@ -24,11 +24,14 @@ RUN Write-Host ('Downloading {0} ...' -f $env:JAVA_URL); \
 	}; \
 	\
 	Write-Host 'Expanding ...'; \
-	Expand-Archive openjdk.zip -DestinationPath C:\; \
+	New-Item -ItemType Directory -Path C:\temp | Out-Null; \
+	Expand-Archive openjdk.zip -DestinationPath C:\temp; \
+	Move-Item -Path C:\temp\* -Destination $env:JAVA_HOME; \
+	Remove-Item C:\temp; \
 	\
 	Write-Host 'Verifying install ...'; \
-	Write-Host '  java -version'; java -version; \
-	Write-Host '  javac -version'; javac -version; \
+	Write-Host '  java --version'; java --version; \
+	Write-Host '  javac --version'; javac --version; \
 	\
 	Write-Host 'Removing ...'; \
 	Remove-Item openjdk.zip -Force; \

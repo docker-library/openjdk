@@ -2,8 +2,12 @@ language: bash
 services: docker
 
 env:
+  - VERSION=12 VARIANT=oracle
+  - VERSION=12 VARIANT=alpine
+  - VERSION=11 VARIANT=oracle
   - VERSION=11
   - VERSION=11 VARIANT=slim
+  - VERSION=10 VARIANT=oracle
   - VERSION=10
   - VERSION=10 VARIANT=slim
   - VERSION=8
@@ -27,9 +31,12 @@ script:
     (
       set -Eeuo pipefail
       set -x
-      travis_retry docker build -t "$imageBase-jdk$imageSuffix" "jdk${VARIANT:+/$VARIANT}"
-      travis_retry docker build -t "$imageBase-jre$imageSuffix" "jre${VARIANT:+/$VARIANT}"
-      ~/official-images/test/run.sh "$imageBase-jdk$imageSuffix" "$imageBase-jre$imageSuffix"
+      docker build -t "$imageBase-jdk$imageSuffix" "jdk${VARIANT:+/$VARIANT}"
+      ~/official-images/test/run.sh "$imageBase-jdk$imageSuffix"
+      if [ -d "jre${VARIANT:+/$VARIANT}" ]; then
+        docker build -t "$imageBase-jre$imageSuffix" "jre${VARIANT:+/$VARIANT}"
+        ~/official-images/test/run.sh "$imageBase-jre$imageSuffix"
+      fi
     )
 
 after_script:

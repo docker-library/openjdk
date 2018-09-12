@@ -124,7 +124,7 @@ aliases() {
 for javaVersion in "${versions[@]}"; do
 	for javaType in jdk jre; do
 		for v in \
-			'' slim alpine \
+			oracle '' slim alpine \
 			windows/windowsservercore-{ltsc2016,1709,1803} \
 			windows/nanoserver-{sac2016,1709,1803} \
 		; do
@@ -137,13 +137,23 @@ for javaVersion in "${versions[@]}"; do
 
 			fullVersion="$(git show "$commit":"$dir/Dockerfile" | awk '$1 == "ENV" && $2 == "JAVA_VERSION" { gsub(/[~+]/, "-", $3); print $3; exit }')"
 
-			case "$v" in
-				windows/*) variantArches='windows-amd64' ;;
-				*)
-					variantParent="$(awk 'toupper($1) == "FROM" { print $2 }' "$dir/Dockerfile")"
-					variantArches="${parentRepoToArches[$variantParent]}"
-					;;
-			esac
+			variantArches=
+			if [ "$javaVersion" -ge 10 ]; then
+				# http://jdk.java.net/10/, http://jdk.java.net/11/, http://jdk.java.net/12/, ...
+				# (no arches except amd64 supported)
+				case "$v" in
+					oracle|alpine) variantArches='amd64' ;;
+				esac
+			fi
+			if [ -z "$variantArches" ]; then
+				case "$v" in
+					windows/*) variantArches='windows-amd64' ;;
+					*)
+						variantParent="$(awk 'toupper($1) == "FROM" { print $2 }' "$dir/Dockerfile")"
+						variantArches="${parentRepoToArches[$variantParent]}"
+						;;
+				esac
+			fi
 
 			sharedTags=()
 			for windowsShared in windowsservercore nanoserver; do
@@ -160,8 +170,9 @@ for javaVersion in "${versions[@]}"; do
 						case /^microsoft\//:
 							$2 = ""
 							break
-						case /^alpine:/:
+						case /^(alpine|oraclelinux):/:
 							gsub(/:/, "", $2) # "alpine3.7", "alpine3.6", etc
+							gsub(/-slim$/, "", $2) # "oraclelinux:7-slim"
 							break
 						default:
 							gsub(/^[^:]+:/, "", $2) # peel off "debian:", "buildpack-deps:", etc
@@ -175,7 +186,7 @@ for javaVersion in "${versions[@]}"; do
 				}
 				END {
 					if (fromTag) {
-						if (variant && fromTag !~ /^alpine/) {
+						if (variant && fromTag !~ /^(alpine|oraclelinux)/) {
 							# "slim-stretch", "slim-jessie", etc
 							printf "%s-", variant
 						}

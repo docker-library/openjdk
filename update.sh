@@ -440,6 +440,11 @@ EOD
 					downloadVersion="$(grep -Eom1 "openjdk-$javaVersion[^_]+" <<<"$downloadUrl")"
 					downloadVersion="${downloadVersion#openjdk-}"
 
+					if [ "$javaVersion" = '11' ]; then
+						# convert "11+28" into "11-ea+28" for consistency
+						downloadVersion="${downloadVersion//+/-ea+}"
+					fi
+
 					echo "$javaVersion-$javaType: $downloadVersion (windows)"
 
 					sed -ri \

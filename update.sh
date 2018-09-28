@@ -190,9 +190,9 @@ for javaVersion in "${versions[@]}"; do
 			tilde='~'
 			case "$javaVersion" in
 				10 | 11)
-					# update Debian's "10~39" to "10-ea+39" (matching http://jdk.java.net/10/)
-					# update Debian's "11~8" to "11-ea+8" (matching http://jdk.java.net/11/)
-					fullVersion="${fullVersion//$javaVersion$tilde/$javaVersion-ea+}"
+					# https://github.com/docker-library/openjdk/pull/235#issuecomment-425378941
+					fullVersion="${fullVersion%%$tilde*}"
+					fullVersion="${fullVersion%%+*}"
 					;;
 			esac
 			fullVersion="${fullVersion//$tilde/-}"
@@ -381,7 +381,7 @@ EOD
 			case "$javaVersion" in
 				8 | 10)
 					ojdkbuildVersion="$(
-						git ls-remote --tags 'https://github.com/ojdkbuild/ojdkbuild' \
+						git ls-remote --tags 'https://github.com/ojdkbuild/ojdkbuild.git' \
 							| cut -d/ -f3 \
 							| grep -E '^(1[.])?'"$javaVersion"'[.-]' \
 							| sort -V \
@@ -406,19 +406,27 @@ EOD
 						exit 1
 					fi
 
-					if [[ "$ojdkbuildVersion" == *-ea-* ]]; then
-						# convert "9-ea-b154-1" into "9-b154"
-						ojdkJavaVersion="$(echo "$ojdkbuildVersion" | sed -r 's/-ea-/-/' | cut -d- -f1,2)"
-					elif [[ "$ojdkbuildVersion" == 1.* ]]; then
-						# convert "1.8.0.111-3" into "8u111"
-						ojdkJavaVersion="$(echo "$ojdkbuildVersion" | cut -d. -f2,4 | cut -d- -f1 | tr . u)"
-					elif [[ "$ojdkbuildVersion" == 10.* ]]; then
-						# convert "10.0.1-1.b10" into "10.0.1"
-						ojdkJavaVersion="${ojdkbuildVersion%%-*}"
-					else
-						echo >&2 "error: unable to parse ojdkbuild version $ojdkbuildVersion"
-						exit 1
-					fi
+					case "$ojdkbuildVersion" in
+						*-ea-* )
+							# convert "9-ea-b154-1" into "9-b154"
+							ojdkJavaVersion="$(echo "$ojdkbuildVersion" | sed -r 's/-ea-/-/' | cut -d- -f1,2)"
+							;;
+
+						1.* )
+							# convert "1.8.0.111-3" into "8u111"
+							ojdkJavaVersion="$(echo "$ojdkbuildVersion" | cut -d. -f2,4 | cut -d- -f1 | tr . u)"
+							;;
+
+						10.* )
+							# convert "10.0.1-1.b10" into "10.0.1"
+							ojdkJavaVersion="${ojdkbuildVersion%%-*}"
+							;;
+
+						* )
+							echo >&2 "error: unable to parse ojdkbuild version $ojdkbuildVersion"
+							exit 1
+							;;
+					esac
 
 					echo "$javaVersion-$javaType: $ojdkJavaVersion (windows ojdkbuild $ojdkbuildVersion)"
 
@@ -441,8 +449,9 @@ EOD
 					downloadVersion="${downloadVersion#openjdk-}"
 
 					if [ "$javaVersion" = '11' ]; then
-						# convert "11+28" into "11-ea+28" for consistency
-						downloadVersion="${downloadVersion//+/-ea+}"
+						# 11 is now GA, so drop any +NN (https://github.com/docker-library/openjdk/pull/235#issuecomment-425378941)
+						# future releases will be 11.0.1, for example
+						downloadVersion="${downloadVersion%%+*}"
 					fi
 
 					echo "$javaVersion-$javaType: $downloadVersion (windows)"

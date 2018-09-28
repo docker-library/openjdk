@@ -10,7 +10,7 @@ RUN $newPath = ('{0}\bin;{1}' -f $env:JAVA_HOME, $env:PATH); \
 	setx /M PATH $newPath
 
 # http://jdk.java.net/
-ENV JAVA_VERSION 11-ea+28
+ENV JAVA_VERSION 11
 ENV JAVA_URL https://download.java.net/java/GA/jdk11/28/GPL/openjdk-11+28_windows-x64_bin.zip
 ENV JAVA_SHA256 fde3b28ca31b86a889c37528f17411cd0b9651beb6fa76cac89a223417910f4b
 

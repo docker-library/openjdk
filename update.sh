@@ -10,7 +10,7 @@ fi
 versions=( "${versions[@]%/}" )
 
 # sort version numbers with lowest first
-IFS=$'\n'; versions=( $(echo "${versions[*]}" | sort -V) ); unset IFS
+IFS=$'\n'; versions=( $(sort -V <<<"${versions[*]}") ); unset IFS
 
 declare -A suites=(
 	# FROM buildpack-deps:SUITE-xxx
@@ -94,11 +94,10 @@ debian-latest-version() {
 		fi
 		IFS=$'\n'
 		local versions=( $(
-			echo "${debCache[$remote]}" \
-				| awk -F ': ' '
-					$1 == "Package" { pkg = $2 }
-					pkg == "'"$package"'" && $1 == "Version" { print $2 }
-				'
+			awk -F ': ' '
+				$1 == "Package" { pkg = $2 }
+				pkg == "'"$package"'" && $1 == "Version" { print $2 }
+			' <<<"${debCache[$remote]}"
 		) )
 		unset IFS
 		local version=
@@ -161,6 +160,30 @@ template-contribute-footer() {
 		#
 		#   https://github.com/docker-library/openjdk/issues
 	EOD
+}
+
+jdk-java-net-download-url() {
+	local javaVersion="$1"; shift
+	local fileSuffix="$1"; shift
+	curl -fsSL "http://jdk.java.net/$javaVersion/" \
+		| tac|tac \
+		| grep -Eom1 "https://download.java.net/[^\"]+$fileSuffix"
+}
+
+jdk-java-net-download-version() {
+	local javaVersion="$1"; shift
+	local downloadUrl="$1"; shift
+
+	downloadVersion="$(grep -Eom1 "openjdk-$javaVersion[^_]*_" <<<"$downloadUrl")"
+	downloadVersion="${downloadVersion%_}"
+	downloadVersion="${downloadVersion#openjdk-}"
+	if [ "$javaVersion" = '11' ]; then
+		# 11 is now GA, so drop any +NN (https://github.com/docker-library/openjdk/pull/235#issuecomment-425378941)
+		# future releases will be 11.0.1, for example
+		downloadVersion="${downloadVersion%%+*}"
+	fi
+
+	echo "$downloadVersion"
 }
 
 travisEnv=
@@ -311,7 +334,7 @@ EOD
 			template-contribute-footer >> "$dir/Dockerfile"
 		fi
 
-		if [ -d "$dir/alpine" ]; then
+		if [ -d "$dir/alpine" ] && [ "$javaVersion" -lt 10 ]; then
 			alpineVersion="${alpineVersions[$javaVersion]:-$defaultAlpineVersion}"
 			alpinePackage="openjdk$javaVersion"
 			alpineJavaHome="/usr/lib/jvm/java-1.${javaVersion}-openjdk"
@@ -365,6 +388,34 @@ RUN set -x \\
 EOD
 
 			template-contribute-footer >> "$dir/alpine/Dockerfile"
+		elif [ -d "$dir/alpine" ]; then
+			downloadUrl="$(jdk-java-net-download-url "$javaVersion" '_linux-x64-musl_bin.tar.gz')"
+			downloadSha256="$(curl -fsSL "$downloadUrl.sha256")"
+			downloadVersion="$(jdk-java-net-download-version "$javaVersion" "$downloadUrl")"
+
+			echo "$javaVersion-$javaType: $downloadVersion (alpine)"
+
+			sed -r \
+				-e 's!^(ENV JAVA_HOME) .*!\1 /opt/openjdk-'"$javaVersion"'!' \
+				-e 's!^(ENV JAVA_VERSION) .*!\1 '"$downloadVersion"'!' \
+				-e 's!^(ENV JAVA_URL) .*!\1 '"$downloadUrl"'!' \
+				-e 's!^(ENV JAVA_SHA256) .*!\1 '"$downloadSha256"'!' \
+				Dockerfile-alpine.template > "$dir/alpine/Dockerfile"
+		fi
+
+		if [ -d "$dir/oracle" ]; then
+			downloadUrl="$(jdk-java-net-download-url "$javaVersion" '_linux-x64_bin.tar.gz')"
+			downloadSha256="$(curl -fsSL "$downloadUrl.sha256")"
+			downloadVersion="$(jdk-java-net-download-version "$javaVersion" "$downloadUrl")"
+
+			echo "$javaVersion-$javaType: $downloadVersion (oracle)"
+
+			sed -r \
+				-e 's!^(ENV JAVA_HOME) .*!\1 /usr/java/openjdk-'"$javaVersion"'!' \
+				-e 's!^(ENV JAVA_VERSION) .*!\1 '"$downloadVersion"'!' \
+				-e 's!^(ENV JAVA_URL) .*!\1 '"$downloadUrl"'!' \
+				-e 's!^(ENV JAVA_SHA256) .*!\1 '"$downloadSha256"'!' \
+				Dockerfile-oracle.template > "$dir/oracle/Dockerfile"
 		fi
 
 		if [ -d "$dir/slim" ]; then
@@ -409,12 +460,12 @@ EOD
 					case "$ojdkbuildVersion" in
 						*-ea-* )
 							# convert "9-ea-b154-1" into "9-b154"
-							ojdkJavaVersion="$(echo "$ojdkbuildVersion" | sed -r 's/-ea-/-/' | cut -d- -f1,2)"
+							ojdkJavaVersion="$(sed -r 's/-ea-/-/' <<<"$ojdkbuildVersion" | cut -d- -f1,2)"
 							;;
 
 						1.* )
 							# convert "1.8.0.111-3" into "8u111"
-							ojdkJavaVersion="$(echo "$ojdkbuildVersion" | cut -d. -f2,4 | cut -d- -f1 | tr . u)"
+							ojdkJavaVersion="$(cut -d. -f2,4 <<<"$ojdkbuildVersion" | cut -d- -f1 | tr . u)"
 							;;
 
 						10.* )
@@ -439,29 +490,24 @@ EOD
 					;;
 
 				*)
-					downloadUrl="$(
-						curl -fsSL "http://jdk.java.net/$javaVersion/" \
-							| tac|tac \
-							| grep -Eom1 'https://download.java.net/[^"]+_windows-x64_bin.zip'
-					)"
+					downloadUrl="$(jdk-java-net-download-url "$javaVersion" '_windows-x64_bin.zip')"
 					downloadSha256="$(curl -fsSL "$downloadUrl.sha256")"
-					downloadVersion="$(grep -Eom1 "openjdk-$javaVersion[^_]+" <<<"$downloadUrl")"
-					downloadVersion="${downloadVersion#openjdk-}"
-
-					if [ "$javaVersion" = '11' ]; then
-						# 11 is now GA, so drop any +NN (https://github.com/docker-library/openjdk/pull/235#issuecomment-425378941)
-						# future releases will be 11.0.1, for example
-						downloadVersion="${downloadVersion%%+*}"
-					fi
+					downloadVersion="$(jdk-java-net-download-version "$javaVersion" "$downloadUrl")"
 
 					echo "$javaVersion-$javaType: $downloadVersion (windows)"
 
-					sed -ri \
-						-e 's!^(ENV JAVA_VERSION) .*!\1 '"$downloadVersion"'!' \
-						-e 's!^(ENV JAVA_URL) .*!\1 '"$downloadUrl"'!' \
-						-e 's!^(ENV JAVA_SHA256) .*!\1 '"$downloadSha256"'!' \
-						-e 's!^(ENV JAVA_HOME) .*!\1 C:\\\\jdk-'"$javaVersion"'!' \
-						"$dir"/windows/*/Dockerfile
+					for winD in "$dir"/windows/*/; do
+						winD="${winD%/}"
+						windowsVersion="$(basename "$winD")"
+						windowsVersion="${windowsVersion#windowsservercore-}"
+						sed -r \
+							-e 's!^(FROM microsoft/windowsservercore):.*$!\1:'"$windowsVersion"'!' \
+							-e 's!^(ENV JAVA_HOME) .*!\1 C:\\\\openjdk-'"$javaVersion"'!' \
+							-e 's!^(ENV JAVA_VERSION) .*!\1 '"$downloadVersion"'!' \
+							-e 's!^(ENV JAVA_URL) .*!\1 '"$downloadUrl"'!' \
+							-e 's!^(ENV JAVA_SHA256) .*!\1 '"$downloadSha256"'!' \
+							Dockerfile-windows.template > "$winD/Dockerfile"
+					done
 					;;
 			esac
 
@@ -491,6 +537,9 @@ EOD
 	fi
 	if [ -e "$javaVersion/jdk/Dockerfile" ]; then
 		travisEnv='\n  - VERSION='"$javaVersion$travisEnv"
+	fi
+	if [ -d "$javaVersion/jdk/oracle" ]; then
+		travisEnv='\n  - VERSION='"$javaVersion"' VARIANT=oracle'"$travisEnv"
 	fi
 done
 

@@ -35,8 +35,8 @@ RUN $url = ('https://github.com/ojdkbuild/ojdkbuild/releases/download/{0}/{1}' -
 	; \
 	\
 	Write-Host 'Verifying install ...'; \
-	Write-Host '  java -version'; java -version; \
-	Write-Host '  javac -version'; javac -version; \
+	Write-Host '  java --version'; java --version; \
+	Write-Host '  javac --version'; javac --version; \
 	\
 	Write-Host 'Removing ...'; \
 	Remove-Item ojdkbuild.zip -Force; \

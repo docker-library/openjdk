@@ -1,21 +1,42 @@
 language: bash
 services: docker
 
-env:
-  - VERSION=12 VARIANT=oracle
-  - VERSION=12 VARIANT=alpine
-  - VERSION=11 VARIANT=oracle
-  - VERSION=11
-  - VERSION=11 VARIANT=slim
-  - VERSION=10 VARIANT=oracle
-  - VERSION=10
-  - VERSION=10 VARIANT=slim
-  - VERSION=8
-  - VERSION=8 VARIANT=slim
-  - VERSION=8 VARIANT=alpine
-  - VERSION=7
-  - VERSION=7 VARIANT=slim
-  - VERSION=7 VARIANT=alpine
+matrix:
+  include:
+    - os: linux
+      env: VERSION=12 VARIANT=oracle
+    - os: linux
+      env: VERSION=12 VARIANT=alpine
+    - os: windows
+      dist: 1803-containers
+      env: VERSION=12 VARIANT=windows/windowsservercore-1803
+    - os: linux
+      env: VERSION=11 VARIANT=oracle
+    - os: linux
+      env: VERSION=11
+    - os: linux
+      env: VERSION=11 VARIANT=slim
+    - os: windows
+      dist: 1803-containers
+      env: VERSION=11 VARIANT=windows/windowsservercore-1803
+    - os: linux
+      env: VERSION=10 VARIANT=oracle
+    - os: linux
+      env: VERSION=10
+    - os: linux
+      env: VERSION=10 VARIANT=slim
+    - os: linux
+      env: VERSION=8
+    - os: linux
+      env: VERSION=8 VARIANT=slim
+    - os: linux
+      env: VERSION=8 VARIANT=alpine
+    - os: linux
+      env: VERSION=7
+    - os: linux
+      env: VERSION=7 VARIANT=slim
+    - os: linux
+      env: VERSION=7 VARIANT=alpine
 
 install:
   - git clone https://github.com/docker-library/official-images.git ~/official-images
@@ -24,7 +45,7 @@ before_script:
   - env | sort
   - cd "$VERSION"
   - imageBase="openjdk:$VERSION"
-  - imageSuffix="${VARIANT:+-$VARIANT}"
+  - imageSuffix="${VARIANT:+-$(basename "$VARIANT")}"
 
 script:
   - |
@@ -32,10 +53,21 @@ script:
       set -Eeuo pipefail
       set -x
       docker build -t "$imageBase-jdk$imageSuffix" "jdk${VARIANT:+/$VARIANT}"
-      ~/official-images/test/run.sh "$imageBase-jdk$imageSuffix"
+      if [ "$TRAVIS_OS_NAME" = 'windows' ]; then
+        # TODO make the tests run successfully on Windows too!
+        docker run --rm "$imageBase-jdk$imageSuffix" javac --version
+        docker run --rm "$imageBase-jdk$imageSuffix" java --version
+      else
+        ~/official-images/test/run.sh "$imageBase-jdk$imageSuffix"
+      fi
       if [ -d "jre${VARIANT:+/$VARIANT}" ]; then
         docker build -t "$imageBase-jre$imageSuffix" "jre${VARIANT:+/$VARIANT}"
-        ~/official-images/test/run.sh "$imageBase-jre$imageSuffix"
+        if [ "$TRAVIS_OS_NAME" = 'windows' ]; then
+          # TODO make the tests run successfully on Windows too!
+          docker run --rm "$imageBase-jre$imageSuffix" java --version
+        else
+          ~/official-images/test/run.sh "$imageBase-jre$imageSuffix"
+        fi
       fi
     )
 

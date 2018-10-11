@@ -522,7 +522,8 @@ EOD
 					"$dir/windows/$winVariant/Dockerfile"
 
 				case "$winVariant" in
-					*-1709 | *-1803 ) ;; # no AppVeyor support for 1709+ yet: https://github.com/appveyor/ci/issues/1885
+					*-1803) travisEnv='\n    - os: windows\n      dist: 1803-containers\n      env: VERSION='"$javaVersion VARIANT=windows/$winVariant$travisEnv" ;;
+					*-1709) ;; # no AppVeyor or Travis support for 1709: https://github.com/appveyor/ci/issues/1885
 					*) appveyorEnv='\n    - version: '"$javaVersion"'\n      variant: '"$winVariant$appveyorEnv" ;;
 				esac
 			done
@@ -530,20 +531,20 @@ EOD
 	done
 
 	if [ -d "$javaVersion/jdk/alpine" ]; then
-		travisEnv='\n  - VERSION='"$javaVersion"' VARIANT=alpine'"$travisEnv"
+		travisEnv='\n    - os: linux\n      env: VERSION='"$javaVersion"' VARIANT=alpine'"$travisEnv"
 	fi
 	if [ -d "$javaVersion/jdk/slim" ]; then
-		travisEnv='\n  - VERSION='"$javaVersion"' VARIANT=slim'"$travisEnv"
+		travisEnv='\n    - os: linux\n      env: VERSION='"$javaVersion"' VARIANT=slim'"$travisEnv"
 	fi
 	if [ -e "$javaVersion/jdk/Dockerfile" ]; then
-		travisEnv='\n  - VERSION='"$javaVersion$travisEnv"
+		travisEnv='\n    - os: linux\n      env: VERSION='"$javaVersion$travisEnv"
 	fi
 	if [ -d "$javaVersion/jdk/oracle" ]; then
-		travisEnv='\n  - VERSION='"$javaVersion"' VARIANT=oracle'"$travisEnv"
+		travisEnv='\n    - os: linux\n      env: VERSION='"$javaVersion"' VARIANT=oracle'"$travisEnv"
 	fi
 done
 
-travis="$(awk -v 'RS=\n\n' '$1 == "env:" { $0 = "env:'"$travisEnv"'" } { printf "%s%s", $0, RS }' .travis.yml)"
+travis="$(awk -v 'RS=\n\n' '$1 == "matrix:" { $0 = "matrix:\n  include:'"$travisEnv"'" } { printf "%s%s", $0, RS }' .travis.yml)"
 echo "$travis" > .travis.yml
 
 appveyor="$(awk -v 'RS=\n\n' '$1 == "environment:" { $0 = "environment:\n  matrix:'"$appveyorEnv"'" } { printf "%s%s", $0, RS }' .appveyor.yml)"

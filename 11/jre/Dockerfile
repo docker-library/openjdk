@@ -63,6 +63,15 @@ RUN set -ex; \
 # ... and verify that it actually worked for one of the alternatives we care about
 	update-alternatives --query java | grep -q 'Status: manual'
 
+# see https://bugs.debian.org/910804
+RUN apt-get update && apt-get install -y --no-install-recommends wget && \
+	rm -rf /var/lib/apt/lists/* && \
+	mkdir $JAVA_HOME/lib/jfr && \
+	wget https://hg.openjdk.java.net/jdk/jdk11/raw-file/76072a077ee1/src/jdk.jfr/share/conf/jfr/default.jfc \
+		-O $JAVA_HOME/lib/jfr/default.jfc && \
+	wget https://hg.openjdk.java.net/jdk/jdk11/raw-file/76072a077ee1/src/jdk.jfr/share/conf/jfr/profile.jfc \
+		-O $JAVA_HOME/lib/jfr/profile.jfc
+
 # If you're reading this and have any feedback on how this image could be
 # improved, please open an issue or a pull request so we can discuss it!
 #

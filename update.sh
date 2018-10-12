@@ -203,6 +203,13 @@ for javaVersion in "${versions[@]}"; do
 				needCaHack=1
 			fi
 
+			needJfrHack=
+			if [ "$javaVersion" -eq 11 -a "$suite" == 'sid' ]; then
+				# JFC files are missing from the OpenJDK installation
+				# see https://bugs.debian.org/910804
+				needJfrHack=1
+			fi
+
 			debianPackage="openjdk-$javaVersion-$javaType"
 			debSuite="${addSuite:-$suite}"
 			debian-latest-version "$debianPackage" "$debSuite" > /dev/null # prime the cache
@@ -313,6 +320,20 @@ EOD
 # ... and verify that it actually worked for one of the alternatives we care about
 	update-alternatives --query java | grep -q 'Status: manual'
 EOD
+
+			if [ "$needJfrHack" ]; then
+				cat >> "$dir/Dockerfile" <<EOD
+
+# see https://bugs.debian.org/910804
+RUN apt-get update && apt-get install -y --no-install-recommends wget && \\
+	rm -rf /var/lib/apt/lists/* && \\
+	mkdir \$JAVA_HOME/lib/jfr && \\
+	wget https://hg.openjdk.java.net/jdk/jdk11/raw-file/76072a077ee1/src/jdk.jfr/share/conf/jfr/default.jfc \\
+		-O \$JAVA_HOME/lib/jfr/default.jfc && \\
+	wget https://hg.openjdk.java.net/jdk/jdk11/raw-file/76072a077ee1/src/jdk.jfr/share/conf/jfr/profile.jfc \\
+		-O \$JAVA_HOME/lib/jfr/profile.jfc
+EOD
+			fi
 
 			if [ "$needCaHack" ]; then
 				cat >> "$dir/Dockerfile" <<-EOD

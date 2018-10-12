@@ -2,8 +2,8 @@
 set -Eeuo pipefail
 
 declare -A aliases=(
-	[10-jdk]='jdk latest'
-	[10-jre]='jre'
+	[11-jdk]='jdk latest'
+	[11-jre]='jre'
 )
 defaultType='jdk'
 
@@ -71,6 +71,19 @@ join() {
 	echo "${out#$sep}"
 }
 
+_latest() {
+	local javaVersion="$1"; shift
+	local variant="$1"; shift
+
+	if [ "$javaVersion" -ge 12 ]; then
+		# version 12+ moves "latest" over to the Oracle-based builds
+		[ "$variant" = 'oracle' ]
+	else
+		# for versions < 12, the non-variant variant (which is Debian) should be "latest"
+		[ -z "$variant" ]
+	fi
+}
+
 aliases() {
 	local javaVersion="$1"; shift
 	local javaType="$1"; shift
@@ -95,16 +108,8 @@ aliases() {
 		fi
 	done
 
-	# generate "openjdkPrefix" before adding aliases ("latest") so we avoid tags like "openjdk-latest"
-	local openjdkPrefix=( "${versionAliases[@]/#/openjdk-}" )
-
 	# add aliases and the prefixed versions (so the silly prefix versions come dead last)
 	versionAliases+=( ${aliases[$javaVersion-$javaType]:-} )
-
-	if [ "$image" = 'java' ]; then
-		# add "openjdk" prefixes (these should stay very last so their use is properly discouraged)
-		versionAliases+=( "${openjdkPrefix[@]}" )
-	fi
 
 	local variantAliases=()
 	local variant
@@ -112,7 +117,8 @@ aliases() {
 		if [ -n "$variant" ]; then
 			local thisVariantAliases=( "${versionAliases[@]/%/-$variant}" )
 			variantAliases+=( "${thisVariantAliases[@]//latest-/}" )
-		else
+		fi
+		if _latest "$javaVersion" "$variant"; then
 			variantAliases+=( "${versionAliases[@]}" )
 		fi
 	done

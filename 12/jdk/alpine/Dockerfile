@@ -4,9 +4,9 @@ ENV JAVA_HOME /opt/openjdk-12
 ENV PATH $JAVA_HOME/bin:$PATH
 
 # http://jdk.java.net/
-ENV JAVA_VERSION 12-ea+14
-ENV JAVA_URL https://download.java.net/java/early_access/alpine/14/binaries/openjdk-12-ea+14_linux-x64-musl_bin.tar.gz
-ENV JAVA_SHA256 172c7d7c6859253822e03f0839f83627ffe06055f118423c6ef619a1af836b4c
+ENV JAVA_VERSION 12-ea+18
+ENV JAVA_URL https://download.java.net/java/early_access/alpine/18/binaries/openjdk-12-ea+18_linux-x64-musl_bin.tar.gz
+ENV JAVA_SHA256 418ecbea7eee82241fdb3cacbddb139bd2563d3dd91d556b6e3309ca06a62254
 # "For Alpine Linux, builds are produced on a reduced schedule and may not be in sync with the other platforms."
 
 RUN set -eux; \

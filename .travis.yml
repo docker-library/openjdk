@@ -31,6 +31,9 @@ matrix:
       env: VERSION=8 VARIANT=slim
     - os: linux
       env: VERSION=8 VARIANT=alpine
+    - os: windows
+      dist: 1803-containers
+      env: VERSION=8 VARIANT=windows/windowsservercore-1803
     - os: linux
       env: VERSION=7
     - os: linux

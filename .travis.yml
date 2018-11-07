@@ -58,8 +58,8 @@ script:
       docker build -t "$imageBase-jdk$imageSuffix" "jdk${VARIANT:+/$VARIANT}"
       if [ "$TRAVIS_OS_NAME" = 'windows' ]; then
         # TODO make the tests run successfully on Windows too!
-        docker run --rm "$imageBase-jdk$imageSuffix" javac --version
-        docker run --rm "$imageBase-jdk$imageSuffix" java --version
+        docker run --rm "$imageBase-jdk$imageSuffix" javac -version
+        docker run --rm "$imageBase-jdk$imageSuffix" java -version
       else
         ~/official-images/test/run.sh "$imageBase-jdk$imageSuffix"
       fi
@@ -67,7 +67,7 @@ script:
         docker build -t "$imageBase-jre$imageSuffix" "jre${VARIANT:+/$VARIANT}"
         if [ "$TRAVIS_OS_NAME" = 'windows' ]; then
           # TODO make the tests run successfully on Windows too!
-          docker run --rm "$imageBase-jre$imageSuffix" java --version
+          docker run --rm "$imageBase-jre$imageSuffix" java -version
         else
           ~/official-images/test/run.sh "$imageBase-jre$imageSuffix"
         fi

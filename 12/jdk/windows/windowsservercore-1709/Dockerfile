@@ -10,9 +10,9 @@ RUN $newPath = ('{0}\bin;{1}' -f $env:JAVA_HOME, $env:PATH); \
 	setx /M PATH $newPath
 
 # http://jdk.java.net/
-ENV JAVA_VERSION 12-ea+23
-ENV JAVA_URL https://download.java.net/java/early_access/jdk12/23/GPL/openjdk-12-ea+23_windows-x64_bin.zip
-ENV JAVA_SHA256 2763f6b811d508f30382e8f209f03540d842487bb1a9499cd0a9381bdb1697ff
+ENV JAVA_VERSION 12-ea+24
+ENV JAVA_URL https://download.java.net/java/early_access/jdk12/24/GPL/openjdk-12-ea+24_windows-x64_bin.zip
+ENV JAVA_SHA256 4ecd476eca44cfc061769ee0ded86fe35e5ab11caedc930112badab4ce9bfcc2
 
 RUN Write-Host ('Downloading {0} ...' -f $env:JAVA_URL); \
 	[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; \

@@ -259,7 +259,7 @@ EOD
 			sillyCaSymlinkCleanup=$'\\'
 			case "$javaVersion" in
 				11)
-					sillyCaSymlink+=$'\n# ca-certificates-java does not work on src:openjdk-11 with no-install-reccomends:\n# /var/lib/dpkg/info/ca-certificates-java.postinst: line 56: java: command not found\n\tln -svT /docker-java-home/bin/java /usr/local/bin/java; \\\n\t\\'
+					sillyCaSymlink+=$'\n# ca-certificates-java does not work on src:openjdk-11 with no-install-recommends: (a case of https://bugs.debian.org/775775)\n# /var/lib/dpkg/info/ca-certificates-java.postinst: line 56: java: command not found\n\tln -svT /docker-java-home/bin/java /usr/local/bin/java; \\\n\t\\'
 					sillyCaSymlinkCleanup+=$'\n\trm -v /usr/local/bin/java; \\\n\t\\'
 					;;
 			esac

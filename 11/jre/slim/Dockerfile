@@ -51,7 +51,7 @@ RUN set -ex; \
 		mkdir -p /usr/share/man/man1; \
 	fi; \
 	\
-# ca-certificates-java does not work on src:openjdk-11 with no-install-reccomends:
+# ca-certificates-java does not work on src:openjdk-11 with no-install-recommends: (a case of https://bugs.debian.org/775775)
 # /var/lib/dpkg/info/ca-certificates-java.postinst: line 56: java: command not found
 	ln -svT /docker-java-home/bin/java /usr/local/bin/java; \
 	\

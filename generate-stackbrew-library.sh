@@ -187,7 +187,7 @@ for javaVersion in "${versions[@]}"; do
 					}
 					fromTag = $2
 				}
-				$1 == "RUN" && $2 == "echo" && $4 == "http://deb.debian.org/debian" {
+				$1 == "RUN" && $2 == "echo" && $4 == "http://deb.debian.org/debian" && $5 !~ /-backports$/ {
 					fromTag = $5 # "experimental", etc
 				}
 				END {

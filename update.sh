@@ -16,18 +16,16 @@ declare -A suites=(
 	# FROM buildpack-deps:SUITE-xxx
 	[7]='jessie'
 	[8]='stretch'
-	[10]='sid'
-	[11]='sid'
+	[11]='stretch'
 )
 defaultAlpineVersion='3.8'
 declare -A alpineVersions=(
 	#[8]='3.7'
-	#[10]='TBD' # there is no openjdk10 in Alpine yet (https://pkgs.alpinelinux.org/packages?name=openjdk*-jre&arch=x86_64)
 )
 
 declare -A addSuites=(
-	# there is no "buildpack-deps:experimental-xxx"
-	#[11]='experimental'
+	# there is no "buildpack-deps:backports-xxx"
+	[11]='stretch-backports'
 )
 
 declare -A buildpackDepsVariants=(
@@ -197,12 +195,6 @@ for javaVersion in "${versions[@]}"; do
 			addSuite="${addSuites[$javaVersion]:-}"
 			buildpackDepsVariant="${buildpackDepsVariants[$javaType]}"
 
-			needCaHack=
-			if [ "$javaVersion" -ge 8 -a "$suite" != 'sid' ]; then
-				# "20140324" is broken (jessie), but "20160321" is fixed (sid)
-				needCaHack=1
-			fi
-
 			debianPackage="openjdk-$javaVersion-$javaType"
 			debSuite="${addSuite:-$suite}"
 			debian-latest-version "$debianPackage" "$debSuite" > /dev/null # prime the cache
@@ -212,7 +204,7 @@ for javaVersion in "${versions[@]}"; do
 
 			tilde='~'
 			case "$javaVersion" in
-				10 | 11)
+				11)
 					# https://github.com/docker-library/openjdk/pull/235#issuecomment-425378941
 					fullVersion="${fullVersion%%$tilde*}"
 					fullVersion="${fullVersion%%+*}"
@@ -263,22 +255,11 @@ EOD
 				ENV JAVA_DEBIAN_VERSION $debianVersion
 			EOD
 
-			if [ "$needCaHack" ]; then
-				debian-latest-version 'ca-certificates-java' "$debSuite" > /dev/null # prime the cache
-				caCertHackVersion="$(debian-latest-version 'ca-certificates-java' "$debSuite")"
-				cat >> "$dir/Dockerfile" <<-EOD
-
-					# see https://bugs.debian.org/775775
-					# and https://github.com/docker-library/java/issues/19#issuecomment-70546872
-					ENV CA_CERTIFICATES_JAVA_VERSION $caCertHackVersion
-				EOD
-			fi
-
 			sillyCaSymlink=$'\\'
 			sillyCaSymlinkCleanup=$'\\'
 			case "$javaVersion" in
-				10)
-					sillyCaSymlink+=$'\n# ca-certificates-java does not support src:openjdk-10 yet:\n# /etc/ca-certificates/update.d/jks-keystore: 86: /etc/ca-certificates/update.d/jks-keystore: java: not found\n\tln -svT /docker-java-home/bin/java /usr/local/bin/java; \\\n\t\\'
+				11)
+					sillyCaSymlink+=$'\n# ca-certificates-java does not work on src:openjdk-11 with no-install-recommends: (a case of https://bugs.debian.org/775775)\n# /var/lib/dpkg/info/ca-certificates-java.postinst: line 56: java: command not found\n\tln -svT /docker-java-home/bin/java /usr/local/bin/java; \\\n\t\\'
 					sillyCaSymlinkCleanup+=$'\n\trm -v /usr/local/bin/java; \\\n\t\\'
 					;;
 			esac
@@ -295,13 +276,6 @@ RUN set -ex; \\
 	apt-get update; \\
 	apt-get install -y --no-install-recommends \\
 		$debianPackage="\$JAVA_DEBIAN_VERSION" \\
-EOD
-			if [ "$needCaHack" ]; then
-				cat >> "$dir/Dockerfile" <<EOD
-		ca-certificates-java="\$CA_CERTIFICATES_JAVA_VERSION" \\
-EOD
-			fi
-			cat >> "$dir/Dockerfile" <<EOD
 	; \\
 	rm -rf /var/lib/apt/lists/*; \\
 	$sillyCaSymlinkCleanup
@@ -313,14 +287,6 @@ EOD
 # ... and verify that it actually worked for one of the alternatives we care about
 	update-alternatives --query java | grep -q 'Status: manual'
 EOD
-
-			if [ "$needCaHack" ]; then
-				cat >> "$dir/Dockerfile" <<-EOD
-
-				# see CA_CERTIFICATES_JAVA_VERSION notes above
-				RUN /var/lib/dpkg/info/ca-certificates-java.postinst configure
-				EOD
-			fi
 
 			if [ "$javaType" = 'jdk' ] && [ "$javaVersion" -ge 10 ]; then
 				cat >> "$dir/Dockerfile" <<-'EOD'

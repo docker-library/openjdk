@@ -4,7 +4,7 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM debian:sid-slim
+FROM debian:stretch-slim
 
 # A few reasons for installing distribution-provided OpenJDK:
 #
@@ -21,6 +21,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 		unzip \
 		xz-utils \
 	&& rm -rf /var/lib/apt/lists/*
+
+RUN echo 'deb http://deb.debian.org/debian stretch-backports main' > /etc/apt/sources.list.d/stretch-backports.list
 
 # Default to UTF-8 file.encoding
 ENV LANG C.UTF-8
@@ -40,7 +42,7 @@ RUN ln -svT "/usr/lib/jvm/java-11-openjdk-$(dpkg --print-architecture)" /docker-
 ENV JAVA_HOME /docker-java-home
 
 ENV JAVA_VERSION 11.0.1
-ENV JAVA_DEBIAN_VERSION 11.0.1+13-3
+ENV JAVA_DEBIAN_VERSION 11.0.1+13-2~bpo9+1
 
 RUN set -ex; \
 	\
@@ -49,11 +51,17 @@ RUN set -ex; \
 		mkdir -p /usr/share/man/man1; \
 	fi; \
 	\
+# ca-certificates-java does not work on src:openjdk-11 with no-install-recommends: (a case of https://bugs.debian.org/775775)
+# /var/lib/dpkg/info/ca-certificates-java.postinst: line 56: java: command not found
+	ln -svT /docker-java-home/bin/java /usr/local/bin/java; \
+	\
 	apt-get update; \
 	apt-get install -y --no-install-recommends \
 		openjdk-11-jre-headless="$JAVA_DEBIAN_VERSION" \
 	; \
 	rm -rf /var/lib/apt/lists/*; \
+	\
+	rm -v /usr/local/bin/java; \
 	\
 # verify that "docker-java-home" returns what we expect
 	[ "$(readlink -f "$JAVA_HOME")" = "$(docker-java-home)" ]; \

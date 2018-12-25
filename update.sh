@@ -467,9 +467,10 @@ EOD
 					for winD in "$dir"/windows/*/; do
 						winD="${winD%/}"
 						windowsVersion="$(basename "$winD")"
-						windowsVersion="${windowsVersion#windowsservercore-}"
+						windowsVariant="${windowsVersion%%-*}" # "windowsservercore", "nanoserver"
+						windowsVersion="${windowsVersion#$windowsVariant-}" # "1803", "ltsc2016", etc
 						sed -r \
-							-e 's!^(FROM microsoft/windowsservercore):.*$!\1:'"$windowsVersion"'!' \
+							-e 's!^(FROM) .*$!\1 microsoft/'"$windowsVariant"':'"$windowsVersion"'!' \
 							-e 's!^(ENV JAVA_HOME) .*!\1 C:\\\\openjdk-'"$javaVersion"'!' \
 							-e 's!^(ENV JAVA_VERSION) .*!\1 '"$downloadVersion"'!' \
 							-e 's!^(ENV JAVA_URL) .*!\1 '"$downloadUrl"'!' \

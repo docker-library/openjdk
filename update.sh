@@ -259,8 +259,10 @@ EOD
 			sillyCaSymlinkCleanup=$'\\'
 			case "$javaVersion" in
 				11)
-					sillyCaSymlink+=$'\n# ca-certificates-java does not work on src:openjdk-11 with no-install-recommends: (a case of https://bugs.debian.org/775775)\n# /var/lib/dpkg/info/ca-certificates-java.postinst: line 56: java: command not found\n\tln -svT /docker-java-home/bin/java /usr/local/bin/java; \\\n\t\\'
+					sillyCaSymlink+=$'\n# ca-certificates-java does not work on src:openjdk-11 with no-install-recommends: (https://bugs.debian.org/914860, https://bugs.debian.org/775775)\n# /var/lib/dpkg/info/ca-certificates-java.postinst: line 56: java: command not found\n\tln -svT /docker-java-home/bin/java /usr/local/bin/java; \\\n\t\\'
 					sillyCaSymlinkCleanup+=$'\n\trm -v /usr/local/bin/java; \\\n\t\\'
+
+					sillyCaSymlinkCleanup+=$'\n# ca-certificates-java does not work on src:openjdk-11: (https://bugs.debian.org/914424, https://bugs.debian.org/894979, https://salsa.debian.org/java-team/ca-certificates-java/commit/813b8c4973e6c4bb273d5d02f8d4e0aa0b226c50#d4b95d176f05e34cd0b718357c532dc5a6d66cd7_54_56)\n\tkeytool -importkeystore -srckeystore /etc/ssl/certs/java/cacerts -destkeystore /etc/ssl/certs/java/cacerts.jks -deststoretype JKS -srcstorepass changeit -deststorepass changeit -noprompt; \\\n\tmv /etc/ssl/certs/java/cacerts.jks /etc/ssl/certs/java/cacerts; \\\n\t/var/lib/dpkg/info/ca-certificates-java.postinst configure; \\\n\t\\'
 					;;
 			esac
 

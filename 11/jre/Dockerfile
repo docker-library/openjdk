@@ -51,7 +51,7 @@ RUN set -ex; \
 		mkdir -p /usr/share/man/man1; \
 	fi; \
 	\
-# ca-certificates-java does not work on src:openjdk-11 with no-install-recommends: (a case of https://bugs.debian.org/775775)
+# ca-certificates-java does not work on src:openjdk-11 with no-install-recommends: (https://bugs.debian.org/914860, https://bugs.debian.org/775775)
 # /var/lib/dpkg/info/ca-certificates-java.postinst: line 56: java: command not found
 	ln -svT /docker-java-home/bin/java /usr/local/bin/java; \
 	\
@@ -62,6 +62,11 @@ RUN set -ex; \
 	rm -rf /var/lib/apt/lists/*; \
 	\
 	rm -v /usr/local/bin/java; \
+	\
+# ca-certificates-java does not work on src:openjdk-11: (https://bugs.debian.org/914424, https://bugs.debian.org/894979, https://salsa.debian.org/java-team/ca-certificates-java/commit/813b8c4973e6c4bb273d5d02f8d4e0aa0b226c50#d4b95d176f05e34cd0b718357c532dc5a6d66cd7_54_56)
+	keytool -importkeystore -srckeystore /etc/ssl/certs/java/cacerts -destkeystore /etc/ssl/certs/java/cacerts.jks -deststoretype JKS -srcstorepass changeit -deststorepass changeit -noprompt; \
+	mv /etc/ssl/certs/java/cacerts.jks /etc/ssl/certs/java/cacerts; \
+	/var/lib/dpkg/info/ca-certificates-java.postinst configure; \
 	\
 # verify that "docker-java-home" returns what we expect
 	[ "$(readlink -f "$JAVA_HOME")" = "$(docker-java-home)" ]; \

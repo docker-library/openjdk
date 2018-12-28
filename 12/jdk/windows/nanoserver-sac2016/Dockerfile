@@ -1,4 +1,4 @@
-FROM placeholder
+FROM microsoft/nanoserver:sac2016
 
 # $ProgressPreference: https://github.com/PowerShell/PowerShell/issues/2138#issuecomment-251261324
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
@@ -16,16 +16,16 @@ RUN Write-Host 'Enabling TLS 1.2 (https://githubengineering.com/crypto-removal-n
 	New-ItemProperty -Path ('{0}/Server' -f $tls12RegBase) -Name 'DisabledByDefault' -PropertyType DWORD -Value 0 -Force; \
 	New-ItemProperty -Path ('{0}/Server' -f $tls12RegBase) -Name 'Enabled' -PropertyType DWORD -Value 1 -Force
 
-ENV JAVA_HOME placeholder
+ENV JAVA_HOME C:\\openjdk-12
 RUN $newPath = ('{0}\bin;{1}' -f $env:JAVA_HOME, $env:PATH); \
 	Write-Host ('Updating PATH: {0}' -f $newPath); \
 # Nano Server does not have "[Environment]::SetEnvironmentVariable()"
 	setx /M PATH $newPath
 
 # http://jdk.java.net/
-ENV JAVA_VERSION placeholder
-ENV JAVA_URL placeholder
-ENV JAVA_SHA256 placeholder
+ENV JAVA_VERSION 12-ea+25
+ENV JAVA_URL https://download.java.net/java/early_access/jdk12/25/GPL/openjdk-12-ea+25_windows-x64_bin.zip
+ENV JAVA_SHA256 a3c94a495ea402b6c752c5757dcd902ec497720d52f59cee756975615a0661c3
 
 RUN Write-Host ('Downloading {0} ...' -f $env:JAVA_URL); \
 	Invoke-WebRequest -Uri $env:JAVA_URL -OutFile 'openjdk.zip'; \

@@ -19,9 +19,9 @@ ENV JAVA_HOME /usr/java/openjdk-13
 ENV PATH $JAVA_HOME/bin:$PATH
 
 # http://jdk.java.net/
-ENV JAVA_VERSION 13-ea+1
-ENV JAVA_URL https://download.java.net/java/early_access/jdk13/1/GPL/openjdk-13-ea+1_linux-x64_bin.tar.gz
-ENV JAVA_SHA256 ac5c70debd145200a47023b30ef53296101f1c0edd63a2e4063e54570549c763
+ENV JAVA_VERSION 13-ea+2
+ENV JAVA_URL https://download.java.net/java/early_access/jdk13/2/GPL/openjdk-13-ea+2_linux-x64_bin.tar.gz
+ENV JAVA_SHA256 4b855094fba64146a8b90e4d51606839d214ec5f2b9c33472e9f28f9824a572e
 
 RUN set -eux; \
 	\

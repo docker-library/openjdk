@@ -19,9 +19,9 @@ ENV JAVA_HOME /usr/java/openjdk-12
 ENV PATH $JAVA_HOME/bin:$PATH
 
 # http://jdk.java.net/
-ENV JAVA_VERSION 12-ea+26
-ENV JAVA_URL https://download.java.net/java/early_access/jdk12/26/GPL/openjdk-12-ea+26_linux-x64_bin.tar.gz
-ENV JAVA_SHA256 c01dbdcab697d9ee5681c1e56a3942574eec423caba671846585ce412792592d
+ENV JAVA_VERSION 12-ea+27
+ENV JAVA_URL https://download.java.net/java/early_access/jdk12/27/GPL/openjdk-12-ea+27_linux-x64_bin.tar.gz
+ENV JAVA_SHA256 9fc017547c3113abea34433ec9b1d6f1710712442939ef4b690c1e502de2d2cb
 
 RUN set -eux; \
 	\

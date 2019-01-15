@@ -469,8 +469,9 @@ EOD
 						windowsVersion="$(basename "$winD")"
 						windowsVariant="${windowsVersion%%-*}" # "windowsservercore", "nanoserver"
 						windowsVersion="${windowsVersion#$windowsVariant-}" # "1803", "ltsc2016", etc
+						windowsVariant="${windowsVariant#windows}" # "servercore", "nanoserver"
 						sed -r \
-							-e 's!^(FROM) .*$!\1 microsoft/'"$windowsVariant"':'"$windowsVersion"'!' \
+							-e 's!^(FROM) .*$!\1 mcr.microsoft.com/windows/'"$windowsVariant"':'"$windowsVersion"'!' \
 							-e 's!^(ENV JAVA_HOME) .*!\1 C:\\\\openjdk-'"$javaVersion"'!' \
 							-e 's!^(ENV JAVA_VERSION) .*!\1 '"$downloadVersion"'!' \
 							-e 's!^(ENV JAVA_URL) .*!\1 '"$downloadUrl"'!' \
@@ -481,19 +482,23 @@ EOD
 			esac
 
 			for winVariant in \
-				nanoserver-{1803,1709,sac2016} \
-				windowsservercore-{1803,1709,ltsc2016} \
+				nanoserver-{1809,1803,1709,sac2016} \
+				windowsservercore-{1809,1803,1709,ltsc2016} \
 			; do
 				[ -f "$dir/windows/$winVariant/Dockerfile" ] || continue
 
+				from="${winVariant%%-*}"
+				from="${from#windows}" # "servercore", "nanoserver"
+				from="mcr.microsoft.com/windows/$from:${winVariant#*-}"
+
 				sed -ri \
-					-e 's!^FROM .*!FROM microsoft/'"${winVariant%%-*}"':'"${winVariant#*-}"'!' \
+					-e 's!^FROM .*!FROM '"$from"'!' \
 					"$dir/windows/$winVariant/Dockerfile"
 
 				case "$winVariant" in
-					*-1803) travisEnv='\n    - os: windows\n      dist: 1803-containers\n      env: VERSION='"$javaVersion VARIANT=windows/$winVariant$travisEnv" ;;
-					*-1709) ;; # no AppVeyor or Travis support for 1709: https://github.com/appveyor/ci/issues/1885
-					*) appveyorEnv='\n    - version: '"$javaVersion"'\n      variant: '"$winVariant$appveyorEnv" ;;
+					*-1803 ) travisEnv='\n    - os: windows\n      dist: 1803-containers\n      env: VERSION='"$javaVersion VARIANT=windows/$winVariant$travisEnv" ;;
+					*-1709 | *-1809 ) ;; # no AppVeyor or Travis support for 1709 or 1809: https://github.com/appveyor/ci/issues/1885
+					* ) appveyorEnv='\n    - version: '"$javaVersion"'\n      variant: '"$winVariant$appveyorEnv" ;;
 				esac
 			done
 		fi

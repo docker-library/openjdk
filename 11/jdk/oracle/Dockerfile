@@ -19,9 +19,9 @@ ENV JAVA_HOME /usr/java/openjdk-11
 ENV PATH $JAVA_HOME/bin:$PATH
 
 # http://jdk.java.net/
-ENV JAVA_VERSION 11.0.1
-ENV JAVA_URL https://download.java.net/java/GA/jdk11/13/GPL/openjdk-11.0.1_linux-x64_bin.tar.gz
-ENV JAVA_SHA256 7a6bb980b9c91c478421f865087ad2d69086a0583aeeb9e69204785e8e97dcfd
+ENV JAVA_VERSION 11.0.2
+ENV JAVA_URL https://download.java.net/java/GA/jdk11/7/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz
+ENV JAVA_SHA256 62ee5758af12bbad04f376bf2b61f114076f6d8ffe4ba8db13bb5a63b5ef0d29
 
 RUN set -eux; \
 	\

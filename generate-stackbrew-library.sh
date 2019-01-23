@@ -76,12 +76,18 @@ _latest() {
 	local variant="$1"; shift
 
 	if [ "$javaVersion" -ge 12 ]; then
-		# version 12+ moves "latest" over to the Oracle-based builds
-		[ "$variant" = 'oracle' ]
+		# version 12+ moves "latest" over to the Oracle-based builds (and includes Windows!)
+		case "$variant" in
+			oracle | windowsservercore* ) return 0 ;;
+		esac
 	else
 		# for versions < 12, the non-variant variant (which is Debian) should be "latest"
-		[ -z "$variant" ]
+		if [ -z "$variant" ]; then
+			return 0
+		fi
 	fi
+
+	return 1
 }
 
 aliases() {
@@ -114,17 +120,17 @@ aliases() {
 	local variantAliases=()
 	local variant
 	for variant in "${variants[@]}"; do
-		if [ -n "$variant" ]; then
-			local thisVariantAliases=( "${versionAliases[@]/%/-$variant}" )
-			variantAliases+=( "${thisVariantAliases[@]//latest-/}" )
-		fi
-		if _latest "$javaVersion" "$variant"; then
-			variantAliases+=( "${versionAliases[@]}" )
-		fi
+		case "$variant" in
+			latest) variantAliases+=( "${versionAliases[@]}" ) ;;
+			'') ;;
+			*)
+				local thisVariantAliases=( "${versionAliases[@]/%/-$variant}" )
+				variantAliases+=( "${thisVariantAliases[@]//latest-/}" )
+				;;
+		esac
 	done
-	versionAliases=( "${variantAliases[@]}" )
 
-	echo "${versionAliases[@]}"
+	echo "${variantAliases[@]}"
 }
 
 for javaVersion in "${versions[@]}"; do
@@ -164,10 +170,13 @@ for javaVersion in "${versions[@]}"; do
 			sharedTags=()
 			for windowsShared in windowsservercore nanoserver; do
 				if [[ "$variant" == "$windowsShared"* ]]; then
-					sharedTags=( $(aliases "$javaVersion" "$javaType" "$fullVersion" "$windowsShared") )
+					sharedTags+=( $(aliases "$javaVersion" "$javaType" "$fullVersion" "$windowsShared") )
 					break
 				fi
 			done
+			if _latest "$javaVersion" "$variant"; then
+				sharedTags+=( $(aliases "$javaVersion" "$javaType" "$fullVersion" 'latest') )
+			fi
 
 			variantAliases=()
 			fromTag="$(git show "$commit":"$dir/Dockerfile" | awk -v variant="$variant" '

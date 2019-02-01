@@ -22,7 +22,7 @@ RUN $newPath = ('{0}\bin;{1}' -f $env:JAVA_HOME, $env:PATH); \
 # Nano Server does not have "[Environment]::SetEnvironmentVariable()"
 	setx /M PATH $newPath
 
-# http://jdk.java.net/
+# https://jdk.java.net/
 ENV JAVA_VERSION 12-ea+30
 ENV JAVA_URL https://download.java.net/java/early_access/jdk12/30/GPL/openjdk-12-ea+30_windows-x64_bin.zip
 ENV JAVA_SHA256 c2aa69aed6fa14de46b2f0b21bc9ad0157220a3e8e13fbf47b9c9bde2aff5121

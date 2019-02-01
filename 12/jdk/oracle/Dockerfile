@@ -18,7 +18,7 @@ RUN set -eux; \
 ENV JAVA_HOME /usr/java/openjdk-12
 ENV PATH $JAVA_HOME/bin:$PATH
 
-# http://jdk.java.net/
+# https://jdk.java.net/
 ENV JAVA_VERSION 12-ea+30
 ENV JAVA_URL https://download.java.net/java/early_access/jdk12/30/GPL/openjdk-12-ea+30_linux-x64_bin.tar.gz
 ENV JAVA_SHA256 edfd94e15194dbaa5f08b995ee98309f9b8bb97a59b232be4e590c4954f4c859
@@ -41,7 +41,7 @@ RUN set -eux; \
 	done; \
 	\
 # https://github.com/docker-library/openjdk/issues/212#issuecomment-420979840
-# http://openjdk.java.net/jeps/341
+# https://openjdk.java.net/jeps/341
 	java -Xshare:dump; \
 	\
 # basic smoke test

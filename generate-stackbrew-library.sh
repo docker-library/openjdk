@@ -151,7 +151,7 @@ for javaVersion in "${versions[@]}"; do
 
 			variantArches=
 			if [ "$javaVersion" -ge 10 ]; then
-				# http://jdk.java.net/10/, http://jdk.java.net/11/, http://jdk.java.net/12/, ...
+				# https://jdk.java.net/10/, https://jdk.java.net/11/, https://jdk.java.net/12/, ...
 				# (no arches except amd64 supported)
 				case "$v" in
 					oracle|alpine) variantArches='amd64' ;;

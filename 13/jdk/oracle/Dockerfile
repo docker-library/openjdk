@@ -18,7 +18,7 @@ RUN set -eux; \
 ENV JAVA_HOME /usr/java/openjdk-13
 ENV PATH $JAVA_HOME/bin:$PATH
 
-# http://jdk.java.net/
+# https://jdk.java.net/
 ENV JAVA_VERSION 13-ea+6
 ENV JAVA_URL https://download.java.net/java/early_access/jdk13/6/GPL/openjdk-13-ea+6_linux-x64_bin.tar.gz
 ENV JAVA_SHA256 c746b087d3401b85b705c8073533bdd338e4d61780107ec2b3be1803ffcdbc26
@@ -41,7 +41,7 @@ RUN set -eux; \
 	done; \
 	\
 # https://github.com/docker-library/openjdk/issues/212#issuecomment-420979840
-# http://openjdk.java.net/jeps/341
+# https://openjdk.java.net/jeps/341
 	java -Xshare:dump; \
 	\
 # basic smoke test

@@ -163,7 +163,7 @@ template-contribute-footer() {
 jdk-java-net-download-url() {
 	local javaVersion="$1"; shift
 	local fileSuffix="$1"; shift
-	curl -fsSL "http://jdk.java.net/$javaVersion/" \
+	wget -qO- "http://jdk.java.net/$javaVersion/" \
 		| tac|tac \
 		| grep -Eom1 "https://download.java.net/[^\"]+$fileSuffix"
 }
@@ -358,7 +358,7 @@ EOD
 			template-contribute-footer >> "$dir/alpine/Dockerfile"
 		elif [ -d "$dir/alpine" ]; then
 			downloadUrl="$(jdk-java-net-download-url "$javaVersion" '_linux-x64-musl_bin.tar.gz')"
-			downloadSha256="$(curl -fsSL "$downloadUrl.sha256")"
+			downloadSha256="$(wget -qO- "$downloadUrl.sha256")"
 			downloadVersion="$(jdk-java-net-download-version "$javaVersion" "$downloadUrl")"
 
 			echo "$javaVersion-$javaType: $downloadVersion (alpine)"
@@ -373,7 +373,7 @@ EOD
 
 		if [ -d "$dir/oracle" ]; then
 			downloadUrl="$(jdk-java-net-download-url "$javaVersion" '_linux-x64_bin.tar.gz')"
-			downloadSha256="$(curl -fsSL "$downloadUrl.sha256")"
+			downloadSha256="$(wget -qO- "$downloadUrl.sha256")"
 			downloadVersion="$(jdk-java-net-download-version "$javaVersion" "$downloadUrl")"
 
 			echo "$javaVersion-$javaType: $downloadVersion (oracle)"
@@ -411,7 +411,7 @@ EOD
 						exit 1
 					fi
 					ojdkbuildZip="$(
-						curl -fsSL "https://github.com/ojdkbuild/ojdkbuild/releases/tag/$ojdkbuildVersion" \
+						wget -qO- "https://github.com/ojdkbuild/ojdkbuild/releases/tag/$ojdkbuildVersion" \
 							| grep --only-matching -E 'java-[0-9.]+-openjdk-[b0-9.-]+[.]ojdkbuild(ea)?[.]windows[.]x86_64[.]zip' \
 							| sort -u
 					)"
@@ -419,7 +419,7 @@ EOD
 						echo >&2 "error: $ojdkbuildVersion doesn't appear to have the release file we need (yet?)"
 						exit 1
 					fi
-					ojdkbuildSha256="$(curl -fsSL "https://github.com/ojdkbuild/ojdkbuild/releases/download/${ojdkbuildVersion}/${ojdkbuildZip}.sha256" | cut -d' ' -f1)"
+					ojdkbuildSha256="$(wget -qO- "https://github.com/ojdkbuild/ojdkbuild/releases/download/${ojdkbuildVersion}/${ojdkbuildZip}.sha256" | cut -d' ' -f1)"
 					if [ -z "$ojdkbuildSha256" ]; then
 						echo >&2 "error: $ojdkbuildVersion seems to have $ojdkbuildZip, but no sha256 for it"
 						exit 1
@@ -459,7 +459,7 @@ EOD
 
 				*)
 					downloadUrl="$(jdk-java-net-download-url "$javaVersion" '_windows-x64_bin.zip')"
-					downloadSha256="$(curl -fsSL "$downloadUrl.sha256")"
+					downloadSha256="$(wget -qO- "$downloadUrl.sha256")"
 					downloadVersion="$(jdk-java-net-download-version "$javaVersion" "$downloadUrl")"
 
 					echo "$javaVersion-$javaType: $downloadVersion (windows)"

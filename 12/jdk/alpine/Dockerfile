@@ -1,9 +1,9 @@
-FROM alpine:3.8
+FROM alpine:3.9
 
 ENV JAVA_HOME /opt/openjdk-12
 ENV PATH $JAVA_HOME/bin:$PATH
 
-# http://jdk.java.net/
+# https://jdk.java.net/
 ENV JAVA_VERSION 12-ea+29
 ENV JAVA_URL https://download.java.net/java/early_access/alpine/29/binaries/openjdk-12-ea+29_linux-x64-musl_bin.tar.gz
 ENV JAVA_SHA256 39c22481736ae8a054fc820ad0cc3f1d9ad3f3f00d8111775573fe6d04c18bf5
@@ -18,7 +18,7 @@ RUN set -eux; \
 	rm /openjdk.tgz; \
 	\
 # https://github.com/docker-library/openjdk/issues/212#issuecomment-420979840
-# http://openjdk.java.net/jeps/341
+# https://openjdk.java.net/jeps/341
 	java -Xshare:dump; \
 	\
 # basic smoke test

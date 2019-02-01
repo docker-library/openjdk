@@ -18,7 +18,7 @@ declare -A suites=(
 	[8]='stretch'
 	[11]='stretch'
 )
-defaultAlpineVersion='3.8'
+defaultAlpineVersion='3.9'
 declare -A alpineVersions=(
 	#[8]='3.7'
 )
@@ -163,7 +163,7 @@ template-contribute-footer() {
 jdk-java-net-download-url() {
 	local javaVersion="$1"; shift
 	local fileSuffix="$1"; shift
-	wget -qO- "http://jdk.java.net/$javaVersion/" \
+	wget -qO- "https://jdk.java.net/$javaVersion/" \
 		| tac|tac \
 		| grep -Eom1 "https://download.java.net/[^\"]+$fileSuffix"
 }

@@ -1,9 +1,9 @@
-FROM alpine:3.8
+FROM alpine:3.9
 
 ENV JAVA_HOME /opt/openjdk-13
 ENV PATH $JAVA_HOME/bin:$PATH
 
-# http://jdk.java.net/
+# https://jdk.java.net/
 ENV JAVA_VERSION 13-ea+5
 ENV JAVA_URL https://download.java.net/java/early_access/alpine/5/binaries/openjdk-13-ea+5_linux-x64-musl_bin.tar.gz
 ENV JAVA_SHA256 277c4238ac2c7c8e1d331ff87f851fefe051c9503e3e030fbdaec40dbff89529
@@ -18,7 +18,7 @@ RUN set -eux; \
 	rm /openjdk.tgz; \
 	\
 # https://github.com/docker-library/openjdk/issues/212#issuecomment-420979840
-# http://openjdk.java.net/jeps/341
+# https://openjdk.java.net/jeps/341
 	java -Xshare:dump; \
 	\
 # basic smoke test

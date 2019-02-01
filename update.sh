@@ -18,7 +18,7 @@ declare -A suites=(
 	[8]='stretch'
 	[11]='stretch'
 )
-defaultAlpineVersion='3.8'
+defaultAlpineVersion='3.9'
 declare -A alpineVersions=(
 	#[8]='3.7'
 )

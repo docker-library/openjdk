@@ -4,7 +4,7 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM alpine:3.8
+FROM alpine:3.9
 
 # A few reasons for installing distribution-provided OpenJDK:
 #

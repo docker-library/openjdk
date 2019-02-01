@@ -1,4 +1,4 @@
-FROM alpine:3.8
+FROM alpine:3.9
 
 ENV JAVA_HOME /opt/openjdk-13
 ENV PATH $JAVA_HOME/bin:$PATH

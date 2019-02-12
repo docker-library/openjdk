@@ -4,9 +4,9 @@ ENV JAVA_HOME /opt/openjdk-13
 ENV PATH $JAVA_HOME/bin:$PATH
 
 # https://jdk.java.net/
-ENV JAVA_VERSION 13-ea+5
-ENV JAVA_URL https://download.java.net/java/early_access/alpine/5/binaries/openjdk-13-ea+5_linux-x64-musl_bin.tar.gz
-ENV JAVA_SHA256 277c4238ac2c7c8e1d331ff87f851fefe051c9503e3e030fbdaec40dbff89529
+ENV JAVA_VERSION 13-ea+7
+ENV JAVA_URL https://download.java.net/java/early_access/alpine/7/binaries/openjdk-13-ea+7_linux-x64-musl_bin.tar.gz
+ENV JAVA_SHA256 436d25bc7bf09afa7b8ca3cfa4cd6637687114431b45a06826597c8ae0d4dba3
 # "For Alpine Linux, builds are produced on a reduced schedule and may not be in sync with the other platforms."
 
 RUN set -eux; \

@@ -23,9 +23,9 @@ RUN $newPath = ('{0}\bin;{1}' -f $env:JAVA_HOME, $env:PATH); \
 	setx /M PATH $newPath
 
 # https://jdk.java.net/
-ENV JAVA_VERSION 13-ea+8
-ENV JAVA_URL https://download.java.net/java/early_access/jdk13/8/GPL/openjdk-13-ea+8_windows-x64_bin.zip
-ENV JAVA_SHA256 f94f40058105735fbb640f8324177cbbec92ec427dcf1572e4485b0a6bbf83cb
+ENV JAVA_VERSION 13-ea+9
+ENV JAVA_URL https://download.java.net/java/early_access/jdk13/9/GPL/openjdk-13-ea+9_windows-x64_bin.zip
+ENV JAVA_SHA256 d71c5f5349d037c330739d4387879a2d6f6d58f4b275f6c2780c163987563cb5
 
 RUN Write-Host ('Downloading {0} ...' -f $env:JAVA_URL); \
 	Invoke-WebRequest -Uri $env:JAVA_URL -OutFile 'openjdk.zip'; \

@@ -46,7 +46,7 @@ getArches() {
 
 	eval "declare -g -A parentRepoToArches=( $(
 		find -name 'Dockerfile' -exec awk '
-				toupper($1) == "FROM" && $2 !~ /^('"$repo"'|scratch|microsoft\/[^:]+)(:|$)/ {
+				toupper($1) == "FROM" && $2 !~ /^('"$repo"'|scratch|.*\/.*)(:|$)/ {
 					print "'"$officialImagesUrl"'" $2
 				}
 			' '{}' + \
@@ -76,12 +76,18 @@ _latest() {
 	local variant="$1"; shift
 
 	if [ "$javaVersion" -ge 12 ]; then
-		# version 12+ moves "latest" over to the Oracle-based builds
-		[ "$variant" = 'oracle' ]
+		# version 12+ moves "latest" over to the Oracle-based builds (and includes Windows!)
+		case "$variant" in
+			oracle | windowsservercore* ) return 0 ;;
+		esac
 	else
 		# for versions < 12, the non-variant variant (which is Debian) should be "latest"
-		[ -z "$variant" ]
+		if [ -z "$variant" ]; then
+			return 0
+		fi
 	fi
+
+	return 1
 }
 
 aliases() {
@@ -114,25 +120,25 @@ aliases() {
 	local variantAliases=()
 	local variant
 	for variant in "${variants[@]}"; do
-		if [ -n "$variant" ]; then
-			local thisVariantAliases=( "${versionAliases[@]/%/-$variant}" )
-			variantAliases+=( "${thisVariantAliases[@]//latest-/}" )
-		fi
-		if _latest "$javaVersion" "$variant"; then
-			variantAliases+=( "${versionAliases[@]}" )
-		fi
+		case "$variant" in
+			latest) variantAliases+=( "${versionAliases[@]}" ) ;;
+			'') ;;
+			*)
+				local thisVariantAliases=( "${versionAliases[@]/%/-$variant}" )
+				variantAliases+=( "${thisVariantAliases[@]//latest-/}" )
+				;;
+		esac
 	done
-	versionAliases=( "${variantAliases[@]}" )
 
-	echo "${versionAliases[@]}"
+	echo "${variantAliases[@]}"
 }
 
 for javaVersion in "${versions[@]}"; do
 	for javaType in jdk jre; do
 		for v in \
 			oracle '' slim alpine \
-			windows/windowsservercore-{ltsc2016,1709,1803} \
-			windows/nanoserver-{sac2016,1709,1803} \
+			windows/windowsservercore-{ltsc2016,1709,1803,1809} \
+			windows/nanoserver-{sac2016,1709,1803,1809} \
 		; do
 			dir="$javaVersion/$javaType${v:+/$v}"
 			[ -n "$v" ] && variant="$(basename "$v")" || variant=
@@ -145,7 +151,7 @@ for javaVersion in "${versions[@]}"; do
 
 			variantArches=
 			if [ "$javaVersion" -ge 10 ]; then
-				# http://jdk.java.net/10/, http://jdk.java.net/11/, http://jdk.java.net/12/, ...
+				# https://jdk.java.net/10/, https://jdk.java.net/11/, https://jdk.java.net/12/, ...
 				# (no arches except amd64 supported)
 				case "$v" in
 					oracle|alpine) variantArches='amd64' ;;
@@ -164,16 +170,19 @@ for javaVersion in "${versions[@]}"; do
 			sharedTags=()
 			for windowsShared in windowsservercore nanoserver; do
 				if [[ "$variant" == "$windowsShared"* ]]; then
-					sharedTags=( $(aliases "$javaVersion" "$javaType" "$fullVersion" "$windowsShared") )
+					sharedTags+=( $(aliases "$javaVersion" "$javaType" "$fullVersion" "$windowsShared") )
 					break
 				fi
 			done
+			if _latest "$javaVersion" "$variant"; then
+				sharedTags+=( $(aliases "$javaVersion" "$javaType" "$fullVersion" 'latest') )
+			fi
 
 			variantAliases=()
 			fromTag="$(git show "$commit":"$dir/Dockerfile" | awk -v variant="$variant" '
 				$1 == "FROM" {
 					switch ($2) {
-						case /^microsoft\//:
+						case /^mcr.microsoft.com\//:
 							$2 = ""
 							break
 						case /^(alpine|oraclelinux):/:

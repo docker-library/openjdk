@@ -15,13 +15,13 @@ RUN set -eux; \
 #ENV LANG C.UTF-8
 # TODO oraclelinux doesn't have C.UTF-8 by default??
 
-ENV JAVA_HOME /usr/java/openjdk-11
+ENV JAVA_HOME /usr/java/openjdk-13
 ENV PATH $JAVA_HOME/bin:$PATH
 
 # https://jdk.java.net/
-ENV JAVA_VERSION 11.0.2
-ENV JAVA_URL https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz
-ENV JAVA_SHA256 99be79935354f5c0df1ad293620ea36d13f48ec3ea870c838f20c504c9668b57
+ENV JAVA_VERSION 13-ea+12
+ENV JAVA_URL https://download.java.net/java/early_access/jdk13/12/GPL/openjdk-13-ea+12_linux-x64_bin.tar.gz
+ENV JAVA_SHA256 6197fb0d5ae3d6f92ced7cbfc71f4f01dbe3eda3d416536abd0a5980b62da2a9
 
 RUN set -eux; \
 	\

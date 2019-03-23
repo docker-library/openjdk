@@ -19,6 +19,8 @@ environment:
       variant: windowsservercore-ltsc2016
     - version: 8
       variant: nanoserver-sac2016
+    - version: 8
+      variant: nanoserver-1809
 
 install:
   - ps: |

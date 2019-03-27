@@ -39,8 +39,8 @@ RUN { \
 RUN ln -svT "/usr/lib/jvm/java-8-openjdk-$(dpkg --print-architecture)" /docker-java-home
 ENV JAVA_HOME /docker-java-home/jre
 
-ENV JAVA_VERSION 8u181
-ENV JAVA_DEBIAN_VERSION 8u181-b13-2~deb9u1
+ENV JAVA_VERSION 8u212
+ENV JAVA_DEBIAN_VERSION 8u212-b01-1~deb9u1
 
 RUN set -ex; \
 	\

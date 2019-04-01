@@ -355,14 +355,6 @@ RUN set -x \\
 	&& [ "\$JAVA_HOME" = "\$(docker-java-home)" ]
 EOD
 
-			if [ "$alpinePackageVersion" = '8.201.08-r0' ]; then
-				cat >> "$dir/alpine/Dockerfile" <<-EOD
-
-					# https://bugs.alpinelinux.org/issues/10126
-					RUN apk add --no-cache so:libnss3.so
-				EOD
-			fi
-
 			template-contribute-footer >> "$dir/alpine/Dockerfile"
 		elif [ -d "$dir/alpine" ]; then
 			downloadUrl="$(jdk-java-net-download-url "$javaVersion" '_linux-x64-musl_bin.tar.gz')"

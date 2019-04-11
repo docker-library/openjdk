@@ -482,8 +482,8 @@ EOD
 			esac
 
 			for winVariant in \
-				nanoserver-{1809,1803,1709,sac2016} \
-				windowsservercore-{1809,1803,1709,ltsc2016} \
+				nanoserver-{1809,1803,sac2016} \
+				windowsservercore-{1809,1803,ltsc2016} \
 			; do
 				[ -f "$dir/windows/$winVariant/Dockerfile" ] || continue
 
@@ -497,7 +497,7 @@ EOD
 
 				case "$winVariant" in
 					*-1803 ) travisEnv='\n    - os: windows\n      dist: 1803-containers\n      env: VERSION='"$javaVersion VARIANT=windows/$winVariant$travisEnv" ;;
-					*-1709 | *-1809 ) ;; # no AppVeyor or Travis support for 1709 or 1809: https://github.com/appveyor/ci/issues/1885
+					*-1809 ) ;; # no AppVeyor or Travis support for 1809: https://github.com/appveyor/ci/issues/1885
 					* ) appveyorEnv='\n    - version: '"$javaVersion"'\n      variant: '"$winVariant$appveyorEnv" ;;
 				esac
 			done

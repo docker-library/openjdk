@@ -138,7 +138,7 @@ for javaVersion in "${versions[@]}"; do
 		for v in \
 			oracle '' slim alpine \
 			windows/windowsservercore-{ltsc2016,1803,1809} \
-			windows/nanoserver-{sac2016,1803,1809} \
+			windows/nanoserver-{1803,1809} \
 		; do
 			dir="$javaVersion/$javaType${v:+/$v}"
 			[ -n "$v" ] && variant="$(basename "$v")" || variant=

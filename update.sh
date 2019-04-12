@@ -482,7 +482,7 @@ EOD
 			esac
 
 			for winVariant in \
-				nanoserver-{1809,1803,sac2016} \
+				nanoserver-{1809,1803} \
 				windowsservercore-{1809,1803,ltsc2016} \
 			; do
 				[ -f "$dir/windows/$winVariant/Dockerfile" ] || continue

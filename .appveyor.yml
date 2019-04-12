@@ -5,20 +5,12 @@ environment:
   matrix:
     - version: 13
       variant: windowsservercore-ltsc2016
-    - version: 13
-      variant: nanoserver-sac2016
     - version: 12
       variant: windowsservercore-ltsc2016
-    - version: 12
-      variant: nanoserver-sac2016
     - version: 11
       variant: windowsservercore-ltsc2016
-    - version: 11
-      variant: nanoserver-sac2016
     - version: 8
       variant: windowsservercore-ltsc2016
-    - version: 8
-      variant: nanoserver-sac2016
 
 install:
   - ps: |

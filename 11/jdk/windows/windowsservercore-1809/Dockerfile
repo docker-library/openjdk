@@ -4,9 +4,9 @@ FROM mcr.microsoft.com/windows/servercore:1809
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
 # https://adoptopenjdk.net/
-ENV JAVA_VERSION 8.0.212+3
-ENV JAVA_URL https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u212-b03/OpenJDK8U-jdk_x64_windows_hotspot_8u212b03.msi
-ENV JAVA_SHA256 86cf932a04dff28e19a5f715cbb8f2c34ce78fa12d30578bcaf7fb46f88a3acb
+ENV JAVA_VERSION 11.0.3+7
+ENV JAVA_URL https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.3%2B7/OpenJDK11U-jdk_x64_windows_hotspot_11.0.3_7.msi
+ENV JAVA_SHA256 6eb277a3e9305fdf380900d20f4ef7a474f13fdbc92f7709b57945f6ffdc80fc
 
 RUN Write-Host ('Downloading {0} ...' -f $env:JAVA_URL); \
         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; \
@@ -29,3 +29,7 @@ RUN Write-Host 'Verifying install ...'; \
         Write-Host '  java -version'; java -version; \
         Write-Host '  javac -version'; javac -version; \
         Write-Host '  JAVA_HOME'; Test-Path $env:JAVA_HOME;
+
+# https://docs.oracle.com/javase/10/tools/jshell.htm
+# https://en.wikipedia.org/wiki/JShell
+CMD ["jshell"]

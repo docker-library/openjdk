@@ -1,12 +1,12 @@
-FROM mcr.microsoft.com/windows/servercore:1809
+FROM placeholder
 
 # $ProgressPreference: https://github.com/PowerShell/PowerShell/issues/2138#issuecomment-251261324
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
 # https://adoptopenjdk.net/
-ENV JAVA_VERSION 8.0.212+3
-ENV JAVA_URL https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u212-b03/OpenJDK8U-jdk_x64_windows_hotspot_8u212b03.msi
-ENV JAVA_SHA256 86cf932a04dff28e19a5f715cbb8f2c34ce78fa12d30578bcaf7fb46f88a3acb
+ENV JAVA_VERSION placeholder
+ENV JAVA_URL placeholder
+ENV JAVA_SHA256 placeholder
 
 RUN Write-Host ('Downloading {0} ...' -f $env:JAVA_URL); \
         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; \

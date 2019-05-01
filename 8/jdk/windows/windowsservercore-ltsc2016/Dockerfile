@@ -3,42 +3,29 @@ FROM mcr.microsoft.com/windows/servercore:ltsc2016
 # $ProgressPreference: https://github.com/PowerShell/PowerShell/issues/2138#issuecomment-251261324
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
-ENV JAVA_HOME C:\\ojdkbuild
-RUN $newPath = ('{0}\bin;{1}' -f $env:JAVA_HOME, $env:PATH); \
-	Write-Host ('Updating PATH: {0}' -f $newPath); \
-# Nano Server does not have "[Environment]::SetEnvironmentVariable()"
-	setx /M PATH $newPath;
+# https://adoptopenjdk.net/
+ENV JAVA_VERSION 8.0.212+3
+ENV JAVA_URL https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u212-b03/OpenJDK8U-jdk_x64_windows_hotspot_8u212b03.msi
+ENV JAVA_SHA256 86cf932a04dff28e19a5f715cbb8f2c34ce78fa12d30578bcaf7fb46f88a3acb
 
-# https://github.com/ojdkbuild/ojdkbuild/releases
-ENV JAVA_VERSION 8u212
-ENV JAVA_OJDKBUILD_VERSION 1.8.0.212-1
-ENV JAVA_OJDKBUILD_ZIP java-1.8.0-openjdk-1.8.0.212-1.b04.ojdkbuild.windows.x86_64.zip
-ENV JAVA_OJDKBUILD_SHA256 a40d7ab150bb2c2b3ad19e388942c4fe47b92a89dd49c468e09ce9d8bc631934
+RUN Write-Host ('Downloading {0} ...' -f $env:JAVA_URL); \
+        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; \
+        Invoke-WebRequest -Uri $env:JAVA_URL -OutFile 'openjdk.msi'; \
+        Write-Host ('Verifying sha256 ({0}) ...' -f $env:JAVA_SHA256); \
+        if ((Get-FileHash openjdk.msi -Algorithm sha256).Hash -ne $env:JAVA_SHA256) { \
+                Write-Host 'FAILED!'; \
+                exit 1; \
+        }; \
+        \
+        New-Item -ItemType Directory -Path C:\temp | Out-Null;
 
-RUN $url = ('https://github.com/ojdkbuild/ojdkbuild/releases/download/{0}/{1}' -f $env:JAVA_OJDKBUILD_VERSION, $env:JAVA_OJDKBUILD_ZIP); \
-	Write-Host ('Downloading {0} ...' -f $url); \
-	[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; \
-	Invoke-WebRequest -Uri $url -OutFile 'ojdkbuild.zip'; \
-	Write-Host ('Verifying sha256 ({0}) ...' -f $env:JAVA_OJDKBUILD_SHA256); \
-	if ((Get-FileHash ojdkbuild.zip -Algorithm sha256).Hash -ne $env:JAVA_OJDKBUILD_SHA256) { \
-		Write-Host 'FAILED!'; \
-		exit 1; \
-	}; \
-	\
-	Write-Host 'Expanding ...'; \
-	Expand-Archive ojdkbuild.zip -DestinationPath C:\; \
-	\
-	Write-Host 'Renaming ...'; \
-	Move-Item \
-		-Path ('C:\{0}' -f ($env:JAVA_OJDKBUILD_ZIP -Replace '.zip$', '')) \
-		-Destination $env:JAVA_HOME \
-	; \
-	\
-	Write-Host 'Verifying install ...'; \
-	Write-Host '  java --version'; java --version; \
-	Write-Host '  javac --version'; javac --version; \
-	\
-	Write-Host 'Removing ...'; \
-	Remove-Item ojdkbuild.zip -Force; \
-	\
-	Write-Host 'Complete.';
+RUN Write-Host 'Installing using MSI ...'; \
+        Start-Process -FilePath "msiexec.exe" -ArgumentList '/i', 'openjdk.msi', '/L*V', 'C:\temp\OpenJDK.log', \
+        '/quiet', 'ADDLOCAL=FeatureEnvironment,FeatureJarFileRunWith,FeatureJavaHome' -Wait -Passthru; \
+        Write-Host 'Removing ...'; \
+        Remove-Item openjdk.msi -Force;
+
+RUN Write-Host 'Verifying install ...'; \
+        Write-Host '  java -version'; java -version; \
+        Write-Host '  javac -version'; javac -version; \
+        Write-Host '  JAVA_HOME'; Test-Path $env:JAVA_HOME;

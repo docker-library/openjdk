@@ -19,6 +19,9 @@ matrix:
       env: VERSION=11
     - os: linux
       env: VERSION=11 VARIANT=slim
+    - os: windows
+      dist: 1803-containers
+      env: VERSION=11 VARIANT=windows/windowsservercore-1803
     - os: linux
       env: VERSION=8
     - os: linux
@@ -67,7 +70,6 @@ script:
         fi
       fi
     )
-
 after_script:
   - docker images
 

@@ -397,89 +397,85 @@ EOD
 		fi
 
 		if [ -d "$dir/windows" ]; then
-			case "$javaVersion" in
-				8 | 10)
-					ojdkbuildVersion="$(
-						git ls-remote --tags 'https://github.com/ojdkbuild/ojdkbuild.git' \
-							| cut -d/ -f3 \
-							| grep -E '^(1[.])?'"$javaVersion"'[.-]' \
-							| sort -V \
-							| tail -1
-					)"
-					if [ -z "$ojdkbuildVersion" ]; then
-						echo >&2 "error: '$dir/windows' exists, but Java $javaVersion doesn't appear to have a corresponding ojdkbuild release"
-						exit 1
-					fi
-					ojdkbuildZip="$(
-						wget -qO- "https://github.com/ojdkbuild/ojdkbuild/releases/tag/$ojdkbuildVersion" \
-							| grep --only-matching -E 'java-[0-9.]+-openjdk-[b0-9.-]+[.]ojdkbuild(ea)?[.]windows[.]x86_64[.]zip' \
-							| sort -u
-					)"
-					if [ -z "$ojdkbuildZip" ]; then
-						echo >&2 "error: $ojdkbuildVersion doesn't appear to have the release file we need (yet?)"
-						exit 1
-					fi
-					ojdkbuildSha256="$(wget -qO- "https://github.com/ojdkbuild/ojdkbuild/releases/download/${ojdkbuildVersion}/${ojdkbuildZip}.sha256" | cut -d' ' -f1)"
-					if [ -z "$ojdkbuildSha256" ]; then
-						echo >&2 "error: $ojdkbuildVersion seems to have $ojdkbuildZip, but no sha256 for it"
-						exit 1
-					fi
 
-					case "$ojdkbuildVersion" in
-						*-ea-* )
-							# convert "9-ea-b154-1" into "9-b154"
-							ojdkJavaVersion="$(sed -r 's/-ea-/-/' <<<"$ojdkbuildVersion" | cut -d- -f1,2)"
-							;;
+			aojdkbuild="$(
+				wget -qO- "https://api.adoptopenjdk.net/v2/info/releases/openjdk${javaVersion}?openjdk_impl=hotspot&os=windows&arch=x64&release=latest&type=jdk"
+			)"
 
-						1.* )
-							# convert "1.8.0.111-3" into "8u111"
-							ojdkJavaVersion="$(cut -d. -f2,4 <<<"$ojdkbuildVersion" | cut -d- -f1 | tr . u)"
-							;;
+			if [ "$aojdkbuild" == "Not found" ]; then
+				downloadUrl="$(jdk-java-net-download-url "$javaVersion" '_windows-x64_bin.zip')"
+				downloadSha256="$(wget -qO- "$downloadUrl.sha256")"
+				downloadVersion="$(jdk-java-net-download-version "$javaVersion" "$downloadUrl")"
 
-						10.* )
-							# convert "10.0.1-1.b10" into "10.0.1"
-							ojdkJavaVersion="${ojdkbuildVersion%%-*}"
-							;;
+				echo "$javaVersion-$javaType: $downloadVersion (windows)"
 
-						* )
-							echo >&2 "error: unable to parse ojdkbuild version $ojdkbuildVersion"
-							exit 1
-							;;
-					esac
+				for winD in "$dir"/windows/*/; do
+					winD="${winD%/}"
+					windowsVersion="$(basename "$winD")"
+					windowsVariant="${windowsVersion%%-*}" # "windowsservercore", "nanoserver"
+					windowsVersion="${windowsVersion#$windowsVariant-}" # "1803", "ltsc2016", etc
+					windowsVariant="${windowsVariant#windows}" # "servercore", "nanoserver"
+					sed -r \
+						-e 's!^(FROM) .*$!\1 mcr.microsoft.com/windows/'"$windowsVariant"':'"$windowsVersion"'!' \
+						-e 's!^(ENV JAVA_HOME) .*!\1 C:\\\\openjdk-'"$javaVersion"'!' \
+						-e 's!^(ENV JAVA_VERSION) .*!\1 '"$downloadVersion"'!' \
+						-e 's!^(ENV JAVA_URL) .*!\1 '"$downloadUrl"'!' \
+						-e 's!^(ENV JAVA_SHA256) .*!\1 '"$downloadSha256"'!' \
+						Dockerfile-windows.template > "$winD/Dockerfile"
+				done
+			else
 
-					echo "$javaVersion-$javaType: $ojdkJavaVersion (windows ojdkbuild $ojdkbuildVersion)"
+				aojdkbuildVersion="$(
+					echo "$aojdkbuild" \
+						| grep --only-matching '[0-9.].[0-9.].[0-9.]*+[0-9.]*' \
+						| head -n 1
+				)"
+				if [ -z "$aojdkbuildVersion" ]; then
+					echo >&2 "error: '$dir/windows' exists, but Java $javaVersion doesn't appear to have a corresponding AdoptOpenJDK release"
+					exit 1
+				fi
 
-					sed -ri \
-						-e 's/^(ENV JAVA_VERSION) .*/\1 '"$ojdkJavaVersion"'/' \
-						-e 's/^(ENV JAVA_OJDKBUILD_VERSION) .*/\1 '"$ojdkbuildVersion"'/' \
-						-e 's/^(ENV JAVA_OJDKBUILD_ZIP) .*/\1 '"$ojdkbuildZip"'/' \
-						-e 's/^(ENV JAVA_OJDKBUILD_SHA256) .*/\1 '"$ojdkbuildSha256"'/' \
-						"$dir"/windows/*/Dockerfile
-					;;
+				aojdkbuildLink="$(
+					echo "$aojdkbuild" \
+						| grep -o "https*.*msi" \
+						| head -n 1
+				)"
 
-				*)
-					downloadUrl="$(jdk-java-net-download-url "$javaVersion" '_windows-x64_bin.zip')"
-					downloadSha256="$(wget -qO- "$downloadUrl.sha256")"
-					downloadVersion="$(jdk-java-net-download-version "$javaVersion" "$downloadUrl")"
+				if [ -z "$aojdkbuildLink" ]; then
+					echo >&2 "error: $aojdkbuildVersion doesn't appear to have the release file we need (yet?)"
+					exit 1
+				fi
+				aojdkbuildSha256="$(wget -qO- "${aojdkbuildLink}.sha256.txt" | cut -d' ' -f1)"
+				if [ -z "$aojdkbuildSha256" ]; then
+					echo >&2 "error: $aojdkbuildVersion seems to have $aojdkbuildLink, but no sha256 for it"
+					exit 1
+				fi
 
-					echo "$javaVersion-$javaType: $downloadVersion (windows)"
+				echo "$javaVersion-$javaType: (windows adoptopenjdk $aojdkbuildVersion)"
 
-					for winD in "$dir"/windows/*/; do
-						winD="${winD%/}"
-						windowsVersion="$(basename "$winD")"
-						windowsVariant="${windowsVersion%%-*}" # "windowsservercore", "nanoserver"
-						windowsVersion="${windowsVersion#$windowsVariant-}" # "1803", "ltsc2016", etc
-						windowsVariant="${windowsVariant#windows}" # "servercore", "nanoserver"
-						sed -r \
-							-e 's!^(FROM) .*$!\1 mcr.microsoft.com/windows/'"$windowsVariant"':'"$windowsVersion"'!' \
-							-e 's!^(ENV JAVA_HOME) .*!\1 C:\\\\openjdk-'"$javaVersion"'!' \
-							-e 's!^(ENV JAVA_VERSION) .*!\1 '"$downloadVersion"'!' \
-							-e 's!^(ENV JAVA_URL) .*!\1 '"$downloadUrl"'!' \
-							-e 's!^(ENV JAVA_SHA256) .*!\1 '"$downloadSha256"'!' \
-							Dockerfile-windows.template > "$winD/Dockerfile"
+				for winD in "$dir"/windows/*/; do
+					winD="${winD%/}"
+					windowsVersion="$(basename "$winD")"
+					windowsVariant="${windowsVersion%%-*}" # "windowsservercore", "nanoserver"
+					windowsVersion="${windowsVersion#$windowsVariant-}" # "1803", "ltsc2016", etc
+					windowsVariant="${windowsVariant#windows}" # "servercore", "nanoserver"
+					sed -r \
+						-e 's!^(FROM) .*$!\1 mcr.microsoft.com/windows/'"$windowsVariant"':'"$windowsVersion"'!' \
+						-e 's!^(ENV JAVA_VERSION) .*!\1 '"$aojdkbuildVersion"'!' \
+						-e 's!^(ENV JAVA_URL) .*!\1 '"$aojdkbuildLink"'!' \
+						-e 's!^(ENV JAVA_SHA256) .*!\1 '"$aojdkbuildSha256"'!' \
+						Dockerfile-windows-msi.template > "$winD/Dockerfile"
+
+						if [ "$javaVersion" -ge 10 ]; then
+							cat >> "$winD/Dockerfile" <<-'EOD'
+
+								# https://docs.oracle.com/javase/10/tools/jshell.htm
+								# https://en.wikipedia.org/wiki/JShell
+								CMD ["jshell"]
+							EOD
+						fi
 					done
-					;;
-			esac
+			fi
 
 			for winVariant in \
 				nanoserver-{1809,1803} \

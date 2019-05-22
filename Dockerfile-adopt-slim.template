@@ -3,16 +3,16 @@ FROM debian:stretch-slim
 # Default to UTF-8 file.encoding
 ENV LANG C.UTF-8
 
-ENV JAVA_HOME /usr/local/openjdk-8
+ENV JAVA_HOME placeholder
 ENV PATH $JAVA_HOME/bin:$PATH
 
 # backwards compatibility shim
 RUN { echo '#/bin/sh'; echo 'echo "$JAVA_HOME"'; } > /usr/local/bin/docker-java-home && chmod +x /usr/local/bin/docker-java-home && [ "$JAVA_HOME" = "$(docker-java-home)" ]
 
 # https://adoptopenjdk.net/upstream.html
-ENV JAVA_VERSION 8u212-b04
-ENV JAVA_BASE_URL https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/download/jdk8u212-b04/OpenJDK8U-jre_
-ENV JAVA_URL_VERSION 8u212b04
+ENV JAVA_VERSION placeholder
+ENV JAVA_BASE_URL placeholder
+ENV JAVA_URL_VERSION placeholder
 # https://github.com/docker-library/openjdk/issues/320#issuecomment-494050246
 
 RUN set -eux; \
@@ -53,4 +53,8 @@ RUN set -eux; \
 	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
 	\
 # basic smoke test
-	java -version
+	javac --version; \
+	java --version
+
+# "jshell" is an interactive REPL for Java (see https://en.wikipedia.org/wiki/JShell)
+CMD ["jshell"]

@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/windows/servercore:ltsc2016
+FROM mcr.microsoft.com/windows/servercore:1809
 
 # $ProgressPreference: https://github.com/PowerShell/PowerShell/issues/2138#issuecomment-251261324
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
@@ -24,7 +24,7 @@ RUN $newPath = ('{0}\bin;{1}' -f $env:JAVA_HOME, $env:PATH); \
 
 # https://adoptopenjdk.net/upstream.html
 ENV JAVA_VERSION 8u212-b04
-ENV JAVA_BASE_URL https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/download/jdk8u212-b04/OpenJDK8U-
+ENV JAVA_BASE_URL https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/download/jdk8u212-b04/OpenJDK8U-jre_
 ENV JAVA_URL_VERSION 8u212b04
 # https://github.com/docker-library/openjdk/issues/320#issuecomment-494050246
 
@@ -43,7 +43,6 @@ RUN $url = ('{0}x64_windows_{1}.zip' -f $env:JAVA_BASE_URL, $env:JAVA_URL_VERSIO
 	Remove-Item openjdk.zip -Force; \
 	\
 	Write-Host 'Verifying install ...'; \
-	Write-Host '  javac -version'; javac -version; \
 	Write-Host '  java -version'; java -version; \
 	\
 	Write-Host 'Complete.'

@@ -1,18 +1,27 @@
-FROM debian:stretch-slim
+FROM buildpack-deps:stretch-placeholder
+
+RUN set -eux; \
+	apt-get update; \
+	apt-get install -y --no-install-recommends \
+		bzip2 \
+		unzip \
+		xz-utils \
+	; \
+	rm -rf /var/lib/apt/lists/*
 
 # Default to UTF-8 file.encoding
 ENV LANG C.UTF-8
 
-ENV JAVA_HOME /usr/local/openjdk-8
+ENV JAVA_HOME placeholder
 ENV PATH $JAVA_HOME/bin:$PATH
 
 # backwards compatibility shim
 RUN { echo '#/bin/sh'; echo 'echo "$JAVA_HOME"'; } > /usr/local/bin/docker-java-home && chmod +x /usr/local/bin/docker-java-home && [ "$JAVA_HOME" = "$(docker-java-home)" ]
 
 # https://adoptopenjdk.net/upstream.html
-ENV JAVA_VERSION 8u212-b04
-ENV JAVA_BASE_URL https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/download/jdk8u212-b04/OpenJDK8U-jre_
-ENV JAVA_URL_VERSION 8u212b04
+ENV JAVA_VERSION placeholder
+ENV JAVA_BASE_URL placeholder
+ENV JAVA_URL_VERSION placeholder
 # https://github.com/docker-library/openjdk/issues/320#issuecomment-494050246
 
 RUN set -eux; \
@@ -20,18 +29,9 @@ RUN set -eux; \
 	dpkgArch="$(dpkg --print-architecture)"; \
 	case "$dpkgArch" in \
 		amd64) upstreamArch='x64' ;; \
-# TODO filter out arm64 for openjdk:8 (https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/tag/jdk8u212-b04 vs https://github.com/AdoptOpenJDK/openjdk11-upstream-binaries/releases/tag/jdk-11.0.3%2B7)
 		arm64) upstreamArch='aarch64' ;; \
 		*) echo >&2 "error: unsupported architecture: $dpkgArch" ;; \
 	esac; \
-	\
-	savedAptMark="$(apt-mark showmanual)"; \
-	apt-get update; \
-	apt-get install -y --no-install-recommends \
-		ca-certificates wget \
-		gnupg dirmngr \
-	; \
-	rm -rf /var/lib/apt/lists/*; \
 	\
 	wget -O openjdk.tgz.asc "${JAVA_BASE_URL}${upstreamArch}_linux_${JAVA_URL_VERSION}.tar.gz.sign"; \
 	wget -O openjdk.tgz "${JAVA_BASE_URL}${upstreamArch}_linux_${JAVA_URL_VERSION}.tar.gz" --progress=dot:giga; \
@@ -48,9 +48,9 @@ RUN set -eux; \
 	\
 # TODO strip "demo" and "man" folders?
 	\
-	apt-mark auto '.*' > /dev/null; \
-	[ -z "$savedAptMark" ] || apt-mark manual $savedAptMark > /dev/null; \
-	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
-	\
 # basic smoke test
-	java -version
+	javac --version; \
+	java --version
+
+# "jshell" is an interactive REPL for Java (see https://en.wikipedia.org/wiki/JShell)
+CMD ["jshell"]

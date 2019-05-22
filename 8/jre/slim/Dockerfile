@@ -20,7 +20,6 @@ RUN set -eux; \
 	dpkgArch="$(dpkg --print-architecture)"; \
 	case "$dpkgArch" in \
 		amd64) upstreamArch='x64' ;; \
-# TODO filter out arm64 for openjdk:8 (https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/tag/jdk8u212-b04 vs https://github.com/AdoptOpenJDK/openjdk11-upstream-binaries/releases/tag/jdk-11.0.3%2B7)
 		arm64) upstreamArch='aarch64' ;; \
 		*) echo >&2 "error: unsupported architecture: $dpkgArch" ;; \
 	esac; \
@@ -40,6 +39,7 @@ RUN set -eux; \
 # TODO find a good link for users to verify this key is right (https://mail.openjdk.java.net/pipermail/jdk-updates-dev/2019-April/000951.html is one of the only mentions of it I can find); perhaps a note added to https://adoptopenjdk.net/upstream.html would make sense?
 	gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys CA5F11C6CE22644D42C6AC4492EF8D39DC13168F; \
 	gpg --batch --verify openjdk.tgz.asc openjdk.tgz; \
+	gpgconf --kill all; \
 	rm -rf "$GNUPGHOME"; \
 	\
 	mkdir -p "$JAVA_HOME"; \

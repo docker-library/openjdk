@@ -45,6 +45,7 @@ RUN set -eux; \
 # TODO find a good link for users to verify this key is right (https://mail.openjdk.java.net/pipermail/jdk-updates-dev/2019-April/000951.html is one of the only mentions of it I can find); perhaps a note added to https://adoptopenjdk.net/upstream.html would make sense?
 	gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys CA5F11C6CE22644D42C6AC4492EF8D39DC13168F; \
 	gpg --batch --verify openjdk.tgz.asc openjdk.tgz; \
+	gpgconf --kill all; \
 	rm -rf "$GNUPGHOME"; \
 	\
 	mkdir -p "$JAVA_HOME"; \

@@ -246,19 +246,21 @@ for javaVersion in "${versions[@]}"; do
 				exit 1
 				;;
 		esac
+	done
 
-		for winVariant in \
-			nanoserver-{1809,1803} \
-			windowsservercore-{1809,1803,ltsc2016} \
-		; do
-			[ -f "$dir/windows/$winVariant/Dockerfile" ] || continue
+	for winVariant in \
+		nanoserver-{1809,1803} \
+		windowsservercore-{1809,1803,ltsc2016} \
+	; do
+		[ -f "$javaVersion/jdk/windows/$winVariant/Dockerfile" ] \
+			|| [ -f "$javaVersion/jre/windows/$winVariant/Dockerfile" ] \
+			|| continue
 
-			case "$winVariant" in
-				*-1803 ) travisEnv='\n    - os: windows\n      dist: 1803-containers\n      env: VERSION='"$javaVersion VARIANT=windows/$winVariant$travisEnv" ;;
-				*-1809 ) ;; # no AppVeyor or Travis support for 1809: https://github.com/appveyor/ci/issues/1885
-				* ) appveyorEnv='\n    - version: '"$javaVersion"'\n      variant: '"$winVariant$appveyorEnv" ;;
-			esac
-		done
+		case "$winVariant" in
+			*-1803 ) travisEnv='\n    - os: windows\n      dist: 1803-containers\n      env: VERSION='"$javaVersion VARIANT=windows/$winVariant$travisEnv" ;;
+			*-1809 ) ;; # no AppVeyor or Travis support for 1809: https://github.com/appveyor/ci/issues/1885
+			* ) appveyorEnv='\n    - version: '"$javaVersion"'\n      variant: '"$winVariant$appveyorEnv" ;;
+		esac
 	done
 
 	if [ -d "$javaVersion/jdk/alpine" ]; then

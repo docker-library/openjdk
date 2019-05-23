@@ -29,9 +29,6 @@ matrix:
     - os: windows
       dist: 1803-containers
       env: VERSION=8 VARIANT=windows/windowsservercore-1803
-    - os: windows
-      dist: 1803-containers
-      env: VERSION=8 VARIANT=windows/windowsservercore-1803
 
 install:
   - git clone https://github.com/docker-library/official-images.git ~/official-images

@@ -12,7 +12,7 @@ RUN set -eux; \
 	rm -rf /var/cache/yum
 
 # Default to UTF-8 file.encoding
-ENV LANG=en_US.UTF-8
+ENV LANG en_US.UTF-8
 
 ENV JAVA_HOME /usr/java/openjdk-12
 ENV PATH $JAVA_HOME/bin:$PATH

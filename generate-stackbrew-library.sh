@@ -40,22 +40,6 @@ dirCommit() {
 	)
 }
 
-getArches() {
-	local repo="$1"; shift
-	local officialImagesUrl='https://github.com/docker-library/official-images/raw/master/library/'
-
-	eval "declare -g -A parentRepoToArches=( $(
-		find -name 'Dockerfile' -exec awk '
-				toupper($1) == "FROM" && $2 !~ /^('"$repo"'|scratch|.*\/.*)(:|$)/ {
-					print "'"$officialImagesUrl"'" $2
-				}
-			' '{}' + \
-			| sort -u \
-			| xargs bashbrew cat --format '[{{ .RepoName }}:{{ .TagName }}]="{{ join " " .TagEntry.Architectures }}"'
-	) )"
-}
-getArches 'openjdk'
-
 cat <<-EOH
 # this file is generated via https://github.com/docker-library/openjdk/blob/$(fileCommit "$self")/$self
 
@@ -150,22 +134,21 @@ for javaVersion in "${versions[@]}"; do
 			fullVersion="$(git show "$commit":"$dir/Dockerfile" | awk '$1 == "ENV" && $2 == "JAVA_VERSION" { gsub(/[~+]/, "-", $3); print $3; exit }')"
 
 			variantArches=
-			if [ "$javaVersion" -ge 10 ]; then
-				# https://jdk.java.net/10/, https://jdk.java.net/11/, https://jdk.java.net/12/, ...
-				# (no arches except amd64 supported)
-				case "$v" in
-					oracle|alpine) variantArches='amd64' ;;
-				esac
-			fi
-			if [ -z "$variantArches" ]; then
-				case "$v" in
-					windows/*) variantArches='windows-amd64' ;;
-					*)
-						variantParent="$(awk 'toupper($1) == "FROM" { print $2 }' "$dir/Dockerfile")"
-						variantArches="${parentRepoToArches[$variantParent]}"
-						;;
-				esac
-			fi
+			case "$javaVersion" in
+				# https://adoptopenjdk.net/upstream.html
+				8) variantArches='amd64' ;;
+				11) variantArches='amd64 arm64v8' ;;
+
+				# https://jdk.java.net/12/
+				# https://jdk.java.net/13/
+				12 | 13) variantArches='amd64' ;;
+
+				*) echo >&2 "error: unknown javaVersion: $javaVersion (while trying to determine 'variantArches')"; exit 1 ;;
+			esac
+
+			case "$v" in
+				windows/*) variantArches='windows-amd64' ;;
+			esac
 
 			sharedTags=()
 			for windowsShared in windowsservercore nanoserver; do
@@ -195,9 +178,6 @@ for javaVersion in "${versions[@]}"; do
 							break
 					}
 					fromTag = $2
-				}
-				$1 == "RUN" && $2 == "echo" && $4 == "http://deb.debian.org/debian" && $5 !~ /-backports$/ {
-					fromTag = $5 # "experimental", etc
 				}
 				END {
 					if (fromTag) {

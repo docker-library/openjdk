@@ -3,42 +3,35 @@ FROM mcr.microsoft.com/windows/servercore:ltsc2016
 # $ProgressPreference: https://github.com/PowerShell/PowerShell/issues/2138#issuecomment-251261324
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
-ENV JAVA_HOME C:\\ojdkbuild
+ENV JAVA_HOME C:\\openjdk-8
 RUN $newPath = ('{0}\bin;{1}' -f $env:JAVA_HOME, $env:PATH); \
 	Write-Host ('Updating PATH: {0}' -f $newPath); \
 # Nano Server does not have "[Environment]::SetEnvironmentVariable()"
-	setx /M PATH $newPath;
+	setx /M PATH $newPath
 
-# https://github.com/ojdkbuild/ojdkbuild/releases
-ENV JAVA_VERSION 8u212
-ENV JAVA_OJDKBUILD_VERSION 1.8.0.212-1
-ENV JAVA_OJDKBUILD_ZIP java-1.8.0-openjdk-1.8.0.212-1.b04.ojdkbuild.windows.x86_64.zip
-ENV JAVA_OJDKBUILD_SHA256 a40d7ab150bb2c2b3ad19e388942c4fe47b92a89dd49c468e09ce9d8bc631934
+# https://adoptopenjdk.net/upstream.html
+ENV JAVA_VERSION 8u212-b04
+ENV JAVA_BASE_URL https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/download/jdk8u212-b04/OpenJDK8U-
+ENV JAVA_URL_VERSION 8u212b04
+# https://github.com/docker-library/openjdk/issues/320#issuecomment-494050246
 
-RUN $url = ('https://github.com/ojdkbuild/ojdkbuild/releases/download/{0}/{1}' -f $env:JAVA_OJDKBUILD_VERSION, $env:JAVA_OJDKBUILD_ZIP); \
+RUN $url = ('{0}x64_windows_{1}.zip' -f $env:JAVA_BASE_URL, $env:JAVA_URL_VERSION); \
 	Write-Host ('Downloading {0} ...' -f $url); \
 	[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; \
-	Invoke-WebRequest -Uri $url -OutFile 'ojdkbuild.zip'; \
-	Write-Host ('Verifying sha256 ({0}) ...' -f $env:JAVA_OJDKBUILD_SHA256); \
-	if ((Get-FileHash ojdkbuild.zip -Algorithm sha256).Hash -ne $env:JAVA_OJDKBUILD_SHA256) { \
-		Write-Host 'FAILED!'; \
-		exit 1; \
-	}; \
+	Invoke-WebRequest -Uri $url -OutFile 'openjdk.zip'; \
+# TODO signature? checksum?
 	\
 	Write-Host 'Expanding ...'; \
-	Expand-Archive ojdkbuild.zip -DestinationPath C:\; \
-	\
-	Write-Host 'Renaming ...'; \
-	Move-Item \
-		-Path ('C:\{0}' -f ($env:JAVA_OJDKBUILD_ZIP -Replace '.zip$', '')) \
-		-Destination $env:JAVA_HOME \
-	; \
-	\
-	Write-Host 'Verifying install ...'; \
-	Write-Host '  java --version'; java --version; \
-	Write-Host '  javac --version'; javac --version; \
+	New-Item -ItemType Directory -Path C:\temp | Out-Null; \
+	Expand-Archive openjdk.zip -DestinationPath C:\temp; \
+	Move-Item -Path C:\temp\* -Destination $env:JAVA_HOME; \
+	Remove-Item C:\temp; \
 	\
 	Write-Host 'Removing ...'; \
-	Remove-Item ojdkbuild.zip -Force; \
+	Remove-Item openjdk.zip -Force; \
 	\
-	Write-Host 'Complete.';
+	Write-Host 'Verifying install ...'; \
+	Write-Host '  javac -version'; javac -version; \
+	Write-Host '  java -version'; java -version; \
+	\
+	Write-Host 'Complete.'

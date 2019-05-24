@@ -1,69 +1,62 @@
-#
-# NOTE: THIS DOCKERFILE IS GENERATED VIA "update.sh"
-#
-# PLEASE DO NOT EDIT IT DIRECTLY.
-#
-
 FROM buildpack-deps:stretch-scm
 
-# A few reasons for installing distribution-provided OpenJDK:
-#
-#  1. Oracle.  Licensing prevents us from redistributing the official JDK.
-#
-#  2. Compiling OpenJDK also requires the JDK to be installed, and it gets
-#     really hairy.
-#
-#     For some sample build times, see Debian's buildd logs:
-#       https://buildd.debian.org/status/logs.php?pkg=openjdk-8
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN set -eux; \
+	apt-get update; \
+	apt-get install -y --no-install-recommends \
 		bzip2 \
 		unzip \
 		xz-utils \
-	&& rm -rf /var/lib/apt/lists/*
+		\
+# java.lang.UnsatisfiedLinkError: /usr/local/openjdk-11/lib/libfontmanager.so: libfreetype.so.6: cannot open shared object file: No such file or directory
+# java.lang.NoClassDefFoundError: Could not initialize class sun.awt.X11FontManager
+# https://github.com/docker-library/openjdk/pull/235#issuecomment-424466077
+		fontconfig libfreetype6 \
+	; \
+	rm -rf /var/lib/apt/lists/*
 
 # Default to UTF-8 file.encoding
 ENV LANG C.UTF-8
 
-# add a simple script that can auto-detect the appropriate JAVA_HOME value
-# based on whether the JDK or only the JRE is installed
-RUN { \
-		echo '#!/bin/sh'; \
-		echo 'set -e'; \
-		echo; \
-		echo 'dirname "$(dirname "$(readlink -f "$(which javac || which java)")")"'; \
-	} > /usr/local/bin/docker-java-home \
-	&& chmod +x /usr/local/bin/docker-java-home
+ENV JAVA_HOME /usr/local/openjdk-8
+ENV PATH $JAVA_HOME/bin:$PATH
 
-# do some fancy footwork to create a JAVA_HOME that's cross-architecture-safe
-RUN ln -svT "/usr/lib/jvm/java-8-openjdk-$(dpkg --print-architecture)" /docker-java-home
-ENV JAVA_HOME /docker-java-home
+# backwards compatibility shim
+RUN { echo '#/bin/sh'; echo 'echo "$JAVA_HOME"'; } > /usr/local/bin/docker-java-home && chmod +x /usr/local/bin/docker-java-home && [ "$JAVA_HOME" = "$(docker-java-home)" ]
 
-ENV JAVA_VERSION 8u212
-ENV JAVA_DEBIAN_VERSION 8u212-b01-1~deb9u1
+# https://adoptopenjdk.net/upstream.html
+ENV JAVA_VERSION 8u212-b04
+ENV JAVA_BASE_URL https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/download/jdk8u212-b04/OpenJDK8U-
+ENV JAVA_URL_VERSION 8u212b04
+# https://github.com/docker-library/openjdk/issues/320#issuecomment-494050246
 
-RUN set -ex; \
+RUN set -eux; \
 	\
-# deal with slim variants not having man page directories (which causes "update-alternatives" to fail)
-	if [ ! -d /usr/share/man/man1 ]; then \
-		mkdir -p /usr/share/man/man1; \
-	fi; \
+	dpkgArch="$(dpkg --print-architecture)"; \
+	case "$dpkgArch" in \
+		amd64) upstreamArch='x64' ;; \
+		arm64) upstreamArch='aarch64' ;; \
+		*) echo >&2 "error: unsupported architecture: $dpkgArch" ;; \
+	esac; \
 	\
-	apt-get update; \
-	apt-get install -y --no-install-recommends \
-		openjdk-8-jdk="$JAVA_DEBIAN_VERSION" \
-	; \
-	rm -rf /var/lib/apt/lists/*; \
+	wget -O openjdk.tgz.asc "${JAVA_BASE_URL}${upstreamArch}_linux_${JAVA_URL_VERSION}.tar.gz.sign"; \
+	wget -O openjdk.tgz "${JAVA_BASE_URL}${upstreamArch}_linux_${JAVA_URL_VERSION}.tar.gz" --progress=dot:giga; \
 	\
-# verify that "docker-java-home" returns what we expect
-	[ "$(readlink -f "$JAVA_HOME")" = "$(docker-java-home)" ]; \
+	export GNUPGHOME="$(mktemp -d)"; \
+# TODO find a good link for users to verify this key is right (https://mail.openjdk.java.net/pipermail/jdk-updates-dev/2019-April/000951.html is one of the only mentions of it I can find); perhaps a note added to https://adoptopenjdk.net/upstream.html would make sense?
+	gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys CA5F11C6CE22644D42C6AC4492EF8D39DC13168F; \
+# https://github.com/docker-library/openjdk/pull/322#discussion_r286839190
+	gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys EAC843EBD3EFDB98CC772FADA5CD6035332FA671; \
+	gpg --batch --list-sigs --keyid-format 0xLONG CA5F11C6CE22644D42C6AC4492EF8D39DC13168F | grep '0xA5CD6035332FA671' | grep 'Andrew Haley'; \
+	gpg --batch --verify openjdk.tgz.asc openjdk.tgz; \
+	gpgconf --kill all; \
+	rm -rf "$GNUPGHOME"; \
 	\
-# update-alternatives so that future installs of other OpenJDK versions don't change /usr/bin/java
-	update-alternatives --get-selections | awk -v home="$(readlink -f "$JAVA_HOME")" 'index($3, home) == 1 { $2 = "manual"; print | "update-alternatives --set-selections" }'; \
-# ... and verify that it actually worked for one of the alternatives we care about
-	update-alternatives --query java | grep -q 'Status: manual'
-
-# If you're reading this and have any feedback on how this image could be
-# improved, please open an issue or a pull request so we can discuss it!
-#
-#   https://github.com/docker-library/openjdk/issues
+	mkdir -p "$JAVA_HOME"; \
+	tar --extract --file openjdk.tgz --directory "$JAVA_HOME" --strip-components 1; \
+	rm openjdk.tgz*; \
+	\
+# TODO strip "demo" and "man" folders?
+	\
+# basic smoke test
+	javac -version; \
+	java -version

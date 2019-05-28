@@ -199,7 +199,7 @@ for javaVersion in "${versions[@]}"; do
 						-e 's!^(ENV JAVA_VERSION) .*!\1 '"$downloadVersion"'!' \
 						-e 's!^(ENV JAVA_URL) .*!\1 '"$downloadUrl"'!' \
 						-e 's!^(ENV JAVA_SHA256) .*!\1 '"$downloadSha256"'!' \
-						Dockerfile-alpine.template > "$dir/alpine/Dockerfile"
+						Dockerfile-oracle-alpine.template > "$dir/alpine/Dockerfile"
 				fi
 
 				if [ -d "$dir/oracle" ]; then
@@ -214,7 +214,7 @@ for javaVersion in "${versions[@]}"; do
 						-e 's!^(ENV JAVA_VERSION) .*!\1 '"$downloadVersion"'!' \
 						-e 's!^(ENV JAVA_URL) .*!\1 '"$downloadUrl"'!' \
 						-e 's!^(ENV JAVA_SHA256) .*!\1 '"$downloadSha256"'!' \
-						Dockerfile-oracle.template > "$dir/oracle/Dockerfile"
+						Dockerfile-oracle-oracle.template > "$dir/oracle/Dockerfile"
 				fi
 
 				if [ -d "$dir/windows" ]; then
@@ -236,7 +236,7 @@ for javaVersion in "${versions[@]}"; do
 							-e 's!^(ENV JAVA_VERSION) .*!\1 '"$downloadVersion"'!' \
 							-e 's!^(ENV JAVA_URL) .*!\1 '"$downloadUrl"'!' \
 							-e 's!^(ENV JAVA_SHA256) .*!\1 '"$downloadSha256"'!' \
-							Dockerfile-windows.template > "$winD/Dockerfile"
+							Dockerfile-oracle-windows.template > "$winD/Dockerfile"
 					done
 				fi
 				;;

@@ -55,7 +55,12 @@ RUN set -eux; \
 	rm -rf "$GNUPGHOME"; \
 	\
 	mkdir -p "$JAVA_HOME"; \
-	tar --extract --file openjdk.tgz --directory "$JAVA_HOME" --strip-components 1; \
+	tar --extract \
+		--file openjdk.tgz \
+		--directory "$JAVA_HOME" \
+		--strip-components 1 \
+		--no-same-owner \
+	; \
 	rm openjdk.tgz*; \
 	\
 # TODO strip "demo" and "man" folders?
@@ -80,6 +85,10 @@ RUN set -eux; \
 	} > /etc/ca-certificates/update.d/docker-openjdk; \
 	chmod +x /etc/ca-certificates/update.d/docker-openjdk; \
 	/etc/ca-certificates/update.d/docker-openjdk; \
+	\
+# https://github.com/docker-library/openjdk/issues/331#issuecomment-498834472
+	find "$JAVA_HOME/lib" -name '*.so' -exec dirname '{}' ';' | sort -u > /etc/ld.so.conf.d/docker-openjdk.conf; \
+	ldconfig; \
 	\
 # basic smoke test
 	javac --version; \

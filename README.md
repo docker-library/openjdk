@@ -2,29 +2,24 @@
 
 ## Maintained by: [the Docker Community](https://github.com/docker-library/openjdk)
 
-This is the Git repo of the [Docker "Official Image"](https://docs.docker.com/docker-hub/official_repos/) for [openjdk](https://hub.docker.com/_/openjdk/) (not to be confused with any official openjdk image provided by openjdk upstream). See [the Docker Hub page](https://hub.docker.com/_/openjdk/) for the full readme on how to use this Docker image and for information regarding contributing and issues.
+This is the Git repo of the [Docker "Official Image"](https://github.com/docker-library/official-images#what-are-official-images) for [`openjdk`](https://hub.docker.com/_/openjdk/) (not to be confused with any official `openjdk` image provided by `openjdk` upstream). See [the Docker Hub page](https://hub.docker.com/_/openjdk/) for the full readme on how to use this Docker image and for information regarding contributing and issues.
 
-The [full description from Docker Hub](https://hub.docker.com/_/openjdk/) is generated over in [docker-library/docs](https://github.com/docker-library/docs), specifically in [docker-library/docs/openjdk](https://github.com/docker-library/docs/tree/master/openjdk).
+The [full image description on Docker Hub](https://hub.docker.com/_/openjdk/) is generated/maintained over in [the docker-library/docs repository](https://github.com/docker-library/docs), specifically in [the `openjdk` directory](https://github.com/docker-library/docs/tree/master/openjdk).
 
 ## See a change merged here that doesn't show up on Docker Hub yet?
 
-Check [the "library/openjdk" manifest file in the docker-library/official-images repo](https://github.com/docker-library/official-images/blob/master/library/openjdk), especially [PRs with the "library/openjdk" label on that repo](https://github.com/docker-library/official-images/labels/library%2Fopenjdk).
+For more information about the full official images change lifecycle, see [the "An image's source changed in Git, now what?" FAQ entry](https://github.com/docker-library/faq#an-images-source-changed-in-git-now-what).
 
-For more information about the official images process, see the [docker-library/official-images readme](https://github.com/docker-library/official-images/blob/master/README.md).
+For outstanding `openjdk` image PRs, check [PRs with the "library/openjdk" label on the official-images repository](https://github.com/docker-library/official-images/labels/library%2Fopenjdk). For the current "source of truth" for [`openjdk`](https://hub.docker.com/_/openjdk/), see [the `library/openjdk` file in the official-images repository](https://github.com/docker-library/official-images/blob/master/library/openjdk).
 
 ---
 
--	[Travis CI:  
-	![build status badge](https://img.shields.io/travis/docker-library/openjdk/master.svg)](https://travis-ci.org/docker-library/openjdk/branches)
--	[AppVeyor (Windows):  
-	![build status badge](https://ci.appveyor.com/api/projects/status/github/docker-library/openjdk?branch=master&svg=true)](https://ci.appveyor.com/project/docker-library/openjdk)
--	[Automated `update.sh`:  
-	![build status badge](https://doi-janky.infosiftr.net/job/update.sh/job/openjdk/badge/icon)](https://doi-janky.infosiftr.net/job/update.sh/job/openjdk)
+-	[![build status badge](https://img.shields.io/travis/docker-library/openjdk/master.svg?label=Travis%20CI)](https://travis-ci.org/docker-library/openjdk/branches)
+-	[![build status badge](https://img.shields.io/appveyor/ci/docker-library/openjdk/master.svg?label=AppVeyor)](https://ci.appveyor.com/project/docker-library/openjdk)
+-	[![build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/update.sh/job/openjdk.svg?label=Automated%20update.sh)](https://doi-janky.infosiftr.net/job/update.sh/job/openjdk)
 
 | Build | Status | Badges | (per-arch) |
 |:-:|:-:|:-:|:-:|
-| [`amd64`<br />![build status badge](https://doi-janky.infosiftr.net/job/multiarch/job/amd64/job/openjdk/badge/icon)](https://doi-janky.infosiftr.net/job/multiarch/job/amd64/job/openjdk) | [`arm32v5`<br />![build status badge](https://doi-janky.infosiftr.net/job/multiarch/job/arm32v5/job/openjdk/badge/icon)](https://doi-janky.infosiftr.net/job/multiarch/job/arm32v5/job/openjdk) | [`arm32v6`<br />![build status badge](https://doi-janky.infosiftr.net/job/multiarch/job/arm32v6/job/openjdk/badge/icon)](https://doi-janky.infosiftr.net/job/multiarch/job/arm32v6/job/openjdk) | [`arm32v7`<br />![build status badge](https://doi-janky.infosiftr.net/job/multiarch/job/arm32v7/job/openjdk/badge/icon)](https://doi-janky.infosiftr.net/job/multiarch/job/arm32v7/job/openjdk) |
-| [`arm64v8`<br />![build status badge](https://doi-janky.infosiftr.net/job/multiarch/job/arm64v8/job/openjdk/badge/icon)](https://doi-janky.infosiftr.net/job/multiarch/job/arm64v8/job/openjdk) | [`i386`<br />![build status badge](https://doi-janky.infosiftr.net/job/multiarch/job/i386/job/openjdk/badge/icon)](https://doi-janky.infosiftr.net/job/multiarch/job/i386/job/openjdk) | [`ppc64le`<br />![build status badge](https://doi-janky.infosiftr.net/job/multiarch/job/ppc64le/job/openjdk/badge/icon)](https://doi-janky.infosiftr.net/job/multiarch/job/ppc64le/job/openjdk) | [`s390x`<br />![build status badge](https://doi-janky.infosiftr.net/job/multiarch/job/s390x/job/openjdk/badge/icon)](https://doi-janky.infosiftr.net/job/multiarch/job/s390x/job/openjdk) |
-| [`windows-amd64`<br />![build status badge](https://doi-janky.infosiftr.net/job/multiarch/job/windows-amd64/job/openjdk/badge/icon)](https://doi-janky.infosiftr.net/job/multiarch/job/windows-amd64/job/openjdk) |
+| [![amd64 build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/amd64/job/openjdk.svg?label=amd64)](https://doi-janky.infosiftr.net/job/multiarch/job/amd64/job/openjdk) | [![arm64v8 build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/arm64v8/job/openjdk.svg?label=arm64v8)](https://doi-janky.infosiftr.net/job/multiarch/job/arm64v8/job/openjdk) | [![windows-amd64 build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/windows-amd64/job/openjdk.svg?label=windows-amd64)](https://doi-janky.infosiftr.net/job/multiarch/job/windows-amd64/job/openjdk) |
 
 <!-- THIS FILE IS GENERATED BY https://github.com/docker-library/docs/blob/master/generate-repo-stub-readme.sh -->

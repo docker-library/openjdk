@@ -59,11 +59,16 @@ _latest() {
 	local javaVersion="$1"; shift
 	local variant="$1"; shift
 
+	# "windowsservercore" variants should always be part of the "latest" tag
+	if [[ "$variant" == windowsservercore* ]]; then
+		return 0
+	fi
+
 	if [ "$javaVersion" -ge 12 ]; then
 		# version 12+ moves "latest" over to the Oracle-based builds (and includes Windows!)
-		case "$variant" in
-			oracle | windowsservercore* ) return 0 ;;
-		esac
+		if [ "$variant" = 'oracle' ]; then
+			return 0
+		fi
 	else
 		# for versions < 12, the non-variant variant (which is Debian) should be "latest"
 		if [ -z "$variant" ]; then

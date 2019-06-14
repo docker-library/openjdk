@@ -60,10 +60,12 @@ adopt-sources-url() {
 
 	local url
 	url="$(
-		wget -qO- "$githubUrl" | tac|tac \
+		curl -fsSL "$githubUrl" | tac|tac \
 			| grep -oEm1 'href="[^"]+-sources_[^"]+[.]tar[.]gz"' \
-			| cut -d'"' -f2
-	)" || return 1
+			| cut -d'"' -f2 \
+			|| :
+	)"
+	[ -n "$url" ] || return 1
 
 	url="$(abs-url "$url" "$githubUrl")" || return 1
 

@@ -199,6 +199,15 @@ for javaVersion in "${versions[@]}"; do
 			fi
 			variantAliases+=( "$variant" )
 
+			constraints=
+			if [ "$variant" != "$v" ]; then
+				# windows
+				constraints="$variant"
+			elif [ "$variant" = 'oracle' ]; then
+				# https://github.com/docker-library/official-images/blob/master/library/oraclelinux
+				constraints='!aufs'
+			fi
+
 			echo
 			echo "Tags: $(join ', ' $(aliases "$javaVersion" "$javaType" "$fullVersion" "${variantAliases[@]}"))"
 			if [ "${#sharedTags[@]}" -gt 0 ]; then
@@ -209,7 +218,7 @@ for javaVersion in "${versions[@]}"; do
 				GitCommit: $commit
 				Directory: $dir
 			EOE
-			[ "$variant" = "$v" ] || echo "Constraints: $variant"
+			[ -z "$constraints" ] || echo "Constraints: $constraints"
 		done
 	done
 done

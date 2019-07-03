@@ -174,10 +174,12 @@ for javaVersion in "${versions[@]}"; do
 						windowsVariant="${windowsVersion%%-*}" # "windowsservercore", "nanoserver"
 						windowsVersion="${windowsVersion#$windowsVariant-}" # "1803", "ltsc2016", etc
 						windowsVariant="${windowsVariant#windows}" # "servercore", "nanoserver"
+						serverCoreImage="openjdk:$adoptVersion-windowsservercore-$windowsVersion" # "openjdk:8u212-b04-windowsservercore-1809", etc
 						sed -r "${sedArgs[@]}" \
 							-e 's!^(ENV JAVA_HOME) .*!\1 C:\\\\openjdk-'"$javaVersion"'!' \
 							-e 's!^(FROM) .*$!\1 mcr.microsoft.com/windows/'"$windowsVariant"':'"$windowsVersion"'!' \
-							Dockerfile-adopt-windows.template > "$winD/Dockerfile"
+							-e 's!%%SERVERCORE-IMAGE%%!'"$serverCoreImage"'!g' \
+							"Dockerfile-adopt-windows-$windowsVariant.template" > "$winD/Dockerfile"
 						dockerfiles+=( "$winD/Dockerfile" )
 					done
 				fi
@@ -236,13 +238,15 @@ for javaVersion in "${versions[@]}"; do
 						windowsVariant="${windowsVersion%%-*}" # "windowsservercore", "nanoserver"
 						windowsVersion="${windowsVersion#$windowsVariant-}" # "1803", "ltsc2016", etc
 						windowsVariant="${windowsVariant#windows}" # "servercore", "nanoserver"
+						serverCoreImage="openjdk:${downloadVersion//+/-}-windowsservercore-$windowsVersion" # "openjdk:8u212-b04-windowsservercore-1809", etc
 						sed -r \
 							-e 's!^(FROM) .*$!\1 mcr.microsoft.com/windows/'"$windowsVariant"':'"$windowsVersion"'!' \
 							-e 's!^(ENV JAVA_HOME) .*!\1 C:\\\\openjdk-'"$javaVersion"'!' \
 							-e 's!^(ENV JAVA_VERSION) .*!\1 '"$downloadVersion"'!' \
 							-e 's!^(ENV JAVA_URL) .*!\1 '"$downloadUrl"'!' \
 							-e 's!^(ENV JAVA_SHA256) .*!\1 '"$downloadSha256"'!' \
-							Dockerfile-oracle-windows.template > "$winD/Dockerfile"
+							-e 's!%%SERVERCORE-IMAGE%%!'"$serverCoreImage"'!g' \
+							"Dockerfile-oracle-windows-$windowsVariant.template" > "$winD/Dockerfile"
 					done
 				fi
 				;;
@@ -263,6 +267,7 @@ for javaVersion in "${versions[@]}"; do
 			|| continue
 
 		case "$winVariant" in
+			nanoserver-* ) ;; # nanoserver variants do "COPY --from=windowsservercore" so cannot build standalone
 			*-1803 ) travisEnv='\n    - os: windows\n      dist: 1803-containers\n      env: VERSION='"$javaVersion VARIANT=windows/$winVariant$travisEnv" ;;
 			*-1809 ) ;; # no AppVeyor or Travis support for 1809: https://github.com/appveyor/ci/issues/1885
 			* ) appveyorEnv='\n    - version: '"$javaVersion"'\n      variant: '"$winVariant$appveyorEnv" ;;

@@ -28,6 +28,7 @@ ENV JAVA_URL https://download.java.net/java/GA/jdk13.0.1/cec27d702aa74d5a8630c65
 ENV JAVA_SHA256 438a6920f1851b1eeb6f09f05d9f91c4423c6586f7a1a7ccbb19df76ea5901ee
 
 RUN Write-Host ('Downloading {0} ...' -f $env:JAVA_URL); \
+	[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; \
 	Invoke-WebRequest -Uri $env:JAVA_URL -OutFile 'openjdk.zip'; \
 	Write-Host ('Verifying sha256 ({0}) ...' -f $env:JAVA_SHA256); \
 	if ((Get-FileHash openjdk.zip -Algorithm sha256).Hash -ne $env:JAVA_SHA256) { \
@@ -41,12 +42,12 @@ RUN Write-Host ('Downloading {0} ...' -f $env:JAVA_URL); \
 	Move-Item -Path C:\temp\* -Destination $env:JAVA_HOME; \
 	Remove-Item C:\temp; \
 	\
-	Write-Host 'Verifying install ...'; \
-	Write-Host '  java --version'; java --version; \
-	Write-Host '  javac --version'; javac --version; \
-	\
 	Write-Host 'Removing ...'; \
 	Remove-Item openjdk.zip -Force; \
+	\
+	Write-Host 'Verifying install ...'; \
+	Write-Host '  javac --version'; javac --version; \
+	Write-Host '  java --version'; java --version; \
 	\
 	Write-Host 'Complete.'
 

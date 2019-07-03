@@ -52,23 +52,33 @@ script:
   - |
     (
       set -Eeuo pipefail
-      set -x
-      docker build -t "$imageBase-jdk$imageSuffix" "jdk${VARIANT:+/$VARIANT}"
-      if [ "$TRAVIS_OS_NAME" = 'windows' ]; then
-        # TODO make the tests run successfully on Windows too!
-        docker run --rm "$imageBase-jdk$imageSuffix" javac -version
-        docker run --rm "$imageBase-jdk$imageSuffix" java -version
-      else
-        ~/official-images/test/run.sh "$imageBase-jdk$imageSuffix"
-      fi
-      if [ -d "jre${VARIANT:+/$VARIANT}" ]; then
-        docker build -t "$imageBase-jre$imageSuffix" "jre${VARIANT:+/$VARIANT}"
+      build_and_test() {
+        local img="$1"; shift
+        local dir="$1"; shift
+        ( set -x; docker build -t "$img" "$dir" )
         if [ "$TRAVIS_OS_NAME" = 'windows' ]; then
-          # TODO make the tests run successfully on Windows too!
-          docker run --rm "$imageBase-jre$imageSuffix" java -version
+          # TODO make the real tests run successfully on Windows too!
+          if [[ "$img" == *-jdk* ]]; then ( set -x; docker run --rm "$img" javac -version ); fi
+          ( set -x; docker run --rm "$img" java -version )
         else
-          ~/official-images/test/run.sh "$imageBase-jre$imageSuffix"
+          ( set -x; ~/official-images/test/run.sh "$img" )
         fi
+      }
+      build_and_test "$imageBase-jdk$imageSuffix" "jdk${VARIANT:+/$VARIANT}"
+      if [ -d "jre${VARIANT:+/$VARIANT}" ]; then
+        build_and_test "$imageBase-jre$imageSuffix" "jre${VARIANT:+/$VARIANT}"
+      fi
+      if [[ "${VARIANT:-}" == windows/windowsservercore-* ]]; then
+        nanoVariant="${VARIANT//windowsservercore/nanoserver}"
+        nanoSuffix="$(basename "$nanoVariant")"
+        for jdk in jdk jre; do
+          if [ -d "$jdk/$nanoVariant" ]; then
+            nanoFrom="$(grep -oEm1 -- '--from=[^ ]+' "$jdk/$nanoVariant/Dockerfile")"
+            nanoFrom="${nanoFrom#--from=}"
+            ( set -x; docker tag "$imageBase-$jdk$imageSuffix" "$nanoFrom" )
+            build_and_test "$imageBase-$jdk-$nanoSuffix" "$jdk/$nanoVariant"
+          fi
+        done
       fi
     )
 

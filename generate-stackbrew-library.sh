@@ -146,7 +146,8 @@ for javaVersion in "${versions[@]}"; do
 
 				# https://jdk.java.net/12/
 				# https://jdk.java.net/13/
-				12 | 13) variantArches='amd64' ;;
+				# https://jdk.java.net/14/
+				12 | 13 | 14) variantArches='amd64' ;;
 
 				*) echo >&2 "error: unknown javaVersion: $javaVersion (while trying to determine 'variantArches')"; exit 1 ;;
 			esac

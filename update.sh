@@ -126,9 +126,7 @@ for javaVersion in "${versions[@]}"; do
 				javaUrlBase="${sourcesUrl%%-sources_*}-"
 				javaUrlVersion="${sourcesUrl#${javaUrlBase}sources_}"
 				javaUrlVersion="${javaUrlVersion%.tar.gz}"
-				if [ "$javaType" = 'jre' ]; then
-					javaUrlBase+='jre_'
-				fi
+				javaUrlBase+="${javaType}_" # "jre_", "jdk_", etc
 
 				echo "$javaVersion-$javaType: $adoptVersion ($javaUrlVersion; $javaUrlBase)"
 

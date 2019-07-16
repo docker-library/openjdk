@@ -10,9 +10,9 @@ RUN $newPath = ('{0}\bin;{1}' -f $env:JAVA_HOME, $env:PATH); \
 	setx /M PATH $newPath
 
 # https://adoptopenjdk.net/upstream.html
-ENV JAVA_VERSION 8u212-b04
-ENV JAVA_BASE_URL https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/download/jdk8u212-b04/OpenJDK8U-
-ENV JAVA_URL_VERSION 8u212b04
+ENV JAVA_VERSION 8u222
+ENV JAVA_BASE_URL https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/download/jdk8u222-b10/OpenJDK8U-jdk_
+ENV JAVA_URL_VERSION 8u222b10
 # https://github.com/docker-library/openjdk/issues/320#issuecomment-494050246
 
 RUN $url = ('{0}x64_windows_{1}.zip' -f $env:JAVA_BASE_URL, $env:JAVA_URL_VERSION); \

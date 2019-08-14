@@ -24,6 +24,12 @@ matrix:
       env: VERSION=11
     - os: linux
       env: VERSION=11 VARIANT=slim
+    - os: linux
+      env: VERSION=11 VARIANT=ubuntu18.04
+    - os: linux
+      env: VERSION=11 VARIANT=ubuntu16.04
+    - os: linux
+      env: VERSION=11 VARIANT=centos7
     - os: windows
       dist: 1803-containers
       env: VERSION=11 VARIANT=windows/windowsservercore-1803

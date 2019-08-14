@@ -5,7 +5,7 @@ RUN set -eux; \
 	yum update -y; \
 	yum install -y \
 # utilities for keeping CentOS and OpenJDK CA certificates in sync
-		ca-certificates p11-kit \
+		ca-certificates p11-kit fontconfig freetype \
 	; \
 	yum clean all
 

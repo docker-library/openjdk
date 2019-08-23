@@ -215,6 +215,10 @@ for javaVersion in "${versions[@]}"; do
 						-e 's!^(ENV JAVA_URL) .*!\1 '"$downloadUrl"'!' \
 						-e 's!^(ENV JAVA_SHA256) .*!\1 '"$downloadSha256"'!' \
 						Dockerfile-oracle-oracle.template > "$dir/oracle/Dockerfile"
+					if [ "$javaVersion" = '12' ]; then
+						# https://github.com/docker-library/openjdk/issues/351
+						sed -ri '/objcopy|binutils/d' "$dir/oracle/Dockerfile"
+					fi
 				fi
 
 				if [ -d "$dir/windows" ]; then

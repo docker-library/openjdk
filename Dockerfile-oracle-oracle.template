@@ -5,6 +5,9 @@ RUN set -eux; \
 		gzip \
 		tar \
 		\
+# jlink --strip-debug on 13+ needs objcopy: https://github.com/docker-library/openjdk/issues/351
+# Error: java.io.IOException: Cannot run program "objcopy": error=2, No such file or directory
+		binutils \
 # java.lang.UnsatisfiedLinkError: /usr/java/openjdk-12/lib/libfontmanager.so: libfreetype.so.6: cannot open shared object file: No such file or directory
 # https://github.com/docker-library/openjdk/pull/235#issuecomment-424466077
 		freetype fontconfig \

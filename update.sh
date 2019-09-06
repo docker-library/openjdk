@@ -202,24 +202,26 @@ for javaVersion in "${versions[@]}"; do
 						Dockerfile-oracle-alpine.template > "$dir/alpine/Dockerfile"
 				fi
 
-				if [ -d "$dir/oracle" ]; then
-					downloadUrl="$(jdk-java-net-download-url "$javaVersion" '_linux-x64_bin.tar.gz')"
-					downloadSha256="$(wget -qO- "$downloadUrl.sha256")"
-					downloadVersion="$(jdk-java-net-download-version "$javaVersion" "$downloadUrl")"
+				downloadUrl="$(jdk-java-net-download-url "$javaVersion" '_linux-x64_bin.tar.gz')"
+				downloadSha256="$(wget -qO- "$downloadUrl.sha256")"
+				downloadVersion="$(jdk-java-net-download-version "$javaVersion" "$downloadUrl")"
 
-					echo "$javaVersion-$javaType: $downloadVersion (oracle)"
+				echo "$javaVersion-$javaType: $downloadVersion (oracle)"
 
+				for variant in oracle debian slim; do
+					[ "$variant" = 'debian' ] && variantDir="$dir" || variantDir="$dir/$variant"
+					[ -d "$variantDir" ] || continue
 					sed -r \
 						-e 's!^(ENV JAVA_HOME) .*!\1 /usr/java/openjdk-'"$javaVersion"'!' \
 						-e 's!^(ENV JAVA_VERSION) .*!\1 '"$downloadVersion"'!' \
 						-e 's!^(ENV JAVA_URL) .*!\1 '"$downloadUrl"'!' \
 						-e 's!^(ENV JAVA_SHA256) .*!\1 '"$downloadSha256"'!' \
-						Dockerfile-oracle-oracle.template > "$dir/oracle/Dockerfile"
+						"Dockerfile-oracle-$variant.template" > "$variantDir/Dockerfile"
 					if [ "$javaVersion" = '12' ]; then
 						# https://github.com/docker-library/openjdk/issues/351
-						sed -ri '/objcopy|binutils/d' "$dir/oracle/Dockerfile"
+						sed -ri '/objcopy|binutils/d' "$variantDir/Dockerfile"
 					fi
-				fi
+				done
 
 				if [ -d "$dir/windows" ]; then
 					downloadUrl="$(jdk-java-net-download-url "$javaVersion" '_windows-x64_bin.zip')"

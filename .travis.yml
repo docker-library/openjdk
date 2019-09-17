@@ -16,11 +16,6 @@ matrix:
       dist: 1803-containers
       env: VERSION=13 VARIANT=windows/windowsservercore-1803
     - os: linux
-      env: VERSION=12 VARIANT=oracle
-    - os: windows
-      dist: 1803-containers
-      env: VERSION=12 VARIANT=windows/windowsservercore-1803
-    - os: linux
       env: VERSION=11
     - os: linux
       env: VERSION=11 VARIANT=slim

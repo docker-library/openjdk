@@ -7,8 +7,6 @@ environment:
       variant: windowsservercore-ltsc2016
     - version: 13
       variant: windowsservercore-ltsc2016
-    - version: 12
-      variant: windowsservercore-ltsc2016
     - version: 11
       variant: windowsservercore-ltsc2016
     - version: 8

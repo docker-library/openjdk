@@ -21,9 +21,9 @@ ENV JAVA_HOME /usr/java/openjdk-14
 ENV PATH $JAVA_HOME/bin:$PATH
 
 # https://jdk.java.net/
-ENV JAVA_VERSION 14-ea+17
-ENV JAVA_URL https://download.java.net/java/early_access/jdk14/17/GPL/openjdk-14-ea+17_linux-x64_bin.tar.gz
-ENV JAVA_SHA256 c1c6627fd797900f64b72ed119c0d58e39955a7759803c324198cb39fe67c657
+ENV JAVA_VERSION 14-ea+18
+ENV JAVA_URL https://download.java.net/java/early_access/jdk14/18/GPL/openjdk-14-ea+18_linux-x64_bin.tar.gz
+ENV JAVA_SHA256 7e97fffda6c9f2ba0640e5e61a1627482532ae18c33c6541ed9cc0f21d498a1d
 
 RUN set -eux; \
 	\

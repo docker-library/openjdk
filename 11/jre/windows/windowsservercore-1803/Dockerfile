@@ -10,9 +10,9 @@ RUN $newPath = ('{0}\bin;{1}' -f $env:JAVA_HOME, $env:PATH); \
 	setx /M PATH $newPath
 
 # https://adoptopenjdk.net/upstream.html
-ENV JAVA_VERSION 11.0.4
-ENV JAVA_BASE_URL https://github.com/AdoptOpenJDK/openjdk11-upstream-binaries/releases/download/jdk-11.0.4%2B11/OpenJDK11U-jre_
-ENV JAVA_URL_VERSION 11.0.4_11
+ENV JAVA_VERSION 11.0.5
+ENV JAVA_BASE_URL https://github.com/AdoptOpenJDK/openjdk11-upstream-binaries/releases/download/jdk-11.0.5%2B10/OpenJDK11U-jre_
+ENV JAVA_URL_VERSION 11.0.5_10
 # https://github.com/docker-library/openjdk/issues/320#issuecomment-494050246
 
 RUN $url = ('{0}x64_windows_{1}.zip' -f $env:JAVA_BASE_URL, $env:JAVA_URL_VERSION); \

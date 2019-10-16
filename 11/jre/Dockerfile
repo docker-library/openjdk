@@ -27,9 +27,9 @@ ENV PATH $JAVA_HOME/bin:$PATH
 RUN { echo '#/bin/sh'; echo 'echo "$JAVA_HOME"'; } > /usr/local/bin/docker-java-home && chmod +x /usr/local/bin/docker-java-home && [ "$JAVA_HOME" = "$(docker-java-home)" ]
 
 # https://adoptopenjdk.net/upstream.html
-ENV JAVA_VERSION 11.0.4
-ENV JAVA_BASE_URL https://github.com/AdoptOpenJDK/openjdk11-upstream-binaries/releases/download/jdk-11.0.4%2B11/OpenJDK11U-jre_
-ENV JAVA_URL_VERSION 11.0.4_11
+ENV JAVA_VERSION 11.0.5
+ENV JAVA_BASE_URL https://github.com/AdoptOpenJDK/openjdk11-upstream-binaries/releases/download/jdk-11.0.5%2B10/OpenJDK11U-jre_
+ENV JAVA_URL_VERSION 11.0.5_10
 # https://github.com/docker-library/openjdk/issues/320#issuecomment-494050246
 
 RUN set -eux; \

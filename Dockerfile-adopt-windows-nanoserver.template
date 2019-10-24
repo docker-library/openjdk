@@ -1,0 +1,23 @@
+FROM placeholder
+
+SHELL ["cmd", "/s", "/c"]
+
+ENV JAVA_HOME placeholder
+# "ERROR: Access to the registry path is denied."
+USER ContainerAdministrator
+RUN echo Updating PATH: %JAVA_HOME%\bin;%PATH% \
+	&& setx /M PATH %JAVA_HOME%\bin;%PATH%
+USER ContainerUser
+
+# https://adoptopenjdk.net/upstream.html
+ENV JAVA_VERSION placeholder
+# https://github.com/docker-library/openjdk/issues/320#issuecomment-494050246
+
+COPY --from=%%SERVERCORE-IMAGE%% $JAVA_HOME $JAVA_HOME
+
+RUN echo Verifying install ... \
+	&& echo   javac --version && javac --version \
+	&& echo   java --version && java --version
+
+# "jshell" is an interactive REPL for Java (see https://en.wikipedia.org/wiki/JShell)
+CMD ["jshell"]

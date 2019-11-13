@@ -17,6 +17,7 @@ RUN Write-Host 'Enabling TLS 1.2 (https://githubengineering.com/crypto-removal-n
 	New-ItemProperty -Path ('{0}/Server' -f $tls12RegBase) -Name 'Enabled' -PropertyType DWORD -Value 1 -Force
 
 ENV JAVA_HOME C:\\openjdk-14
+ENV java C:\\openjdk-14\\bin\\java.exe
 RUN $newPath = ('{0}\bin;{1}' -f $env:JAVA_HOME, $env:PATH); \
 	Write-Host ('Updating PATH: {0}' -f $newPath); \
 # Nano Server does not have "[Environment]::SetEnvironmentVariable()"

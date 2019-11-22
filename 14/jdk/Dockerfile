@@ -30,9 +30,9 @@ ENV PATH $JAVA_HOME/bin:$PATH
 RUN { echo '#/bin/sh'; echo 'echo "$JAVA_HOME"'; } > /usr/local/bin/docker-java-home && chmod +x /usr/local/bin/docker-java-home && [ "$JAVA_HOME" = "$(docker-java-home)" ]
 
 # https://jdk.java.net/
-ENV JAVA_VERSION 14-ea+23
-ENV JAVA_URL https://download.java.net/java/early_access/jdk14/23/GPL/openjdk-14-ea+23_linux-x64_bin.tar.gz
-ENV JAVA_SHA256 95d55dfaa49cdf2eed4678312bcba9298eff56fb0cac13846b9c2e0f4a139528
+ENV JAVA_VERSION 14-ea+24
+ENV JAVA_URL https://download.java.net/java/early_access/jdk14/24/GPL/openjdk-14-ea+24_linux-x64_bin.tar.gz
+ENV JAVA_SHA256 d200bacb3c8225d17acbd4806892f1b219510b5566a350ecd9c8bc952513b4b1
 
 RUN set -eux; \
 	\

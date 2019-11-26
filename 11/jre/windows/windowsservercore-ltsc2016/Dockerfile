@@ -34,6 +34,3 @@ RUN $url = ('{0}x64_windows_{1}.zip' -f $env:JAVA_BASE_URL, $env:JAVA_URL_VERSIO
 	Write-Host '  java --version'; java --version; \
 	\
 	Write-Host 'Complete.'
-
-# "jshell" is an interactive REPL for Java (see https://en.wikipedia.org/wiki/JShell)
-CMD ["jshell"]

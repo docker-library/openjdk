@@ -17,6 +17,3 @@ COPY --from=openjdk:11.0.5-windowsservercore-1803 $JAVA_HOME $JAVA_HOME
 
 RUN echo Verifying install ... \
 	&& echo   java --version && java --version
-
-# "jshell" is an interactive REPL for Java (see https://en.wikipedia.org/wiki/JShell)
-CMD ["jshell"]

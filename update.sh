@@ -158,6 +158,10 @@ for javaVersion in "${versions[@]}"; do
 						-e '/jshell/d'
 					)
 				fi
+				if [ "$javaType" = 'jre' ]; then
+					# no "jshell" in JRE
+					sedArgs+=( -e '/jshell/d' )
+				fi
 
 				linuxSedArgs=(
 					-e 's!^(ENV JAVA_HOME) .*!\1 /usr/local/openjdk-'"$javaVersion"'!'

@@ -93,6 +93,3 @@ RUN set -eux; \
 	\
 # basic smoke test
 	java --version
-
-# "jshell" is an interactive REPL for Java (see https://en.wikipedia.org/wiki/JShell)
-CMD ["jshell"]

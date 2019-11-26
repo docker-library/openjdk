@@ -18,10 +18,20 @@ ENV PATH $JAVA_HOME/bin:$PATH
 RUN { echo '#/bin/sh'; echo 'echo "$JAVA_HOME"'; } > /usr/local/bin/docker-java-home && chmod +x /usr/local/bin/docker-java-home && [ "$JAVA_HOME" = "$(docker-java-home)" ]
 
 # https://adoptopenjdk.net/upstream.html
+# >
+# > What are these binaries?
+# >
+# > These binaries are built by Red Hat on their infrastructure on behalf of the OpenJDK jdk8u and jdk11u projects. The binaries are created from the unmodified source code at OpenJDK. Although no formal support agreement is provided, please report any bugs you may find to https://bugs.java.com/.
+# >
 ENV JAVA_VERSION 8u232
 ENV JAVA_BASE_URL https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/download/jdk8u232-b09/OpenJDK8U-jre_
 ENV JAVA_URL_VERSION 8u232b09
 # https://github.com/docker-library/openjdk/issues/320#issuecomment-494050246
+# >
+# > I am the OpenJDK 8 and 11 Updates OpenJDK project lead.
+# > ...
+# > While it is true that the OpenJDK Governing Board has not sanctioned those releases, they (or rather we, since I am a member) didn't sanction Oracle's OpenJDK releases either. As far as I am aware, the lead of an OpenJDK project is entitled to release binary builds, and there is clearly a need for them.
+# >
 
 RUN set -eux; \
 	\

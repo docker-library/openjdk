@@ -21,6 +21,7 @@ ENV JAVA_HOME /usr/java/openjdk-14
 ENV PATH $JAVA_HOME/bin:$PATH
 
 # https://jdk.java.net/
+# > Java Development Kit builds, from Oracle
 ENV JAVA_VERSION 14-ea+24
 ENV JAVA_URL https://download.java.net/java/early_access/jdk14/24/GPL/openjdk-14-ea+24_linux-x64_bin.tar.gz
 ENV JAVA_SHA256 d200bacb3c8225d17acbd4806892f1b219510b5566a350ecd9c8bc952513b4b1

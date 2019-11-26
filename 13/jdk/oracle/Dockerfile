@@ -21,6 +21,7 @@ ENV JAVA_HOME /usr/java/openjdk-13
 ENV PATH $JAVA_HOME/bin:$PATH
 
 # https://jdk.java.net/
+# > Java Development Kit builds, from Oracle
 ENV JAVA_VERSION 13.0.1
 ENV JAVA_URL https://download.java.net/java/GA/jdk13.0.1/cec27d702aa74d5a8630c65ae61e4305/9/GPL/openjdk-13.0.1_linux-x64_bin.tar.gz
 ENV JAVA_SHA256 2e01716546395694d3fad54c9b36d1cd46c5894c06f72d156772efbcf4b41335

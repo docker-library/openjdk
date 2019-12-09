@@ -263,8 +263,8 @@ for javaVersion in "${versions[@]}"; do
 	done
 
 	for winVariant in \
-		nanoserver-{1809,1803} \
-		windowsservercore-{1809,1803,ltsc2016} \
+		nanoserver-1809 \
+		windowsservercore-{1809,ltsc2016} \
 	; do
 		[ -f "$javaVersion/jdk/windows/$winVariant/Dockerfile" ] \
 			|| [ -f "$javaVersion/jre/windows/$winVariant/Dockerfile" ] \
@@ -272,7 +272,6 @@ for javaVersion in "${versions[@]}"; do
 
 		case "$winVariant" in
 			nanoserver-* ) ;; # nanoserver variants do "COPY --from=windowsservercore" so cannot build standalone
-			*-1803 ) travisEnv='\n    - os: windows\n      dist: 1803-containers\n      env: VERSION='"$javaVersion VARIANT=windows/$winVariant$travisEnv" ;;
 			*-1809 ) ;; # no AppVeyor or Travis support for 1809: https://github.com/appveyor/ci/issues/1885
 			* ) appveyorEnv='\n    - version: '"$javaVersion"'\n      variant: '"$winVariant$appveyorEnv" ;;
 		esac

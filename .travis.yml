@@ -4,6 +4,12 @@ services: docker
 matrix:
   include:
     - os: linux
+      env: VERSION=15 VARIANT=oracle
+    - os: linux
+      env: VERSION=15
+    - os: linux
+      env: VERSION=15 VARIANT=slim
+    - os: linux
       env: VERSION=14 VARIANT=oracle
     - os: linux
       env: VERSION=14

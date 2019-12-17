@@ -192,7 +192,7 @@ for javaVersion in "${versions[@]}"; do
 				sed -i -e '${/^$/d;}' "${dockerfiles[@]}"
 				;;
 
-			12 | 13 | 14)
+			12 | 13 | 14 | 15)
 				if [ -d "$dir/alpine" ]; then
 					downloadUrl="$(jdk-java-net-download-url "$javaVersion" '_linux-x64-musl_bin.tar.gz')"
 					downloadSha256="$(wget -qO- "$downloadUrl.sha256")"

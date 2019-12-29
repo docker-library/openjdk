@@ -11,9 +11,9 @@ USER ContainerUser
 
 # https://jdk.java.net/
 # > Java Development Kit builds, from Oracle
-ENV JAVA_VERSION 15-ea+2
+ENV JAVA_VERSION 15-ea+3
 
-COPY --from=openjdk:15-ea-2-windowsservercore-1809 $JAVA_HOME $JAVA_HOME
+COPY --from=openjdk:15-ea-3-windowsservercore-1809 $JAVA_HOME $JAVA_HOME
 
 RUN echo Verifying install ... \
 	&& echo   javac --version && javac --version \

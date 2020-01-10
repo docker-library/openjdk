@@ -264,7 +264,7 @@ for javaVersion in "${versions[@]}"; do
 
 	for winVariant in \
 		nanoserver-1809 \
-		windowsservercore-{1809,ltsc2016} \
+		windowsservercore-{1809,ltsc2016,ltsc2019} \
 	; do
 		[ -f "$javaVersion/jdk/windows/$winVariant/Dockerfile" ] \
 			|| [ -f "$javaVersion/jre/windows/$winVariant/Dockerfile" ] \

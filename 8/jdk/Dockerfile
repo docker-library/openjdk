@@ -32,9 +32,9 @@ RUN { echo '#/bin/sh'; echo 'echo "$JAVA_HOME"'; } > /usr/local/bin/docker-java-
 # >
 # > These binaries are built by Red Hat on their infrastructure on behalf of the OpenJDK jdk8u and jdk11u projects. The binaries are created from the unmodified source code at OpenJDK. Although no formal support agreement is provided, please report any bugs you may find to https://bugs.java.com/.
 # >
-ENV JAVA_VERSION 8u232
-ENV JAVA_BASE_URL https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/download/jdk8u232-b09/OpenJDK8U-jdk_
-ENV JAVA_URL_VERSION 8u232b09
+ENV JAVA_VERSION 8u242
+ENV JAVA_BASE_URL https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/download/jdk8u242-b08/OpenJDK8U-jdk_
+ENV JAVA_URL_VERSION 8u242b08
 # https://github.com/docker-library/openjdk/issues/320#issuecomment-494050246
 # >
 # > I am the OpenJDK 8 and 11 Updates OpenJDK project lead.

@@ -5,14 +5,34 @@ environment:
   matrix:
     - version: 15
       variant: windowsservercore-ltsc2016
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    - version: 15
+      variant: windowsservercore-1809
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
     - version: 14
       variant: windowsservercore-ltsc2016
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    - version: 14
+      variant: windowsservercore-1809
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
     - version: 13
       variant: windowsservercore-ltsc2016
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    - version: 13
+      variant: windowsservercore-1809
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
     - version: 11
       variant: windowsservercore-ltsc2016
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    - version: 11
+      variant: windowsservercore-1809
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
     - version: 8
       variant: windowsservercore-ltsc2016
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    - version: 8
+      variant: windowsservercore-1809
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
 
 install:
   - ps: |

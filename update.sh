@@ -271,9 +271,14 @@ for javaVersion in "${versions[@]}"; do
 			|| continue
 
 		case "$winVariant" in
-			nanoserver-* ) ;; # nanoserver variants do "COPY --from=windowsservercore" so cannot build standalone
-			*-1809 ) ;; # no AppVeyor or Travis support for 1809: https://github.com/appveyor/ci/issues/1885
-			* ) appveyorEnv='\n    - version: '"$javaVersion"'\n      variant: '"$winVariant$appveyorEnv" ;;
+			nanoserver-*) ;; # nanoserver images COPY --from=...:...-windowsservercore-...
+			# https://www.appveyor.com/docs/windows-images-software/
+			*-1809)
+				appveyorEnv='\n    - version: '"$javaVersion"'\n      variant: '"$winVariant"'\n      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019'"$appveyorEnv"
+				;;
+			*-ltsc2016)
+				appveyorEnv='\n    - version: '"$javaVersion"'\n      variant: '"$winVariant"'\n      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017'"$appveyorEnv"
+				;;
 		esac
 	done
 

@@ -1,4 +1,4 @@
-FROM buildpack-deps:stretch-scm
+FROM buildpack-deps:buster-scm
 
 RUN set -eux; \
 	apt-get update; \

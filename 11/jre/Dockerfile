@@ -1,4 +1,4 @@
-FROM buildpack-deps:stretch-curl
+FROM buildpack-deps:buster-curl
 
 RUN set -eux; \
 	apt-get update; \

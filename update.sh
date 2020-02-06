@@ -12,11 +12,6 @@ versions=( "${versions[@]%/}" )
 # sort version numbers with lowest first
 IFS=$'\n'; versions=( $(sort -V <<<"${versions[*]}") ); unset IFS
 
-declare -A buildpackDepsVariants=(
-	[jre]='stretch-curl'
-	[jdk]='stretch-scm'
-)
-
 abs-url() {
 	local url="$1"; shift
 	local base="$1"; shift
@@ -138,11 +133,11 @@ for javaVersion in "${versions[@]}"; do
 
 				case "$javaType" in
 					jdk)
-						baseFrom='buildpack-deps:stretch-scm'
+						baseFrom='buildpack-deps:buster-scm'
 						;;
 
 					jre)
-						baseFrom='buildpack-deps:stretch-curl'
+						baseFrom='buildpack-deps:buster-curl'
 						sedArgs+=( -e '/javac --version/d' )
 						;;
 

@@ -171,18 +171,17 @@ for javaVersion in "${versions[@]}"; do
 			variantAliases=()
 			fromTag="$(git show "$commit":"$dir/Dockerfile" | awk -v variant="$variant" '
 				$1 == "FROM" {
-					switch ($2) {
-						case /^mcr.microsoft.com\//:
-							$2 = ""
-							break
-						case /^(alpine|oraclelinux):/:
-							gsub(/:/, "", $2) # "alpine3.7", "alpine3.6", etc
-							gsub(/-slim$/, "", $2) # "oraclelinux:7-slim"
-							break
-						default:
-							gsub(/^[^:]+:/, "", $2) # peel off "debian:", "buildpack-deps:", etc
-							gsub(/-[^-]+$/, "", $2) # peel off "-scm", "-curl", etc
-							break
+					# "switch" is a gawk-ism
+					if ($2 ~ /^mcr.microsoft.com\//) {
+						$2 = ""
+					}
+					else if ($2 ~ /^(alpine|oraclelinux):/) {
+						gsub(/:/, "", $2) # "alpine3.7", "alpine3.6", etc
+						gsub(/-slim$/, "", $2) # "oraclelinux:7-slim"
+					}
+					else {
+						gsub(/^[^:]+:/, "", $2) # peel off "debian:", "buildpack-deps:", etc
+						gsub(/-[^-]+$/, "", $2) # peel off "-scm", "-curl", etc
 					}
 					fromTag = $2
 				}

@@ -1,13 +1,13 @@
 FROM alpine:3.11
 
-ENV JAVA_HOME placeholder
+ENV JAVA_HOME /opt/openjdk-15
 ENV PATH $JAVA_HOME/bin:$PATH
 
 # https://jdk.java.net/
 # > Java Development Kit builds, from Oracle
-ENV JAVA_VERSION placeholder
-ENV JAVA_URL placeholder
-ENV JAVA_SHA256 placeholder
+ENV JAVA_VERSION 15-ea+7
+ENV JAVA_URL https://download.java.net/java/early_access/alpine/7/binaries/openjdk-15-ea+7_linux-x64-musl_bin.tar.gz
+ENV JAVA_SHA256 4e68bb97ffd64d0d84137cea9251ac47908fbbdcc62ae8c623a8f7fe06c87e7d
 # "For Alpine Linux, builds are produced on a reduced schedule and may not be in sync with the other platforms."
 
 RUN set -eux; \

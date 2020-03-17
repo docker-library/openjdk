@@ -187,7 +187,7 @@ for javaVersion in "${versions[@]}"; do
 				sed -i -e '${/^$/d;}' "${dockerfiles[@]}"
 				;;
 
-			12 | 13 | 14 | 15)
+			14 | 15)
 				if [ -d "$dir/alpine" ]; then
 					downloadUrl="$(jdk-java-net-download-url "$javaVersion" '_linux-x64-musl_bin.tar.gz')"
 					downloadSha256="$(wget -qO- "$downloadUrl.sha256")"
@@ -218,10 +218,6 @@ for javaVersion in "${versions[@]}"; do
 						-e 's!^(ENV JAVA_URL) .*!\1 '"$downloadUrl"'!' \
 						-e 's!^(ENV JAVA_SHA256) .*!\1 '"$downloadSha256"'!' \
 						"Dockerfile-oracle-$variant.template" > "$variantDir/Dockerfile"
-					if [ "$javaVersion" = '12' ]; then
-						# https://github.com/docker-library/openjdk/issues/351
-						sed -ri '/objcopy|binutils/d' "$variantDir/Dockerfile"
-					fi
 				done
 
 				if [ -d "$dir/windows" ]; then

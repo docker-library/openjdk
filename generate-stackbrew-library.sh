@@ -2,8 +2,8 @@
 set -Eeuo pipefail
 
 declare -A aliases=(
-	[13-jdk]='jdk latest'
-	[13-jre]='jre'
+	[14-jdk]='jdk latest'
+	[14-jre]='jre'
 )
 defaultType='jdk'
 
@@ -144,11 +144,9 @@ for javaVersion in "${versions[@]}"; do
 				8) variantArches='amd64' ;;
 				11) variantArches='amd64 arm64v8' ;;
 
-				# https://jdk.java.net/12/
-				# https://jdk.java.net/13/
 				# https://jdk.java.net/14/
 				# https://jdk.java.net/15/
-				12 | 13 | 14 | 15) variantArches='amd64' ;;
+				14 | 15) variantArches='amd64' ;;
 
 				*) echo >&2 "error: unknown javaVersion: $javaVersion (while trying to determine 'variantArches')"; exit 1 ;;
 			esac

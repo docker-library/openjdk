@@ -31,9 +31,9 @@ RUN { echo '#/bin/sh'; echo 'echo "$JAVA_HOME"'; } > /usr/local/bin/docker-java-
 
 # https://jdk.java.net/
 # > Java Development Kit builds, from Oracle
-ENV JAVA_VERSION 15-ea+18
-ENV JAVA_URL https://download.java.net/java/early_access/jdk15/18/GPL/openjdk-15-ea+18_linux-x64_bin.tar.gz
-ENV JAVA_SHA256 b5a60c62d325c8808978848fd7e21f2cce765ae97cf8361a7e136b36b6bd73bf
+ENV JAVA_VERSION 15-ea+19
+ENV JAVA_URL https://download.java.net/java/early_access/jdk15/19/GPL/openjdk-15-ea+19_linux-x64_bin.tar.gz
+ENV JAVA_SHA256 bb111954337ae9a48c7928f5638096c82d681a20a64f630efaebf2172bf7c924
 
 RUN set -eux; \
 	\

@@ -24,9 +24,9 @@ RUN $newPath = ('{0}\bin;{1}' -f $env:JAVA_HOME, $env:PATH); \
 
 # https://jdk.java.net/
 # > Java Development Kit builds, from Oracle
-ENV JAVA_VERSION 15-ea+19
-ENV JAVA_URL https://download.java.net/java/early_access/jdk15/19/GPL/openjdk-15-ea+19_windows-x64_bin.zip
-ENV JAVA_SHA256 cedb7660711da3feebdd62bfcc08905de7e0a96ea3a806a8b4acc3e2810cb70e
+ENV JAVA_VERSION 15-ea+20
+ENV JAVA_URL https://download.java.net/java/early_access/jdk15/20/GPL/openjdk-15-ea+20_windows-x64_bin.zip
+ENV JAVA_SHA256 1a188867f46916d60dfc3e4d736444c8fea471ef304480991761b846c3f25490
 
 RUN Write-Host ('Downloading {0} ...' -f $env:JAVA_URL); \
 	[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; \

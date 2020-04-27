@@ -23,7 +23,7 @@ ENV JAVA_VERSION 8u252
 # > While it is true that the OpenJDK Governing Board has not sanctioned those releases, they (or rather we, since I am a member) didn't sanction Oracle's OpenJDK releases either. As far as I am aware, the lead of an OpenJDK project is entitled to release binary builds, and there is clearly a need for them.
 # >
 
-COPY --from=openjdk:8u252-windowsservercore-1809 $JAVA_HOME $JAVA_HOME
+COPY --from=openjdk:8u252-jdk-windowsservercore-1809 $JAVA_HOME $JAVA_HOME
 
 RUN echo Verifying install ... \
 	&& echo   javac -version && javac -version \

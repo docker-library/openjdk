@@ -173,7 +173,7 @@ for javaVersion in "${versions[@]}"; do
 						windowsVariant="${windowsVersion%%-*}" # "windowsservercore", "nanoserver"
 						windowsVersion="${windowsVersion#$windowsVariant-}" # "1803", "ltsc2016", etc
 						windowsVariant="${windowsVariant#windows}" # "servercore", "nanoserver"
-						serverCoreImage="openjdk:$adoptVersion-windowsservercore-$windowsVersion" # "openjdk:8u212-b04-windowsservercore-1809", etc
+						serverCoreImage="openjdk:$adoptVersion-$javaType-windowsservercore-$windowsVersion" # "openjdk:8u212-b04-jre-windowsservercore-1809", etc
 						sed -r "${sedArgs[@]}" \
 							-e 's!^(ENV JAVA_HOME) .*!\1 C:\\\\openjdk-'"$javaVersion"'!' \
 							-e 's!^(FROM) .*$!\1 mcr.microsoft.com/windows/'"$windowsVariant"':'"$windowsVersion"'!' \

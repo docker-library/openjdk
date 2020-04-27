@@ -105,8 +105,6 @@ jdk-java-net-download-version() {
 	echo "$downloadVersion"
 }
 
-travisEnv=
-appveyorEnv=
 for javaVersion in "${versions[@]}"; do
 	for javaType in jdk jre; do
 		dir="$javaVersion/$javaType"
@@ -252,43 +250,4 @@ for javaVersion in "${versions[@]}"; do
 				;;
 		esac
 	done
-
-	for winVariant in \
-		nanoserver-1809 \
-		windowsservercore-{1809,ltsc2016} \
-	; do
-		[ -f "$javaVersion/jdk/windows/$winVariant/Dockerfile" ] \
-			|| [ -f "$javaVersion/jre/windows/$winVariant/Dockerfile" ] \
-			|| continue
-
-		case "$winVariant" in
-			nanoserver-*) ;; # nanoserver images COPY --from=...:...-windowsservercore-...
-			# https://www.appveyor.com/docs/windows-images-software/
-			*-1809)
-				appveyorEnv='\n    - version: '"$javaVersion"'\n      variant: '"$winVariant"'\n      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019'"$appveyorEnv"
-				;;
-			*-ltsc2016)
-				appveyorEnv='\n    - version: '"$javaVersion"'\n      variant: '"$winVariant"'\n      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017'"$appveyorEnv"
-				;;
-		esac
-	done
-
-	if [ -d "$javaVersion/jdk/alpine" ]; then
-		travisEnv='\n    - os: linux\n      env: VERSION='"$javaVersion"' VARIANT=alpine'"$travisEnv"
-	fi
-	if [ -d "$javaVersion/jdk/slim" ]; then
-		travisEnv='\n    - os: linux\n      env: VERSION='"$javaVersion"' VARIANT=slim'"$travisEnv"
-	fi
-	if [ -e "$javaVersion/jdk/Dockerfile" ]; then
-		travisEnv='\n    - os: linux\n      env: VERSION='"$javaVersion$travisEnv"
-	fi
-	if [ -d "$javaVersion/jdk/oracle" ]; then
-		travisEnv='\n    - os: linux\n      env: VERSION='"$javaVersion"' VARIANT=oracle'"$travisEnv"
-	fi
 done
-
-travis="$(awk -v 'RS=\n\n' '$1 == "matrix:" { $0 = "matrix:\n  include:'"$travisEnv"'" } { printf "%s%s", $0, RS }' .travis.yml)"
-cat <<<"$travis" > .travis.yml
-
-appveyor="$(awk -v 'RS=\n\n' '$1 == "environment:" { $0 = "environment:\n  matrix:'"$appveyorEnv"'" } { printf "%s%s", $0, RS }' .appveyor.yml)"
-cat <<<"$appveyor" > .appveyor.yml

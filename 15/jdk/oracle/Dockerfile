@@ -22,9 +22,9 @@ ENV PATH $JAVA_HOME/bin:$PATH
 
 # https://jdk.java.net/
 # > Java Development Kit builds, from Oracle
-ENV JAVA_VERSION 15-ea+21
-ENV JAVA_URL https://download.java.net/java/early_access/jdk15/21/GPL/openjdk-15-ea+21_linux-x64_bin.tar.gz
-ENV JAVA_SHA256 c8ff25779035a045f1a74f21b51a7383eb5f5d78d06973d722ea259886d9da62
+ENV JAVA_VERSION 15-ea+22
+ENV JAVA_URL https://download.java.net/java/early_access/jdk15/22/GPL/openjdk-15-ea+22_linux-x64_bin.tar.gz
+ENV JAVA_SHA256 c123e6d67ef5be47d5cc9a9b2c2940e31a4bad55af56e34f50e52f4dfec07c78
 
 RUN set -eux; \
 	\

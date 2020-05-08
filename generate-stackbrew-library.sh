@@ -206,9 +206,6 @@ for javaVersion in "${versions[@]}"; do
 					# nanoserver variants "COPY --from=...:...-windowsservercore-... ..."
 					constraints+=", windowsservercore-${variant#nanoserver-}"
 				fi
-			elif [ "$variant" = 'oracle' ]; then
-				# https://github.com/docker-library/official-images/blob/master/library/oraclelinux
-				constraints='!aufs'
 			fi
 
 			echo

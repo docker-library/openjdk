@@ -105,6 +105,11 @@ jdk-java-net-download-version() {
 	echo "$downloadVersion"
 }
 
+# see https://stackoverflow.com/a/2705678/433558
+sed_escape_rhs() {
+	sed -e 's/[\/&]/\\&/g' <<<"$*" | sed -e ':a;N;$!ba;s/\n/\\n/g'
+}
+
 for javaVersion in "${versions[@]}"; do
 	for javaType in jdk jre; do
 		dir="$javaVersion/$javaType"
@@ -186,12 +191,45 @@ for javaVersion in "${versions[@]}"; do
 				;;
 
 			14 | 15)
-				if [ -d "$dir/alpine" ]; then
-					downloadUrl="$(jdk-java-net-download-url "$javaVersion" '_linux-x64-musl_bin.tar.gz')"
-					downloadSha256="$(wget -qO- "$downloadUrl.sha256")"
-					downloadVersion="$(jdk-java-net-download-version "$javaVersion" "$downloadUrl")"
+				possibleArches=(
+					# https://jdk.java.net/15/
+					'linux-aarch64'
+					'linux-x64'
+					'linux-x64-musl'
+					'windows-x64'
+				)
+				declare -A archSha256s=()
+				declare -A archUrls=()
+				declare -A archVersions=()
+
+				for arch in "${possibleArches[@]}"; do
+					case "$arch" in
+						linux-*) downloadSuffix="_${arch}_bin.tar.gz" ;;
+						windows-*) downloadSuffix="_${arch}_bin.zip" ;;
+						*) echo >&2 "error: unknown Oracle arch: '$arch'"; exit 1 ;;
+					esac
+					if downloadUrl="$(jdk-java-net-download-url "$javaVersion" "$downloadSuffix")" \
+						&& [ -n "$downloadUrl" ] \
+						&& downloadSha256="$(wget -qO- "$downloadUrl.sha256")" \
+						&& [ -n "$downloadSha256" ] \
+					; then
+						archSha256s["$arch"]="$downloadSha256"
+						archUrls["$arch"]="$downloadUrl"
+						downloadVersion="$(jdk-java-net-download-version "$javaVersion" "$downloadUrl")"
+						archVersions["$arch"]="$downloadVersion"
+					fi
+				done
+
+				arch='linux-x64-musl'
+				if [ -n "${archSha256s["$arch"]:-}" ]; then
+					downloadUrl="${archUrls["$arch"]}"
+					downloadSha256="${archSha256s["$arch"]}"
+					downloadVersion="${archVersions["$arch"]}"
+					unset archUrls["$arch"] archSha256s["$arch"] archVersions["$arch"]
 
 					echo "$javaVersion-$javaType: $downloadVersion (alpine)"
+
+					mkdir -p "$dir/alpine"
 
 					sed -r \
 						-e 's!^(ENV JAVA_HOME) .*!\1 /opt/openjdk-'"$javaVersion"'!' \
@@ -199,29 +237,16 @@ for javaVersion in "${versions[@]}"; do
 						-e 's!^(ENV JAVA_URL) .*!\1 '"$downloadUrl"'!' \
 						-e 's!^(ENV JAVA_SHA256) .*!\1 '"$downloadSha256"'!' \
 						Dockerfile-oracle-alpine.template > "$dir/alpine/Dockerfile"
+				else
+					rm -rf "$dir/alpine"
 				fi
 
-				downloadUrl="$(jdk-java-net-download-url "$javaVersion" '_linux-x64_bin.tar.gz')"
-				downloadSha256="$(wget -qO- "$downloadUrl.sha256")"
-				downloadVersion="$(jdk-java-net-download-version "$javaVersion" "$downloadUrl")"
-
-				echo "$javaVersion-$javaType: $downloadVersion (oracle)"
-
-				for variant in oracle debian slim; do
-					[ "$variant" = 'debian' ] && variantDir="$dir" || variantDir="$dir/$variant"
-					[ -d "$variantDir" ] || continue
-					sed -r \
-						-e 's!^(ENV JAVA_HOME) .*!\1 /usr/java/openjdk-'"$javaVersion"'!' \
-						-e 's!^(ENV JAVA_VERSION) .*!\1 '"$downloadVersion"'!' \
-						-e 's!^(ENV JAVA_URL) .*!\1 '"$downloadUrl"'!' \
-						-e 's!^(ENV JAVA_SHA256) .*!\1 '"$downloadSha256"'!' \
-						"Dockerfile-oracle-$variant.template" > "$variantDir/Dockerfile"
-				done
-
-				if [ -d "$dir/windows" ]; then
-					downloadUrl="$(jdk-java-net-download-url "$javaVersion" '_windows-x64_bin.zip')"
-					downloadSha256="$(wget -qO- "$downloadUrl.sha256")"
-					downloadVersion="$(jdk-java-net-download-version "$javaVersion" "$downloadUrl")"
+				arch='windows-x64'
+				if [ -n "${archSha256s["$arch"]:-}" ]; then
+					downloadUrl="${archUrls["$arch"]}"
+					downloadSha256="${archSha256s["$arch"]}"
+					downloadVersion="${archVersions["$arch"]}"
+					unset archUrls["$arch"] archSha256s["$arch"] archVersions["$arch"]
 
 					echo "$javaVersion-$javaType: $downloadVersion (windows)"
 
@@ -241,7 +266,44 @@ for javaVersion in "${versions[@]}"; do
 							-e 's!%%SERVERCORE-IMAGE%%!'"$serverCoreImage"'!g' \
 							"Dockerfile-oracle-windows-$windowsVariant.template" > "$winD/Dockerfile"
 					done
+				else
+					rm -rf "$dir/windows"
 				fi
+
+				downloadVersion="${archVersions['linux-x64']}"
+				linuxArchCase=$'case "$arch" in \\\n'
+				for arch in "${possibleArches[@]}"; do
+					if [ -n "${archSha256s["$arch"]:-}" ]; then
+						if [ "$downloadVersion" != "${archVersions["$arch"]}" ]; then
+							echo >&2 "error: version for '$arch' does not match 'linux-x64': $downloadVersion vs ${archVersions["$arch"]}"
+							exit 1
+						fi
+						case "$arch" in
+							# dpkg-architecture | "objdump --file-headers /sbin/init | awk -F '[:,]+[[:space:]]+' '$1 == "architecture" { print $2 }'"
+							*-x64) caseArch='amd64 | i386:x86-64'; bashbrewArch='amd64' ;;
+							*-aarch64) caseArch='arm64 | aarch64'; bashbrewArch='arm64v8' ;;
+							*) echo >&2 "error: unknown Oracle case arch: '$arch'"; exit 1 ;;
+						esac
+						linuxArchCase+="# $bashbrewArch"$'\n'
+						newArchCase="$(printf '\t\t%s) \\\n\t\t\tdownloadUrl=%q; \\\n\t\t\tdownloadSha256=%q; \\\n\t\t\t;;' "$caseArch" "${archUrls["$arch"]}" "${archSha256s["$arch"]}")"
+						linuxArchCase+="$newArchCase"$' \\\n'
+					fi
+				done
+				linuxArchCase+=$'# fallback\n'
+				linuxArchCase+=$'\t\t*) echo >&2 "error: unsupported architecture: \'$arch\'"; exit 1 ;; \\\n'
+				linuxArchCase+=$'\tesac'
+
+				echo "$javaVersion-$javaType: $downloadVersion (oracle); ${!archSha256s[*]}"
+
+				for variant in oracle debian slim; do
+					[ "$variant" = 'debian' ] && variantDir="$dir" || variantDir="$dir/$variant"
+					mkdir -p "$variantDir"
+					sed -r \
+						-e 's!^(ENV JAVA_HOME) .*!\1 /usr/java/openjdk-'"$javaVersion"'!' \
+						-e 's!^(ENV JAVA_VERSION) .*!\1 '"$downloadVersion"'!' \
+						-e 's!%%ARCH-CASE%%!'"$(sed_escape_rhs "$linuxArchCase")"'!g' \
+						"Dockerfile-oracle-$variant.template" > "$variantDir/Dockerfile"
+				done
 				;;
 
 			*)

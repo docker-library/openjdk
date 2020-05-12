@@ -40,6 +40,22 @@ dirCommit() {
 	)
 }
 
+getArches() {
+	local repo="$1"; shift
+	local officialImagesUrl='https://github.com/docker-library/official-images/raw/master/library/'
+
+	eval "declare -g -A parentRepoToArches=( $(
+		find -name 'Dockerfile' -exec awk '
+				toupper($1) == "FROM" && $2 !~ /^('"$repo"'|scratch|.*\/.*)(:|$)/ {
+					print "'"$officialImagesUrl"'" $2
+				}
+			' '{}' + \
+			| sort -u \
+			| xargs bashbrew cat --format '[{{ .RepoName }}:{{ .TagName }}]="{{ join " " .TagEntry.Architectures }}"'
+	) )"
+}
+getArches 'openjdk'
+
 cat <<-EOH
 # this file is generated via https://github.com/docker-library/openjdk/blob/$(fileCommit "$self")/$self
 
@@ -146,7 +162,21 @@ for javaVersion in "${versions[@]}"; do
 
 				# https://jdk.java.net/14/
 				# https://jdk.java.net/15/
-				14 | 15) variantArches='amd64' ;;
+				14 | 15)
+					if [ "$v" = 'alpine' ]; then
+						variantArches='amd64'
+					else
+						# see "update.sh" for where these comment lines get embedded
+						parent="$(git show "$commit":"$dir/Dockerfile" | awk '$1 == "FROM" { print $2; exit }')"
+						parentArches="${parentRepoToArches[$parent]:-}"
+						variantArches=
+						for arch in $parentArches; do
+							if git show "$commit":"$dir/Dockerfile" | grep -qE "^# $arch\$"; then
+								variantArches+=" $arch"
+							fi
+						done
+					fi
+					;;
 
 				*) echo >&2 "error: unknown javaVersion: $javaVersion (while trying to determine 'variantArches')"; exit 1 ;;
 			esac

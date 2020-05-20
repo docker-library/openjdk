@@ -23,13 +23,25 @@ ENV PATH $JAVA_HOME/bin:$PATH
 # https://jdk.java.net/
 # > Java Development Kit builds, from Oracle
 ENV JAVA_VERSION 14.0.1
-ENV JAVA_URL https://download.java.net/java/GA/jdk14.0.1/664493ef4a6946b186ff29eb326336a2/7/GPL/openjdk-14.0.1_linux-x64_bin.tar.gz
-ENV JAVA_SHA256 22ce248e0bd69f23028625bede9d1b3080935b68d011eaaf9e241f84d6b9c4cc
 
 RUN set -eux; \
 	\
-	curl -fL -o /openjdk.tgz "$JAVA_URL"; \
-	echo "$JAVA_SHA256 */openjdk.tgz" | sha256sum -c -; \
+	objdump="$(command -v objdump)"; \
+	arch="$(objdump --file-headers "$objdump" | awk -F '[:,]+[[:space:]]+' '$1 == "architecture" { print $2 }')"; \
+# this "case" statement is generated via "update.sh"
+	case "$arch" in \
+# amd64
+		amd64 | i386:x86-64) \
+			downloadUrl=https://download.java.net/java/GA/jdk14.0.1/664493ef4a6946b186ff29eb326336a2/7/GPL/openjdk-14.0.1_linux-x64_bin.tar.gz; \
+			downloadSha256=22ce248e0bd69f23028625bede9d1b3080935b68d011eaaf9e241f84d6b9c4cc; \
+			;; \
+# fallback
+		*) echo >&2 "error: unsupported architecture: '$arch'"; exit 1 ;; \
+	esac; \
+	\
+	curl -fL -o /openjdk.tgz "$downloadUrl"; \
+	echo "$downloadSha256 */openjdk.tgz" | sha256sum -c -; \
+	\
 	mkdir -p "$JAVA_HOME"; \
 	tar --extract --file /openjdk.tgz --directory "$JAVA_HOME" --strip-components 1; \
 	rm /openjdk.tgz; \

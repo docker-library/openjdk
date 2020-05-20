@@ -32,13 +32,28 @@ RUN { echo '#/bin/sh'; echo 'echo "$JAVA_HOME"'; } > /usr/local/bin/docker-java-
 # https://jdk.java.net/
 # > Java Development Kit builds, from Oracle
 ENV JAVA_VERSION 15-ea+23
-ENV JAVA_URL https://download.java.net/java/early_access/jdk15/23/GPL/openjdk-15-ea+23_linux-x64_bin.tar.gz
-ENV JAVA_SHA256 0a3a3f2bb3005d848f9a579c46c1cb581b46d6805faf673a7c1b5a2f158cd1b0
 
 RUN set -eux; \
 	\
-	wget -O openjdk.tgz "$JAVA_URL"; \
-	echo "$JAVA_SHA256 */openjdk.tgz" | sha256sum -c -; \
+	arch="$(dpkg --print-architecture)"; \
+# this "case" statement is generated via "update.sh"
+	case "$arch" in \
+# arm64v8
+		arm64 | aarch64) \
+			downloadUrl=https://download.java.net/java/early_access/jdk15/23/GPL/openjdk-15-ea+23_linux-aarch64_bin.tar.gz; \
+			downloadSha256=c9817b2efa619dcde0d4a5fa9dd1d6bcbe5bdf05fee152e9a06387544c4e5c90; \
+			;; \
+# amd64
+		amd64 | i386:x86-64) \
+			downloadUrl=https://download.java.net/java/early_access/jdk15/23/GPL/openjdk-15-ea+23_linux-x64_bin.tar.gz; \
+			downloadSha256=0a3a3f2bb3005d848f9a579c46c1cb581b46d6805faf673a7c1b5a2f158cd1b0; \
+			;; \
+# fallback
+		*) echo >&2 "error: unsupported architecture: '$arch'"; exit 1 ;; \
+	esac; \
+	\
+	wget -O openjdk.tgz "$downloadUrl"; \
+	echo "$downloadSha256 */openjdk.tgz" | sha256sum -c -; \
 	\
 	mkdir -p "$JAVA_HOME"; \
 	tar --extract \

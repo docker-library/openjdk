@@ -20,8 +20,6 @@ RUN { echo '#/bin/sh'; echo 'echo "$JAVA_HOME"'; } > /usr/local/bin/docker-java-
 # https://jdk.java.net/
 # > Java Development Kit builds, from Oracle
 ENV JAVA_VERSION 14.0.1
-ENV JAVA_URL https://download.java.net/java/GA/jdk14.0.1/664493ef4a6946b186ff29eb326336a2/7/GPL/openjdk-14.0.1_linux-x64_bin.tar.gz
-ENV JAVA_SHA256 22ce248e0bd69f23028625bede9d1b3080935b68d011eaaf9e241f84d6b9c4cc
 
 RUN set -eux; \
 	\
@@ -32,8 +30,20 @@ RUN set -eux; \
 	; \
 	rm -rf /var/lib/apt/lists/*; \
 	\
-	wget -O openjdk.tgz "$JAVA_URL"; \
-	echo "$JAVA_SHA256 */openjdk.tgz" | sha256sum -c -; \
+	arch="$(dpkg --print-architecture)"; \
+# this "case" statement is generated via "update.sh"
+	case "$arch" in \
+# amd64
+		amd64 | i386:x86-64) \
+			downloadUrl=https://download.java.net/java/GA/jdk14.0.1/664493ef4a6946b186ff29eb326336a2/7/GPL/openjdk-14.0.1_linux-x64_bin.tar.gz; \
+			downloadSha256=22ce248e0bd69f23028625bede9d1b3080935b68d011eaaf9e241f84d6b9c4cc; \
+			;; \
+# fallback
+		*) echo >&2 "error: unsupported architecture: '$arch'"; exit 1 ;; \
+	esac; \
+	\
+	wget -O openjdk.tgz "$downloadUrl"; \
+	echo "$downloadSha256 */openjdk.tgz" | sha256sum -c -; \
 	\
 	mkdir -p "$JAVA_HOME"; \
 	tar --extract \

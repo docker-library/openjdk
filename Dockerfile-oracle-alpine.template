@@ -14,6 +14,7 @@ RUN set -eux; \
 	\
 	wget -O /openjdk.tgz "$JAVA_URL"; \
 	echo "$JAVA_SHA256 */openjdk.tgz" | sha256sum -c -; \
+	\
 	mkdir -p "$JAVA_HOME"; \
 	tar --extract --file /openjdk.tgz --directory "$JAVA_HOME" --strip-components 1; \
 	rm /openjdk.tgz; \

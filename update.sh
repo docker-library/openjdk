@@ -190,9 +190,10 @@ for javaVersion in "${versions[@]}"; do
 				sed -i -e '${/^$/d;}' "${dockerfiles[@]}"
 				;;
 
-			14 | 15)
+			14 | 15 | 16)
 				possibleArches=(
 					# https://jdk.java.net/15/
+					# https://jdk.java.net/16/
 					'linux-aarch64'
 					'linux-x64'
 					'linux-x64-musl'

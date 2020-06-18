@@ -162,7 +162,8 @@ for javaVersion in "${versions[@]}"; do
 
 				# https://jdk.java.net/14/
 				# https://jdk.java.net/15/
-				14 | 15)
+				# https://jdk.java.net/16/
+				14 | 15 | 16)
 					if [ "$v" = 'alpine' ]; then
 						variantArches='amd64'
 					else

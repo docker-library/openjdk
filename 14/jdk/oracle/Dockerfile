@@ -59,6 +59,10 @@ RUN set -eux; \
 # https://openjdk.java.net/jeps/341
 	java -Xshare:dump; \
 	\
+# see "update-ca-trust" script which creates/maintains this cacerts bundle
+	rm -rf "$JAVA_HOME/lib/security/cacerts"; \
+	ln -sT /etc/pki/ca-trust/extracted/java/cacerts "$JAVA_HOME/lib/security/cacerts"; \
+	\
 # basic smoke test
 	java --version; \
 	javac --version

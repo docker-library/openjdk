@@ -1,5 +1,7 @@
 FROM alpine:3.11
 
+RUN apk add --no-cache java-cacerts
+
 ENV JAVA_HOME placeholder
 ENV PATH $JAVA_HOME/bin:$PATH
 
@@ -22,6 +24,10 @@ RUN set -eux; \
 # https://github.com/docker-library/openjdk/issues/212#issuecomment-420979840
 # https://openjdk.java.net/jeps/341
 	java -Xshare:dump; \
+	\
+# see "java-cacerts" package installed above (which maintains "/etc/ssl/certs/java/cacerts" for us)
+	rm -rf "$JAVA_HOME/lib/security/cacerts"; \
+	ln -sT /etc/ssl/certs/java/cacerts "$JAVA_HOME/lib/security/cacerts"; \
 	\
 # basic smoke test
 	java --version; \

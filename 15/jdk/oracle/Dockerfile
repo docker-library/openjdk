@@ -22,7 +22,7 @@ ENV PATH $JAVA_HOME/bin:$PATH
 
 # https://jdk.java.net/
 # > Java Development Kit builds, from Oracle
-ENV JAVA_VERSION 15-ea+28
+ENV JAVA_VERSION 15-ea+29
 
 RUN set -eux; \
 	\
@@ -32,13 +32,13 @@ RUN set -eux; \
 	case "$arch" in \
 # arm64v8
 		arm64 | aarch64) \
-			downloadUrl=https://download.java.net/java/early_access/jdk15/28/GPL/openjdk-15-ea+28_linux-aarch64_bin.tar.gz; \
-			downloadSha256=5537ebe5b7beaa80af444a8494dcc1bad474ffae19803ba5327a14071a244869; \
+			downloadUrl=https://download.java.net/java/early_access/jdk15/29/GPL/openjdk-15-ea+29_linux-aarch64_bin.tar.gz; \
+			downloadSha256=66c4e6595969bbef90735328ca384cc94ac9b2800ad61dd5a051315cc6bd2035; \
 			;; \
 # amd64
 		amd64 | i386:x86-64) \
-			downloadUrl=https://download.java.net/java/early_access/jdk15/28/GPL/openjdk-15-ea+28_linux-x64_bin.tar.gz; \
-			downloadSha256=dd7a0712379df213edd7dcee8c7e0ab06b117d851f05c55dbcaabf72536c347e; \
+			downloadUrl=https://download.java.net/java/early_access/jdk15/29/GPL/openjdk-15-ea+29_linux-x64_bin.tar.gz; \
+			downloadSha256=a0b14c0e3cd626b23ceeb3f7b84b2d395dcaa832bd4eace4cf9c47fc761cbe0f; \
 			;; \
 # fallback
 		*) echo >&2 "error: unsupported architecture: '$arch'"; exit 1 ;; \

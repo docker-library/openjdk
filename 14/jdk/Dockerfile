@@ -40,8 +40,8 @@ RUN set -eux; \
 	case "$arch" in \
 # amd64
 		amd64 | i386:x86-64) \
-			downloadUrl=https://download.java.net/java/GA/jdk14.0.2/205943a0976c4ed48cb16f1043c5c647/11/GPL/openjdk-14.0.2_linux-x64_bin.tar.gz; \
-			downloadSha256=499b6907af5da930dadee5e5c7a895ae1ecf8c512279219884d49dcdaf6bac4e; \
+			downloadUrl=https://download.java.net/java/GA/jdk14.0.2/205943a0976c4ed48cb16f1043c5c647/12/GPL/openjdk-14.0.2_linux-x64_bin.tar.gz; \
+			downloadSha256=91310200f072045dc6cef2c8c23e7e6387b37c46e9de49623ce0fa461a24623d; \
 			;; \
 # fallback
 		*) echo >&2 "error: unsupported architecture: '$arch'"; exit 1 ;; \

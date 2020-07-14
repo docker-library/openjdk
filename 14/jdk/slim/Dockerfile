@@ -19,7 +19,7 @@ RUN { echo '#/bin/sh'; echo 'echo "$JAVA_HOME"'; } > /usr/local/bin/docker-java-
 
 # https://jdk.java.net/
 # > Java Development Kit builds, from Oracle
-ENV JAVA_VERSION 14.0.1
+ENV JAVA_VERSION 14.0.2
 
 RUN set -eux; \
 	\
@@ -35,8 +35,8 @@ RUN set -eux; \
 	case "$arch" in \
 # amd64
 		amd64 | i386:x86-64) \
-			downloadUrl=https://download.java.net/java/GA/jdk14.0.1/664493ef4a6946b186ff29eb326336a2/7/GPL/openjdk-14.0.1_linux-x64_bin.tar.gz; \
-			downloadSha256=22ce248e0bd69f23028625bede9d1b3080935b68d011eaaf9e241f84d6b9c4cc; \
+			downloadUrl=https://download.java.net/java/GA/jdk14.0.2/205943a0976c4ed48cb16f1043c5c647/11/GPL/openjdk-14.0.2_linux-x64_bin.tar.gz; \
+			downloadSha256=499b6907af5da930dadee5e5c7a895ae1ecf8c512279219884d49dcdaf6bac4e; \
 			;; \
 # fallback
 		*) echo >&2 "error: unsupported architecture: '$arch'"; exit 1 ;; \

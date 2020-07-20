@@ -7,9 +7,9 @@ ENV PATH $JAVA_HOME/bin:$PATH
 
 # https://jdk.java.net/
 # > Java Development Kit builds, from Oracle
-ENV JAVA_VERSION 15-ea+10
-ENV JAVA_URL https://download.java.net/java/early_access/alpine/10/binaries/openjdk-15-ea+10_linux-x64-musl_bin.tar.gz
-ENV JAVA_SHA256 15a5e8002e24ed129b82bfe55ffe4bdbf3cfd0a7e5ad3399879cdd44175bfd06
+ENV JAVA_VERSION 15-ea+31
+ENV JAVA_URL https://download.java.net/java/early_access/alpine/31/binaries/openjdk-15-ea+31_linux-x64-musl_bin.tar.gz
+ENV JAVA_SHA256 da7abd4d3b3511ed2da8aba25b7ff67863261a0c8b5e7e771cf0fbfadcc7f4fd
 # "For Alpine Linux, builds are produced on a reduced schedule and may not be in sync with the other platforms."
 
 RUN set -eux; \

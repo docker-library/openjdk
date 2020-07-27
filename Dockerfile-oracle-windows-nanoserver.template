@@ -10,7 +10,9 @@ RUN echo Updating PATH: %JAVA_HOME%\bin;%PATH% \
 USER ContainerUser
 
 # https://jdk.java.net/
+# >
 # > Java Development Kit builds, from Oracle
+# >
 ENV JAVA_VERSION placeholder
 
 COPY --from=%%SERVERCORE-IMAGE%% $JAVA_HOME $JAVA_HOME

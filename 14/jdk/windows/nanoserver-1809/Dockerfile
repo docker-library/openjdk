@@ -10,10 +10,12 @@ RUN echo Updating PATH: %JAVA_HOME%\bin;%PATH% \
 USER ContainerUser
 
 # https://jdk.java.net/
+# >
 # > Java Development Kit builds, from Oracle
+# >
 ENV JAVA_VERSION 14.0.2
 
-COPY --from=openjdk:14.0.2-windowsservercore-1809 $JAVA_HOME $JAVA_HOME
+COPY --from=openjdk:14.0.2-jdk-windowsservercore-1809 $JAVA_HOME $JAVA_HOME
 
 RUN echo Verifying install ... \
 	&& echo   javac --version && javac --version \

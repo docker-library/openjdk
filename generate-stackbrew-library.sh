@@ -6,6 +6,9 @@ declare -A aliases=(
 	[14-jre]='jre'
 )
 defaultType='jdk'
+defaultAlpine='3.12'
+defaultDebian='buster'
+defaultOracle='7'
 
 image="${1:-openjdk}"
 
@@ -82,12 +85,12 @@ _latest() {
 
 	if [ "$javaVersion" -ge 12 ]; then
 		# version 12+ moves "latest" over to the Oracle-based builds (and includes Windows!)
-		if [ "$variant" = 'oracle' ]; then
+		if [ "$variant" = "oraclelinux$defaultOracle" ]; then
 			return 0
 		fi
 	else
-		# for versions < 12, the non-variant variant (which is Debian) should be "latest"
-		if [ -z "$variant" ]; then
+		# for versions < 12, the Debian variant should be "latest"
+		if [ "$variant" = "$defaultDebian" ]; then
 			return 0
 		fi
 	fi
@@ -141,49 +144,33 @@ aliases() {
 for javaVersion in "${versions[@]}"; do
 	for javaType in jdk jre; do
 		for v in \
-			oracle '' slim alpine \
+			oraclelinux7 \
+			{,slim-}buster \
+			alpine3.12 \
 			windows/windowsservercore-{1809,ltsc2016} \
 			windows/nanoserver-1809 \
 		; do
-			dir="$javaVersion/$javaType${v:+/$v}"
-			[ -n "$v" ] && variant="$(basename "$v")" || variant=
-
+			dir="$javaVersion/$javaType/$v"
 			[ -f "$dir/Dockerfile" ] || continue
+			variant="$(basename "$v")"
 
 			commit="$(dirCommit "$dir")"
 
 			fullVersion="$(git show "$commit":"$dir/Dockerfile" | awk '$1 == "ENV" && $2 == "JAVA_VERSION" { gsub(/[~+]/, "-", $3); print $3; exit }')"
 
 			variantArches=
-			case "$javaVersion" in
-				# https://adoptopenjdk.net/upstream.html
-				8) variantArches='amd64' ;;
-				11) variantArches='amd64 arm64v8' ;;
-
-				# https://jdk.java.net/14/
-				# https://jdk.java.net/15/
-				# https://jdk.java.net/16/
-				14 | 15 | 16)
-					if [ "$v" = 'alpine' ]; then
-						variantArches='amd64'
-					else
-						# see "update.sh" for where these comment lines get embedded
-						parent="$(git show "$commit":"$dir/Dockerfile" | awk '$1 == "FROM" { print $2; exit }')"
-						parentArches="${parentRepoToArches[$parent]:-}"
-						variantArches=
-						for arch in $parentArches; do
-							if git show "$commit":"$dir/Dockerfile" | grep -qE "^# $arch\$"; then
-								variantArches+=" $arch"
-							fi
-						done
-					fi
-					;;
-
-				*) echo >&2 "error: unknown javaVersion: $javaVersion (while trying to determine 'variantArches')"; exit 1 ;;
-			esac
-
 			case "$v" in
 				windows/*) variantArches='windows-amd64' ;;
+				*)
+					# see "update.sh" for where these comment lines get embedded
+					parent="$(git show "$commit":"$dir/Dockerfile" | awk '$1 == "FROM" { print $2; exit }')"
+					parentArches="${parentRepoToArches[$parent]:-}"
+					for arch in $parentArches; do
+						if git show "$commit":"$dir/Dockerfile" | grep -qE "^# $arch\$"; then
+							variantArches+=" $arch"
+						fi
+					done
+					;;
 			esac
 
 			sharedTags=()
@@ -197,47 +184,23 @@ for javaVersion in "${versions[@]}"; do
 				sharedTags+=( $(aliases "$javaVersion" "$javaType" "$fullVersion" 'latest') )
 			fi
 
-			variantAliases=()
-			fromTag="$(git show "$commit":"$dir/Dockerfile" | awk -v variant="$variant" '
-				$1 == "FROM" {
-					# "switch" is a gawk-ism
-					if ($2 ~ /^mcr.microsoft.com\//) {
-						$2 = ""
-					}
-					else if ($2 ~ /^(alpine|oraclelinux):/) {
-						gsub(/:/, "", $2) # "alpine3.7", "alpine3.6", etc
-						gsub(/-slim$/, "", $2) # "oraclelinux:7-slim"
-					}
-					else {
-						gsub(/^[^:]+:/, "", $2) # peel off "debian:", "buildpack-deps:", etc
-						gsub(/-[^-]+$/, "", $2) # peel off "-scm", "-curl", etc
-					}
-					fromTag = $2
-				}
-				END {
-					if (fromTag) {
-						if (variant && fromTag !~ /^(alpine|oraclelinux)/) {
-							# "slim-stretch", "slim-jessie", etc
-							printf "%s-", variant
-						}
-						print fromTag
-					}
-				}
-			')"
-			if [ -n "$fromTag" ]; then
-				variantAliases+=( "$fromTag" )
-			fi
-			variantAliases+=( "$variant" )
+			variantAliases=( "$variant" )
+			case "$variant" in
+				"oraclelinux$defaultOracle") variantAliases+=( oracle ) ;;
+				"slim-$defaultDebian") variantAliases+=( slim ) ;;
+				"alpine$defaultAlpine") variantAliases+=( alpine ) ;;
+			esac
 
 			constraints=
-			if [ "$variant" != "$v" ]; then
-				# windows
-				constraints="$variant"
-				if [[ "$variant" == nanoserver-* ]]; then
-					# nanoserver variants "COPY --from=...:...-windowsservercore-... ..."
-					constraints+=", windowsservercore-${variant#nanoserver-}"
-				fi
-			fi
+			case "$v" in
+				windows/*)
+					constraints="$variant"
+					if [[ "$variant" == nanoserver-* ]]; then
+						# nanoserver variants "COPY --from=...:...-windowsservercore-... ..."
+						constraints+=", windowsservercore-${variant#nanoserver-}"
+					fi
+					;;
+			esac
 
 			echo
 			echo "Tags: $(join ', ' $(aliases "$javaVersion" "$javaType" "$fullVersion" "${variantAliases[@]}"))"

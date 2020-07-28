@@ -23,7 +23,9 @@ RUN $newPath = ('{0}\bin;{1}' -f $env:JAVA_HOME, $env:PATH); \
 	setx /M PATH $newPath
 
 # https://jdk.java.net/
+# >
 # > Java Development Kit builds, from Oracle
+# >
 ENV JAVA_VERSION 16-ea+7
 ENV JAVA_URL https://download.java.net/java/early_access/jdk16/7/GPL/openjdk-16-ea+7_windows-x64_bin.zip
 ENV JAVA_SHA256 51f0d39c14feb7c4ce970aebb3ec35c33b6511023842c1122c62b83ea3292339
@@ -52,6 +54,5 @@ RUN Write-Host ('Downloading {0} ...' -f $env:JAVA_URL); \
 	\
 	Write-Host 'Complete.'
 
-# https://docs.oracle.com/javase/10/tools/jshell.htm
-# https://en.wikipedia.org/wiki/JShell
+# "jshell" is an interactive REPL for Java (see https://en.wikipedia.org/wiki/JShell)
 CMD ["jshell"]

@@ -23,7 +23,9 @@ RUN $newPath = ('{0}\bin;{1}' -f $env:JAVA_HOME, $env:PATH); \
 	setx /M PATH $newPath
 
 # https://jdk.java.net/
+# >
 # > Java Development Kit builds, from Oracle
+# >
 ENV JAVA_VERSION 14.0.2
 ENV JAVA_URL https://download.java.net/java/GA/jdk14.0.2/205943a0976c4ed48cb16f1043c5c647/12/GPL/openjdk-14.0.2_windows-x64_bin.zip
 ENV JAVA_SHA256 20600c0bda9d1db9d20dbe1ab656a5f9175ffb990ef3df6af5d994673e4d8ff9
@@ -52,6 +54,5 @@ RUN Write-Host ('Downloading {0} ...' -f $env:JAVA_URL); \
 	\
 	Write-Host 'Complete.'
 
-# https://docs.oracle.com/javase/10/tools/jshell.htm
-# https://en.wikipedia.org/wiki/JShell
+# "jshell" is an interactive REPL for Java (see https://en.wikipedia.org/wiki/JShell)
 CMD ["jshell"]

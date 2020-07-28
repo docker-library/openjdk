@@ -1,4 +1,4 @@
-FROM oraclelinux:placeholder-slim
+FROM oraclelinux:8-slim
 
 RUN set -eux; \
 	microdnf install \
@@ -17,21 +17,29 @@ RUN set -eux; \
 # Default to UTF-8 file.encoding
 ENV LANG en_US.UTF-8
 
-ENV JAVA_HOME placeholder
+ENV JAVA_HOME /usr/java/openjdk-14
 ENV PATH $JAVA_HOME/bin:$PATH
 
 # https://jdk.java.net/
 # >
 # > Java Development Kit builds, from Oracle
 # >
-ENV JAVA_VERSION placeholder
+ENV JAVA_VERSION 14.0.2
 
 RUN set -eux; \
 	\
 	objdump="$(command -v objdump)"; \
 	arch="$(objdump --file-headers "$objdump" | awk -F '[:,]+[[:space:]]+' '$1 == "architecture" { print $2 }')"; \
 # this "case" statement is generated via "update.sh"
-	%%ARCH-CASE%%; \
+	case "$arch" in \
+# amd64
+		amd64 | i386:x86-64) \
+			downloadUrl=https://download.java.net/java/GA/jdk14.0.2/205943a0976c4ed48cb16f1043c5c647/12/GPL/openjdk-14.0.2_linux-x64_bin.tar.gz; \
+			downloadSha256=91310200f072045dc6cef2c8c23e7e6387b37c46e9de49623ce0fa461a24623d; \
+			;; \
+# fallback
+		*) echo >&2 "error: unsupported architecture: '$arch'"; exit 1 ;; \
+	esac; \
 	\
 	curl -fL -o openjdk.tgz "$downloadUrl"; \
 	echo "$downloadSha256 *openjdk.tgz" | sha256sum --strict --check -; \

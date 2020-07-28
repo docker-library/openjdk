@@ -8,7 +8,7 @@ declare -A aliases=(
 defaultType='jdk'
 defaultAlpine='3.12'
 defaultDebian='buster'
-defaultOracle='7'
+defaultOracle='8'
 
 image="${1:-openjdk}"
 
@@ -144,7 +144,7 @@ aliases() {
 for javaVersion in "${versions[@]}"; do
 	for javaType in jdk jre; do
 		for v in \
-			oraclelinux7 \
+			oraclelinux{8,7} \
 			{,slim-}buster \
 			alpine3.12 \
 			windows/windowsservercore-{1809,ltsc2016} \

@@ -280,7 +280,7 @@ for javaVersion in "${versions[@]}"; do
 		alpineArchCase="${archCasePrefix}${alpineArchCase}${archCaseSuffix}"
 
 		for variant in \
-			oraclelinux7 \
+			oraclelinux{8,7} \
 			{,slim-}buster \
 			alpine3.12 \
 			windows/windowsservercore-{1809,ltsc2016} \
@@ -303,10 +303,18 @@ for javaVersion in "${versions[@]}"; do
 					;;
 				oraclelinux*)
 					template="Dockerfile-$downloadSource-oraclelinux.template"
-					from="oraclelinux:${variant#oraclelinux}-slim"
+					oracleVersion="${variant#oraclelinux}" # "7", "8", etc
+					from="oraclelinux:$oracleVersion-slim"
 					variantVersion="$linuxVersion"
 					variantJavaHome="/usr/java/openjdk-$javaVersion"
 					variantArchCase="$linuxArchCase"
+					if [ "$oracleVersion" -eq 7 ]; then
+						# yum vs microdnf in Oracle Linux 7
+						sedArgs+=(
+							-e "$(sed_s 'microdnf install' 'yum install -y')"
+							-e "$(sed_s 'microdnf clean all' 'rm -rf /var/cache/yum')"
+						)
+					fi
 					;;
 				windows/*)
 					variantVersion="$windowsVersion"

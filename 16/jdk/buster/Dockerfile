@@ -33,7 +33,7 @@ RUN { echo '#/bin/sh'; echo 'echo "$JAVA_HOME"'; } > /usr/local/bin/docker-java-
 # >
 # > Java Development Kit builds, from Oracle
 # >
-ENV JAVA_VERSION 16-ea+9
+ENV JAVA_VERSION 16-ea+11
 
 RUN set -eux; \
 	\
@@ -42,13 +42,13 @@ RUN set -eux; \
 	case "$arch" in \
 # arm64v8
 		arm64 | aarch64) \
-			downloadUrl=https://download.java.net/java/early_access/jdk16/9/GPL/openjdk-16-ea+9_linux-aarch64_bin.tar.gz; \
-			downloadSha256=a6af410ef3cbc0a6759af3d37ecc49f94c90814dde4aca84af4152b152e7eddc; \
+			downloadUrl=https://download.java.net/java/early_access/jdk16/11/GPL/openjdk-16-ea+11_linux-aarch64_bin.tar.gz; \
+			downloadSha256=4c29bf2f7773d5eced73448f29bfa171fb19d66b4428f606aaedc4aba2675ab5; \
 			;; \
 # amd64
 		amd64 | i386:x86-64) \
-			downloadUrl=https://download.java.net/java/early_access/jdk16/9/GPL/openjdk-16-ea+9_linux-x64_bin.tar.gz; \
-			downloadSha256=0f650105086222566b7fe0011a69c70af2e9915b75e2f5736e01b633bb9ad040; \
+			downloadUrl=https://download.java.net/java/early_access/jdk16/11/GPL/openjdk-16-ea+11_linux-x64_bin.tar.gz; \
+			downloadSha256=05c97ccd24ab86dffb7d31d04a331abd3b1556a25ad8dbc164767e6dfc39c151; \
 			;; \
 # fallback
 		*) echo >&2 "error: unsupported architecture: '$arch'"; exit 1 ;; \

@@ -309,10 +309,13 @@ for javaVersion in "${versions[@]}"; do
 					variantJavaHome="/usr/java/openjdk-$javaVersion"
 					variantArchCase="$linuxArchCase"
 					if [ "$oracleVersion" -eq 7 ]; then
-						# yum vs microdnf in Oracle Linux 7
 						sedArgs+=(
+							# yum vs microdnf in Oracle Linux 7
 							-e "$(sed_s 'microdnf install' 'yum install -y')"
 							-e "$(sed_s 'microdnf clean all' 'rm -rf /var/cache/yum')"
+
+							# "en_US.UTF-8" vs "C.UTF-8" in Oracle Linux 7
+							-e "$(sed_s 'C.UTF-8' 'en_US.UTF-8')"
 						)
 					fi
 					;;

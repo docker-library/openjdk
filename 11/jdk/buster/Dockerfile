@@ -104,6 +104,7 @@ RUN set -eux; \
 	ldconfig; \
 	\
 # basic smoke test
+	fileEncoding="$(echo 'System.out.println(System.getProperty("file.encoding"))' | jshell -s -)"; [ "$fileEncoding" = 'UTF-8' ]; rm -rf ~/.java; \
 	javac --version; \
 	java --version
 

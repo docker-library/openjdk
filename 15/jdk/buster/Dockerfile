@@ -40,6 +40,11 @@ RUN set -eux; \
 	arch="$(dpkg --print-architecture)"; \
 # this "case" statement is generated via "update.sh"
 	case "$arch" in \
+# arm64v8
+		arm64 | aarch64) \
+			downloadUrl=https://download.java.net/java/GA/jdk15/779bf45e88a44cbd9ea6621d33e33db1/36/GPL/openjdk-15_linux-aarch64_bin.tar.gz; \
+			downloadSha256=01e7e07dd8a67a65b32fdcaff75ba3f21cd9cfc749287e7c9b1c6037f96a3537; \
+			;; \
 # amd64
 		amd64 | i386:x86-64) \
 			downloadUrl=https://download.java.net/java/GA/jdk15/779bf45e88a44cbd9ea6621d33e33db1/36/GPL/openjdk-15_linux-x64_bin.tar.gz; \

@@ -9,7 +9,7 @@ ENV PATH $JAVA_HOME/bin:$PATH
 # >
 # > Java Development Kit builds, from Oracle
 # >
-ENV JAVA_VERSION 16-ea+14
+ENV JAVA_VERSION 16-ea+23
 # "For Alpine Linux, builds are produced on a reduced schedule and may not be in sync with the other platforms."
 
 RUN set -eux; \
@@ -19,8 +19,8 @@ RUN set -eux; \
 	case "$arch" in \
 # amd64
 		x86_64) \
-			downloadUrl=https://download.java.net/java/early_access/alpine/14/binaries/openjdk-16-ea+14_linux-x64-musl_bin.tar.gz; \
-			downloadSha256=6d6943f9c350ca20fd2892e024c363e538ab4a2c1aeaceeab4450a47cbaca54c; \
+			downloadUrl=https://download.java.net/java/early_access/alpine/23/binaries/openjdk-16-ea+23_linux-x64-musl_bin.tar.gz; \
+			downloadSha256=4e1d9054a4407e63fbb74155b247cf3926cffe9491074ace6d8a51d78dd0958d; \
 			;; \
 # fallback
 		*) echo >&2 "error: unsupported architecture: '$arch'"; exit 1 ;; \

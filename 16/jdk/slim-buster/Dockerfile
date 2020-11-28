@@ -28,11 +28,6 @@ RUN set -eux; \
 	arch="$(dpkg --print-architecture)"; \
 # this "case" statement is generated via "update.sh"
 	case "$arch" in \
-# arm64v8
-		arm64 | aarch64) \
-			downloadUrl=https://download.java.net/java/early_access/jdk16/26/GPL/openjdk-16-ea+26_linux-aarch64_bin.tar.gz; \
-			downloadSha256=1e2fefe414a16aceeae6816b4e48b426e79bb647927a44bbfe4d692156096e74; \
-			;; \
 # amd64
 		amd64 | i386:x86-64) \
 			downloadUrl=https://download.java.net/java/early_access/jdk16/26/GPL/openjdk-16-ea+26_linux-x64_bin.tar.gz; \

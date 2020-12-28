@@ -186,7 +186,7 @@ for javaVersion in "${versions[@]}"; do
 				done
 				;;
 
-			14 | 15 | 16)
+			14 | 15 | 16 | 17)
 				downloadSource='oracle'
 
 				possibleArches=(

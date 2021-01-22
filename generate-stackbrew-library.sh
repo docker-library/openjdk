@@ -6,7 +6,7 @@ declare -A aliases=(
 	[15-jre]='jre'
 )
 defaultType='jdk'
-defaultAlpine='3.12'
+defaultAlpine='3.13'
 defaultDebian='buster'
 defaultOracle='8'
 
@@ -15,11 +15,13 @@ image="${1:-openjdk}"
 self="$(basename "$BASH_SOURCE")"
 cd "$(dirname "$(readlink -f "$BASH_SOURCE")")"
 
-versions=( */ )
-versions=( "${versions[@]%/}" )
+if [ "$#" -eq 0 ]; then
+	versions="$(jq -r 'keys | map(@sh) | join(" ")' versions.json)"
+	eval "set -- $versions"
+fi
 
 # sort version numbers with highest first
-IFS=$'\n'; versions=( $(echo "${versions[*]}" | sort -rV) ); unset IFS
+IFS=$'\n'; set -- $(sort -rV <<<"$*"); unset IFS
 
 # get the most recent commit which modified any of "$@"
 fileCommit() {
@@ -31,15 +33,19 @@ dirCommit() {
 	local dir="$1"; shift
 	(
 		cd "$dir"
-		fileCommit \
-			Dockerfile \
-			$(git show HEAD:./Dockerfile | awk '
+		files="$(
+			git show HEAD:./Dockerfile | awk '
 				toupper($1) == "COPY" {
 					for (i = 2; i < NF; i++) {
+						if ($i ~ /^--from=/) {
+							next
+						}
 						print $i
 					}
 				}
-			')
+			'
+		)"
+		fileCommit Dockerfile $files
 	)
 }
 
@@ -141,47 +147,58 @@ aliases() {
 	echo "${variantAliases[@]}"
 }
 
-for javaVersion in "${versions[@]}"; do
+for version; do
+	export version
+
+	variants="$(jq -r '.[env.version].variants | map(@sh) | join(" ")' versions.json)"
+	eval "variants=( $variants )"
+
 	for javaType in jdk jre; do
-		for v in \
-			oraclelinux{8,7} \
-			{,slim-}buster \
-			alpine3.12 \
-			windows/windowsservercore-{1809,ltsc2016} \
-			windows/nanoserver-1809 \
-		; do
-			dir="$javaVersion/$javaType/$v"
+		export javaType
+
+		for v in "${variants[@]}"; do
+			dir="$version/$javaType/$v"
 			[ -f "$dir/Dockerfile" ] || continue
+
 			variant="$(basename "$v")"
+			export variant
 
 			commit="$(dirCommit "$dir")"
 
-			fullVersion="$(git show "$commit":"$dir/Dockerfile" | awk '$1 == "ENV" && $2 == "JAVA_VERSION" { gsub(/[~+]/, "-", $3); print $3; exit }')"
+			fullVersion="$(jq -r '.[env.version] | if env.variant | startswith("alpine") then .alpine.version else .version end | gsub("[+]"; "-")' versions.json)"
 
 			variantArches=
 			case "$v" in
 				windows/*) variantArches='windows-amd64' ;;
 				*)
 					# see "update.sh" for where these comment lines get embedded
-					parent="$(git show "$commit":"$dir/Dockerfile" | awk '$1 == "FROM" { print $2; exit }')"
+					parent="$(awk 'toupper($1) == "FROM" { print $2; exit }' "$dir/Dockerfile")"
 					parentArches="${parentRepoToArches[$parent]:-}"
-					for arch in $parentArches; do
-						if git show "$commit":"$dir/Dockerfile" | grep -qE "^# $arch\$"; then
-							variantArches+=" $arch"
-						fi
-					done
+					export parentArches
+					variantArches="$(
+						comm -12 \
+							<(
+								jq -r '
+									.[env.version]
+									| if env.variant | startswith("alpine") then .alpine else . end
+									| .[env.javaType].arches
+									| keys[]
+								' versions.json | sort
+							) \
+							<(xargs -n1 <<<"$parentArches" | sort)
+					)"
 					;;
 			esac
 
 			sharedTags=()
 			for windowsShared in windowsservercore nanoserver; do
 				if [[ "$variant" == "$windowsShared"* ]]; then
-					sharedTags+=( $(aliases "$javaVersion" "$javaType" "$fullVersion" "$windowsShared") )
+					sharedTags+=( $(aliases "$version" "$javaType" "$fullVersion" "$windowsShared") )
 					break
 				fi
 			done
-			if _latest "$javaVersion" "$variant"; then
-				sharedTags+=( $(aliases "$javaVersion" "$javaType" "$fullVersion" 'latest') )
+			if _latest "$version" "$variant"; then
+				sharedTags+=( $(aliases "$version" "$javaType" "$fullVersion" 'latest') )
 			fi
 
 			variantAliases=( "$variant" )
@@ -203,7 +220,7 @@ for javaVersion in "${versions[@]}"; do
 			esac
 
 			echo
-			echo "Tags: $(join ', ' $(aliases "$javaVersion" "$javaType" "$fullVersion" "${variantAliases[@]}"))"
+			echo "Tags: $(join ', ' $(aliases "$version" "$javaType" "$fullVersion" "${variantAliases[@]}"))"
 			if [ "${#sharedTags[@]}" -gt 0 ]; then
 				echo "SharedTags: $(join ', ' "${sharedTags[@]}")"
 			fi

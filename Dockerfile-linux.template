@@ -1,0 +1,332 @@
+{{
+	def is_alpine:
+		env.variant | startswith("alpine")
+	;
+	def alpine_version:
+		env.variant | ltrimstr("alpine")
+-}}
+{{
+	def is_oracle:
+		env.variant | startswith("oraclelinux")
+	;
+	def oracle_version:
+		env.variant | ltrimstr("oraclelinux")
+-}}
+{{
+	def is_debian:
+		is_alpine or is_oracle | not
+	;
+	def is_debian_slim:
+		is_debian and (env.variant | startswith("slim-"))
+	;
+	def debian_suite:
+		env.variant | ltrimstr("slim-")
+-}}
+{{
+	if is_alpine then (
+-}}
+FROM alpine:{{ alpine_version }}
+
+RUN apk add --no-cache java-cacerts
+
+ENV JAVA_HOME /opt/openjdk-{{ env.version }}
+{{
+	) elif is_oracle then (
+-}}
+FROM oraclelinux:{{ oracle_version }}-slim
+
+RUN set -eux; \
+{{ if oracle_version == "7" then ( -}}
+	yum install -y \
+{{ ) else ( -}}
+	microdnf install \
+{{ ) end -}}
+		gzip \
+		tar \
+		\
+# jlink --strip-debug on 13+ needs objcopy: https://github.com/docker-library/openjdk/issues/351
+# Error: java.io.IOException: Cannot run program "objcopy": error=2, No such file or directory
+		binutils \
+# java.lang.UnsatisfiedLinkError: /usr/java/openjdk-12/lib/libfontmanager.so: libfreetype.so.6: cannot open shared object file: No such file or directory
+# https://github.com/docker-library/openjdk/pull/235#issuecomment-424466077
+		freetype fontconfig \
+	; \
+{{ if oracle_version == "7" then ( -}}
+	rm -rf /var/cache/yum
+{{ ) else ( -}}
+	microdnf clean all
+{{ ) end -}}
+
+ENV JAVA_HOME /usr/java/openjdk-{{ env.version }}
+{{
+	) else (
+-}}
+FROM {{
+	if is_debian_slim then
+		"debian:" + debian_suite + "-slim"
+	else
+		"buildpack-deps:" + debian_suite + (
+			if env.javaType == "jdk" then
+				"-scm"
+			else
+				"-curl"
+			end
+		)
+	end
+}}
+
+RUN set -eux; \
+	apt-get update; \
+	apt-get install -y --no-install-recommends \
+{{ if is_debian_slim then "" else ( -}}
+		bzip2 \
+		unzip \
+		xz-utils \
+		\
+{{ if env.version | tonumber >= 13 then ( -}}
+# jlink --strip-debug on 13+ needs objcopy: https://github.com/docker-library/openjdk/issues/351
+# Error: java.io.IOException: Cannot run program "objcopy": error=2, No such file or directory
+		binutils \
+		\
+{{ ) else "" end -}}
+# java.lang.UnsatisfiedLinkError: /usr/local/openjdk-11/lib/libfontmanager.so: libfreetype.so.6: cannot open shared object file: No such file or directory
+# java.lang.NoClassDefFoundError: Could not initialize class sun.awt.X11FontManager
+# https://github.com/docker-library/openjdk/pull/235#issuecomment-424466077
+		fontconfig libfreetype6 \
+		\
+{{ ) end -}}
+# utilities for keeping Debian and OpenJDK CA certificates in sync
+		ca-certificates p11-kit \
+	; \
+	rm -rf /var/lib/apt/lists/*
+
+ENV JAVA_HOME /usr/local/openjdk-{{ env.version }}
+{{ if env.version | tonumber < 16 then ( -}}
+RUN { echo '#/bin/sh'; echo 'echo "$JAVA_HOME"'; } > /usr/local/bin/docker-java-home && chmod +x /usr/local/bin/docker-java-home && [ "$JAVA_HOME" = "$(docker-java-home)" ] # backwards compatibility
+{{ ) else "" end -}}
+{{
+	) end
+-}}
+ENV PATH $JAVA_HOME/bin:$PATH
+
+{{ if is_alpine then "" else ( -}}
+# Default to UTF-8 file.encoding
+ENV LANG {{ if is_oracle and oracle_version == "7" then "en_US.UTF-8" else "C.UTF-8" end }}
+
+{{ ) end -}}
+{{ def java_version: if is_alpine then .alpine.version else .version end -}}
+{{ if .source == "oracle" then ( -}}
+# https://jdk.java.net/
+# >
+# > Java Development Kit builds, from Oracle
+# >
+ENV JAVA_VERSION {{ java_version }}
+{{ if is_alpine then ( -}}
+# "For Alpine Linux, builds are produced on a reduced schedule and may not be in sync with the other platforms."
+{{ ) else "" end -}}
+{{ ) else ( -}}
+# https://adoptopenjdk.net/upstream.html
+# >
+# > What are these binaries?
+# >
+# > These binaries are built by Red Hat on their infrastructure on behalf of the OpenJDK jdk8u and jdk11u projects. The binaries are created from the unmodified source code at OpenJDK. Although no formal support agreement is provided, please report any bugs you may find to https://bugs.java.com/.
+# >
+ENV JAVA_VERSION {{ java_version }}
+# https://github.com/docker-library/openjdk/issues/320#issuecomment-494050246
+# >
+# > I am the OpenJDK 8 and 11 Updates OpenJDK project lead.
+# > ...
+# > While it is true that the OpenJDK Governing Board has not sanctioned those releases, they (or rather we, since I am a member) didn't sanction Oracle's OpenJDK releases either. As far as I am aware, the lead of an OpenJDK project is entitled to release binary builds, and there is clearly a need for them.
+# >
+{{ ) end -}}
+
+{{
+	def arches:
+		if is_alpine then .alpine else . end
+		| .[env.javaType].arches
+	;
+	def get_arch_command:
+		if is_alpine then
+			"apk --print-arch"
+		elif is_oracle then
+			"objdump=\"$(command -v objdump)\" && objdump --file-headers \"$objdump\" | awk -F '[:,]+[[:space:]]+' '$1 == \"architecture\" { print $2 }'"
+		else
+			"dpkg --print-architecture"
+		end
+	;
+	def case_arch:
+		# input is a bashbrew arch
+		# - "amd64", "arm64v8", etc
+		# output is a shell "case" expression for matching the output of running "get_arch_command"
+		# - "amd64 | i386:x86-64", etc
+		. as $bashbrewArch
+		| if is_alpine then {
+			amd64: "x86_64",
+			arm64v8: "aarch64",
+		} elif is_oracle then {
+			amd64: "i386:x86-64",
+			arm64v8: "aarch64",
+		} else {
+			amd64: "amd64",
+			arm64v8: "arm64",
+		} end
+		| .[$bashbrewArch] // error("unsupported bashbrew architecture: " + $bashbrewArch)
+		| @sh
+	;
+	def wget_command:
+		if is_oracle then
+			"curl -fL -o"
+		else
+			[
+				"wget",
+				if is_alpine then empty else "--progress=dot:giga" end,
+				"-O"
+			] | join(" ")
+		end
+-}}
+RUN set -eux; \
+	\
+	arch="$({{ get_arch_command }})"; \
+	case "$arch" in \
+{{
+	[
+		arches | to_entries[]
+		| select(.key | startswith("windows-") | not)
+		| .key as $bashbrewArch | .value
+		| (
+-}}
+		{{ $bashbrewArch | case_arch }}) \
+			downloadUrl={{ .url | @sh }}; \
+{{ if .sha256 then ( -}}
+			downloadSha256={{ .sha256 | @sh }}; \
+{{ ) else "" end -}}
+			;; \
+{{
+		)
+	] | add
+-}}
+		*) echo >&2 "error: unsupported architecture: '$arch'"; exit 1 ;; \
+	esac; \
+	\
+{{ if is_debian_slim then ( -}}
+	savedAptMark="$(apt-mark showmanual)"; \
+	apt-get update; \
+	apt-get install -y --no-install-recommends \
+{{ if .source == "adopt" then ( -}}
+		dirmngr \
+		gnupg \
+{{ ) else "" end -}}
+		wget \
+	; \
+	rm -rf /var/lib/apt/lists/*; \
+	\
+{{ ) else "" end -}}
+	{{ wget_command }} openjdk.tgz "$downloadUrl"; \
+{{ if [ arches[] ] | any(has("sha256")) then ( -}}
+	echo "$downloadSha256 *openjdk.tgz" | sha256sum {{ if is_alpine then "-c" else "--strict --check" end }} -; \
+{{ ) else "" end -}}
+{{ if .source == "adopt" then ( -}}
+	{{ wget_command }} openjdk.tgz.asc "$downloadUrl.sign"; \
+	\
+	export GNUPGHOME="$(mktemp -d)"; \
+# pre-fetch Andrew Haley's (the OpenJDK 8 and 11 Updates OpenJDK project lead) key so we can verify that the OpenJDK key was signed by it
+# (https://github.com/docker-library/openjdk/pull/322#discussion_r286839190)
+# we pre-fetch this so that the signature it makes on the OpenJDK key can survive "import-clean" in gpg
+	gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys EAC843EBD3EFDB98CC772FADA5CD6035332FA671; \
+# TODO find a good link for users to verify this key is right (https://mail.openjdk.java.net/pipermail/jdk-updates-dev/2019-April/000951.html is one of the only mentions of it I can find); perhaps a note added to https://adoptopenjdk.net/upstream.html would make sense?
+# no-self-sigs-only: https://salsa.debian.org/debian/gnupg2/commit/c93ca04a53569916308b369c8b218dad5ae8fe07
+	gpg --batch --keyserver ha.pool.sks-keyservers.net --keyserver-options no-self-sigs-only --recv-keys CA5F11C6CE22644D42C6AC4492EF8D39DC13168F; \
+	gpg --batch --list-sigs --keyid-format 0xLONG CA5F11C6CE22644D42C6AC4492EF8D39DC13168F \
+		| tee /dev/stderr \
+		| grep '0xA5CD6035332FA671' \
+		| grep 'Andrew Haley'; \
+	gpg --batch --verify openjdk.tgz.asc openjdk.tgz; \
+{{ if is_oracle then "" else ( -}}
+	gpgconf --kill all; \
+{{ ) end -}}
+	rm -rf "$GNUPGHOME"; \
+{{ ) else "" end -}}
+	\
+	mkdir -p "$JAVA_HOME"; \
+	tar --extract \
+		--file openjdk.tgz \
+		--directory "$JAVA_HOME" \
+		--strip-components 1 \
+		--no-same-owner \
+	; \
+	rm openjdk.tgz*; \
+	\
+{{ if is_debian_slim then ( -}}
+	apt-mark auto '.*' > /dev/null; \
+	[ -z "$savedAptMark" ] || apt-mark manual $savedAptMark > /dev/null; \
+	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
+	\
+{{ ) else "" end -}}
+{{
+	def cacerts_file:
+		# 8-jdk uses "$JAVA_HOME/jre/lib/security/cacerts" and 8-jre and 11+ use "$JAVA_HOME/lib/security/cacerts" directly (no "jre" directory)
+		if env.version == "8" and env.javaType == "jdk" then
+			"$JAVA_HOME/jre/lib/security/cacerts"
+		else
+			"$JAVA_HOME/lib/security/cacerts"
+		end
+-}}
+{{ if is_alpine then ( -}}
+	rm -rf "{{ cacerts_file }}"; \
+# see "java-cacerts" package installed above (which maintains "/etc/ssl/certs/java/cacerts" for us)
+	ln -sT /etc/ssl/certs/java/cacerts "{{ cacerts_file }}"; \
+{{ ) elif is_oracle then ( -}}
+	rm -rf "{{ cacerts_file }}"; \
+# see "update-ca-trust" script which creates/maintains this cacerts bundle
+	ln -sT /etc/pki/ca-trust/extracted/java/cacerts "{{ cacerts_file }}"; \
+	\
+# https://github.com/oracle/docker-images/blob/a56e0d1ed968ff669d2e2ba8a1483d0f3acc80c0/OracleJava/java-8/Dockerfile#L17-L19
+	ln -sfT "$JAVA_HOME" /usr/java/default; \
+	ln -sfT "$JAVA_HOME" /usr/java/latest; \
+	for bin in "$JAVA_HOME/bin/"*; do \
+		base="$(basename "$bin")"; \
+		[ ! -e "/usr/bin/$base" ]; \
+		alternatives --install "/usr/bin/$base" "$base" "$bin" 20000; \
+	done; \
+{{ ) else ( -}}
+# update "cacerts" bundle to use Debian's CA certificates (and make sure it stays up-to-date with changes to Debian's store)
+# see https://github.com/docker-library/openjdk/issues/327
+#     http://rabexc.org/posts/certificates-not-working-java#comment-4099504075
+#     https://salsa.debian.org/java-team/ca-certificates-java/blob/3e51a84e9104823319abeb31f880580e46f45a98/debian/jks-keystore.hook.in
+#     https://git.alpinelinux.org/aports/tree/community/java-cacerts/APKBUILD?id=761af65f38b4570093461e6546dcf6b179d2b624#n29
+	{ \
+		echo '#!/usr/bin/env bash'; \
+		echo 'set -Eeuo pipefail'; \
+		echo 'trust extract --overwrite --format=java-cacerts --filter=ca-anchors --purpose=server-auth "{{ cacerts_file }}"'; \
+	} > /etc/ca-certificates/update.d/docker-openjdk; \
+	chmod +x /etc/ca-certificates/update.d/docker-openjdk; \
+	/etc/ca-certificates/update.d/docker-openjdk; \
+	\
+# https://github.com/docker-library/openjdk/issues/331#issuecomment-498834472
+	find "$JAVA_HOME/lib" -name '*.so' -exec dirname '{}' ';' | sort -u > /etc/ld.so.conf.d/docker-openjdk.conf; \
+	ldconfig; \
+{{ ) end -}}
+	\
+{{ if env.version == "8" then ( -}}
+# basic smoke test
+{{ if env.javaType == "jdk" then ( -}}
+	javac -version; \
+{{ ) else "" end -}}
+	java -version
+{{ ) else ( -}}
+# https://github.com/docker-library/openjdk/issues/212#issuecomment-420979840
+# https://openjdk.java.net/jeps/341
+	java -Xshare:dump; \
+	\
+# basic smoke test
+{{ if env.javaType == "jdk" then ( -}}
+	fileEncoding="$(echo 'System.out.println(System.getProperty("file.encoding"))' | jshell -s -)"; [ "$fileEncoding" = 'UTF-8' ]; rm -rf ~/.java; \
+	javac --version; \
+	java --version
+
+# "jshell" is an interactive REPL for Java (see https://en.wikipedia.org/wiki/JShell)
+CMD ["jshell"]
+{{ ) else ( -}}
+	java --version
+{{ ) end -}}
+{{ ) end -}}

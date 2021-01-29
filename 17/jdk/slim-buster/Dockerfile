@@ -21,7 +21,7 @@ RUN { echo '#/bin/sh'; echo 'echo "$JAVA_HOME"'; } > /usr/local/bin/docker-java-
 # >
 # > Java Development Kit builds, from Oracle
 # >
-ENV JAVA_VERSION 17-ea+6
+ENV JAVA_VERSION 17-ea+7
 
 RUN set -eux; \
 	\
@@ -30,13 +30,13 @@ RUN set -eux; \
 	case "$arch" in \
 # arm64v8
 		arm64 | aarch64) \
-			downloadUrl=https://download.java.net/java/early_access/jdk17/6/GPL/openjdk-17-ea+6_linux-aarch64_bin.tar.gz; \
-			downloadSha256=fc7ad87123841b528112c6fa94883b28dc3bb0ea174d3a3795fe2c2873a68f6f; \
+			downloadUrl=https://download.java.net/java/early_access/jdk17/7/GPL/openjdk-17-ea+7_linux-aarch64_bin.tar.gz; \
+			downloadSha256=f3f80fc9b41cfddd89d263ae66c0f514aaeb3db2eadd6c9bf3c31e1b2cdcf44e; \
 			;; \
 # amd64
 		amd64 | i386:x86-64) \
-			downloadUrl=https://download.java.net/java/early_access/jdk17/6/GPL/openjdk-17-ea+6_linux-x64_bin.tar.gz; \
-			downloadSha256=f9082a010d2be7b1a1b462d86345d797f311bde30ddf2ccefe7e718ec49de334; \
+			downloadUrl=https://download.java.net/java/early_access/jdk17/7/GPL/openjdk-17-ea+7_linux-x64_bin.tar.gz; \
+			downloadSha256=0e340613945c78b2eb714ba0850604a1a80a9678ba0e8d81f66629c0ca2c36b1; \
 			;; \
 # fallback
 		*) echo >&2 "error: unsupported architecture: '$arch'"; exit 1 ;; \

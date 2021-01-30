@@ -1,3 +1,9 @@
+#
+# NOTE: THIS DOCKERFILE IS GENERATED VIA "apply-templates.sh"
+#
+# PLEASE DO NOT EDIT IT DIRECTLY.
+#
+
 FROM oraclelinux:7-slim
 
 RUN set -eux; \
@@ -14,11 +20,11 @@ RUN set -eux; \
 	; \
 	rm -rf /var/cache/yum
 
-# Default to UTF-8 file.encoding
-ENV LANG en_US.UTF-8
-
 ENV JAVA_HOME /usr/java/openjdk-8
 ENV PATH $JAVA_HOME/bin:$PATH
+
+# Default to UTF-8 file.encoding
+ENV LANG en_US.UTF-8
 
 # https://adoptopenjdk.net/upstream.html
 # >
@@ -36,18 +42,16 @@ ENV JAVA_VERSION 8u282
 
 RUN set -eux; \
 	\
-	objdump="$(command -v objdump)"; \
-	arch="$(objdump --file-headers "$objdump" | awk -F '[:,]+[[:space:]]+' '$1 == "architecture" { print $2 }')"; \
-# this "case" statement is generated via "update.sh"
+	arch="$(objdump="$(command -v objdump)" && objdump --file-headers "$objdump" | awk -F '[:,]+[[:space:]]+' '$1 == "architecture" { print $2 }')"; \
 	case "$arch" in \
-# amd64
-		amd64 | i386:x86-64) downloadUrl=https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/download/jdk8u282-b08/OpenJDK8U-jdk_x64_linux_8u282b08.tar.gz ;; \
-# fallback
+		'i386:x86-64') \
+			downloadUrl='https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/download/jdk8u282-b08/OpenJDK8U-jdk_x64_linux_8u282b08.tar.gz'; \
+			;; \
 		*) echo >&2 "error: unsupported architecture: '$arch'"; exit 1 ;; \
 	esac; \
 	\
-	curl -fL -o openjdk.tgz.asc "$downloadUrl.sign"; \
 	curl -fL -o openjdk.tgz "$downloadUrl"; \
+	curl -fL -o openjdk.tgz.asc "$downloadUrl.sign"; \
 	\
 	export GNUPGHOME="$(mktemp -d)"; \
 # pre-fetch Andrew Haley's (the OpenJDK 8 and 11 Updates OpenJDK project lead) key so we can verify that the OpenJDK key was signed by it
@@ -73,7 +77,9 @@ RUN set -eux; \
 	; \
 	rm openjdk.tgz*; \
 	\
-# TODO strip "demo" and "man" folders?
+	rm -rf "$JAVA_HOME/jre/lib/security/cacerts"; \
+# see "update-ca-trust" script which creates/maintains this cacerts bundle
+	ln -sT /etc/pki/ca-trust/extracted/java/cacerts "$JAVA_HOME/jre/lib/security/cacerts"; \
 	\
 # https://github.com/oracle/docker-images/blob/a56e0d1ed968ff669d2e2ba8a1483d0f3acc80c0/OracleJava/java-8/Dockerfile#L17-L19
 	ln -sfT "$JAVA_HOME" /usr/java/default; \
@@ -83,13 +89,6 @@ RUN set -eux; \
 		[ ! -e "/usr/bin/$base" ]; \
 		alternatives --install "/usr/bin/$base" "$base" "$bin" 20000; \
 	done; \
-	\
-# 8-jdk uses "$JAVA_HOME/jre/lib/security/cacerts" and 8-jre and 11+ uses "$JAVA_HOME/lib/security/cacerts" directly (no "jre" directory)
-	cacertsFile=; for f in "$JAVA_HOME/lib/security/cacerts" "$JAVA_HOME/jre/lib/security/cacerts"; do if [ -e "$f" ]; then cacertsFile="$f"; break; fi; done; \
-	if [ -z "$cacertsFile" ] || ! [ -f "$cacertsFile" ]; then echo >&2 "error: failed to find cacerts file in $JAVA_HOME"; exit 1; fi; \
-# see "update-ca-trust" script which creates/maintains this cacerts bundle
-	rm -rf "$cacertsFile"; \
-	ln -sT /etc/pki/ca-trust/extracted/java/cacerts "$cacertsFile"; \
 	\
 # basic smoke test
 	javac -version; \

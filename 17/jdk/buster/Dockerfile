@@ -1,3 +1,9 @@
+#
+# NOTE: THIS DOCKERFILE IS GENERATED VIA "apply-templates.sh"
+#
+# PLEASE DO NOT EDIT IT DIRECTLY.
+#
+
 FROM buildpack-deps:buster-scm
 
 RUN set -eux; \
@@ -7,27 +13,25 @@ RUN set -eux; \
 		unzip \
 		xz-utils \
 		\
-# utilities for keeping Debian and OpenJDK CA certificates in sync
-		ca-certificates p11-kit \
-		\
 # jlink --strip-debug on 13+ needs objcopy: https://github.com/docker-library/openjdk/issues/351
 # Error: java.io.IOException: Cannot run program "objcopy": error=2, No such file or directory
 		binutils \
+		\
 # java.lang.UnsatisfiedLinkError: /usr/local/openjdk-11/lib/libfontmanager.so: libfreetype.so.6: cannot open shared object file: No such file or directory
 # java.lang.NoClassDefFoundError: Could not initialize class sun.awt.X11FontManager
 # https://github.com/docker-library/openjdk/pull/235#issuecomment-424466077
 		fontconfig libfreetype6 \
+		\
+# utilities for keeping Debian and OpenJDK CA certificates in sync
+		ca-certificates p11-kit \
 	; \
 	rm -rf /var/lib/apt/lists/*
-
-# Default to UTF-8 file.encoding
-ENV LANG C.UTF-8
 
 ENV JAVA_HOME /usr/local/openjdk-17
 ENV PATH $JAVA_HOME/bin:$PATH
 
-# backwards compatibility shim
-RUN { echo '#/bin/sh'; echo 'echo "$JAVA_HOME"'; } > /usr/local/bin/docker-java-home && chmod +x /usr/local/bin/docker-java-home && [ "$JAVA_HOME" = "$(docker-java-home)" ]
+# Default to UTF-8 file.encoding
+ENV LANG C.UTF-8
 
 # https://jdk.java.net/
 # >
@@ -38,23 +42,19 @@ ENV JAVA_VERSION 17-ea+7
 RUN set -eux; \
 	\
 	arch="$(dpkg --print-architecture)"; \
-# this "case" statement is generated via "update.sh"
 	case "$arch" in \
-# arm64v8
-		arm64 | aarch64) \
-			downloadUrl=https://download.java.net/java/early_access/jdk17/7/GPL/openjdk-17-ea+7_linux-aarch64_bin.tar.gz; \
-			downloadSha256=f3f80fc9b41cfddd89d263ae66c0f514aaeb3db2eadd6c9bf3c31e1b2cdcf44e; \
+		'amd64') \
+			downloadUrl='https://download.java.net/java/early_access/jdk17/7/GPL/openjdk-17-ea+7_linux-x64_bin.tar.gz'; \
+			downloadSha256='0e340613945c78b2eb714ba0850604a1a80a9678ba0e8d81f66629c0ca2c36b1'; \
 			;; \
-# amd64
-		amd64 | i386:x86-64) \
-			downloadUrl=https://download.java.net/java/early_access/jdk17/7/GPL/openjdk-17-ea+7_linux-x64_bin.tar.gz; \
-			downloadSha256=0e340613945c78b2eb714ba0850604a1a80a9678ba0e8d81f66629c0ca2c36b1; \
+		'arm64') \
+			downloadUrl='https://download.java.net/java/early_access/jdk17/7/GPL/openjdk-17-ea+7_linux-aarch64_bin.tar.gz'; \
+			downloadSha256='f3f80fc9b41cfddd89d263ae66c0f514aaeb3db2eadd6c9bf3c31e1b2cdcf44e'; \
 			;; \
-# fallback
 		*) echo >&2 "error: unsupported architecture: '$arch'"; exit 1 ;; \
 	esac; \
 	\
-	wget -O openjdk.tgz "$downloadUrl" --progress=dot:giga; \
+	wget --progress=dot:giga -O openjdk.tgz "$downloadUrl"; \
 	echo "$downloadSha256 *openjdk.tgz" | sha256sum --strict --check -; \
 	\
 	mkdir -p "$JAVA_HOME"; \
@@ -64,7 +64,7 @@ RUN set -eux; \
 		--strip-components 1 \
 		--no-same-owner \
 	; \
-	rm openjdk.tgz; \
+	rm openjdk.tgz*; \
 	\
 # update "cacerts" bundle to use Debian's CA certificates (and make sure it stays up-to-date with changes to Debian's store)
 # see https://github.com/docker-library/openjdk/issues/327
@@ -74,11 +74,7 @@ RUN set -eux; \
 	{ \
 		echo '#!/usr/bin/env bash'; \
 		echo 'set -Eeuo pipefail'; \
-		echo 'if ! [ -d "$JAVA_HOME" ]; then echo >&2 "error: missing JAVA_HOME environment variable"; exit 1; fi'; \
-# 8-jdk uses "$JAVA_HOME/jre/lib/security/cacerts" and 8-jre and 11+ uses "$JAVA_HOME/lib/security/cacerts" directly (no "jre" directory)
-		echo 'cacertsFile=; for f in "$JAVA_HOME/lib/security/cacerts" "$JAVA_HOME/jre/lib/security/cacerts"; do if [ -e "$f" ]; then cacertsFile="$f"; break; fi; done'; \
-		echo 'if [ -z "$cacertsFile" ] || ! [ -f "$cacertsFile" ]; then echo >&2 "error: failed to find cacerts file in $JAVA_HOME"; exit 1; fi'; \
-		echo 'trust extract --overwrite --format=java-cacerts --filter=ca-anchors --purpose=server-auth "$cacertsFile"'; \
+		echo 'trust extract --overwrite --format=java-cacerts --filter=ca-anchors --purpose=server-auth "$JAVA_HOME/lib/security/cacerts"'; \
 	} > /etc/ca-certificates/update.d/docker-openjdk; \
 	chmod +x /etc/ca-certificates/update.d/docker-openjdk; \
 	/etc/ca-certificates/update.d/docker-openjdk; \

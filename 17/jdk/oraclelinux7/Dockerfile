@@ -1,3 +1,9 @@
+#
+# NOTE: THIS DOCKERFILE IS GENERATED VIA "apply-templates.sh"
+#
+# PLEASE DO NOT EDIT IT DIRECTLY.
+#
+
 FROM oraclelinux:7-slim
 
 RUN set -eux; \
@@ -14,11 +20,11 @@ RUN set -eux; \
 	; \
 	rm -rf /var/cache/yum
 
-# Default to UTF-8 file.encoding
-ENV LANG en_US.UTF-8
-
 ENV JAVA_HOME /usr/java/openjdk-17
 ENV PATH $JAVA_HOME/bin:$PATH
+
+# Default to UTF-8 file.encoding
+ENV LANG en_US.UTF-8
 
 # https://jdk.java.net/
 # >
@@ -28,21 +34,16 @@ ENV JAVA_VERSION 17-ea+7
 
 RUN set -eux; \
 	\
-	objdump="$(command -v objdump)"; \
-	arch="$(objdump --file-headers "$objdump" | awk -F '[:,]+[[:space:]]+' '$1 == "architecture" { print $2 }')"; \
-# this "case" statement is generated via "update.sh"
+	arch="$(objdump="$(command -v objdump)" && objdump --file-headers "$objdump" | awk -F '[:,]+[[:space:]]+' '$1 == "architecture" { print $2 }')"; \
 	case "$arch" in \
-# arm64v8
-		arm64 | aarch64) \
-			downloadUrl=https://download.java.net/java/early_access/jdk17/7/GPL/openjdk-17-ea+7_linux-aarch64_bin.tar.gz; \
-			downloadSha256=f3f80fc9b41cfddd89d263ae66c0f514aaeb3db2eadd6c9bf3c31e1b2cdcf44e; \
+		'i386:x86-64') \
+			downloadUrl='https://download.java.net/java/early_access/jdk17/7/GPL/openjdk-17-ea+7_linux-x64_bin.tar.gz'; \
+			downloadSha256='0e340613945c78b2eb714ba0850604a1a80a9678ba0e8d81f66629c0ca2c36b1'; \
 			;; \
-# amd64
-		amd64 | i386:x86-64) \
-			downloadUrl=https://download.java.net/java/early_access/jdk17/7/GPL/openjdk-17-ea+7_linux-x64_bin.tar.gz; \
-			downloadSha256=0e340613945c78b2eb714ba0850604a1a80a9678ba0e8d81f66629c0ca2c36b1; \
+		'aarch64') \
+			downloadUrl='https://download.java.net/java/early_access/jdk17/7/GPL/openjdk-17-ea+7_linux-aarch64_bin.tar.gz'; \
+			downloadSha256='f3f80fc9b41cfddd89d263ae66c0f514aaeb3db2eadd6c9bf3c31e1b2cdcf44e'; \
 			;; \
-# fallback
 		*) echo >&2 "error: unsupported architecture: '$arch'"; exit 1 ;; \
 	esac; \
 	\
@@ -56,7 +57,11 @@ RUN set -eux; \
 		--strip-components 1 \
 		--no-same-owner \
 	; \
-	rm openjdk.tgz; \
+	rm openjdk.tgz*; \
+	\
+	rm -rf "$JAVA_HOME/lib/security/cacerts"; \
+# see "update-ca-trust" script which creates/maintains this cacerts bundle
+	ln -sT /etc/pki/ca-trust/extracted/java/cacerts "$JAVA_HOME/lib/security/cacerts"; \
 	\
 # https://github.com/oracle/docker-images/blob/a56e0d1ed968ff669d2e2ba8a1483d0f3acc80c0/OracleJava/java-8/Dockerfile#L17-L19
 	ln -sfT "$JAVA_HOME" /usr/java/default; \
@@ -70,10 +75,6 @@ RUN set -eux; \
 # https://github.com/docker-library/openjdk/issues/212#issuecomment-420979840
 # https://openjdk.java.net/jeps/341
 	java -Xshare:dump; \
-	\
-# see "update-ca-trust" script which creates/maintains this cacerts bundle
-	rm -rf "$JAVA_HOME/lib/security/cacerts"; \
-	ln -sT /etc/pki/ca-trust/extracted/java/cacerts "$JAVA_HOME/lib/security/cacerts"; \
 	\
 # basic smoke test
 	fileEncoding="$(echo 'System.out.println(System.getProperty("file.encoding"))' | jshell -s -)"; [ "$fileEncoding" = 'UTF-8' ]; rm -rf ~/.java; \

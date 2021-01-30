@@ -8,14 +8,14 @@ FROM alpine:3.12
 
 RUN apk add --no-cache java-cacerts
 
-ENV JAVA_HOME /opt/openjdk-16
+ENV JAVA_HOME /opt/openjdk-17
 ENV PATH $JAVA_HOME/bin:$PATH
 
 # https://jdk.java.net/
 # >
 # > Java Development Kit builds, from Oracle
 # >
-ENV JAVA_VERSION 16-ea+32
+ENV JAVA_VERSION 17-ea+5
 # "For Alpine Linux, builds are produced on a reduced schedule and may not be in sync with the other platforms."
 
 RUN set -eux; \
@@ -23,8 +23,8 @@ RUN set -eux; \
 	arch="$(apk --print-arch)"; \
 	case "$arch" in \
 		'x86_64') \
-			downloadUrl='https://download.java.net/java/early_access/alpine/32/binaries/openjdk-16-ea+32_linux-x64-musl_bin.tar.gz'; \
-			downloadSha256='f9ec3071fdea08ca5be7b149d6c2f2689814e3ee86ee15b7981f5eed76280985'; \
+			downloadUrl='https://download.java.net/java/early_access/alpine/5/binaries/openjdk-17-ea+5_linux-x64-musl_bin.tar.gz'; \
+			downloadSha256='709daae3577453dba8e4ea03e8b52daeb11370648d2da1d012df527556c0cda2'; \
 			;; \
 		*) echo >&2 "error: unsupported architecture: '$arch'"; exit 1 ;; \
 	esac; \

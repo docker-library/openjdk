@@ -1,3 +1,9 @@
+#
+# NOTE: THIS DOCKERFILE IS GENERATED VIA "apply-templates.sh"
+#
+# PLEASE DO NOT EDIT IT DIRECTLY.
+#
+
 FROM mcr.microsoft.com/windows/nanoserver:1809
 
 SHELL ["cmd", "/s", "/c"]
@@ -6,7 +12,8 @@ ENV JAVA_HOME C:\\openjdk-8
 # "ERROR: Access to the registry path is denied."
 USER ContainerAdministrator
 RUN echo Updating PATH: %JAVA_HOME%\bin;%PATH% \
-	&& setx /M PATH %JAVA_HOME%\bin;%PATH%
+	&& setx /M PATH %JAVA_HOME%\bin;%PATH% \
+	&& echo Complete.
 USER ContainerUser
 
 # https://adoptopenjdk.net/upstream.html
@@ -26,4 +33,5 @@ ENV JAVA_VERSION 8u282
 COPY --from=openjdk:8u282-jre-windowsservercore-1809 $JAVA_HOME $JAVA_HOME
 
 RUN echo Verifying install ... \
-	&& echo   java -version && java -version
+	&& echo   java -version && java -version \
+	&& echo Complete.

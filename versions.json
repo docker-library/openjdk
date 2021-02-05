@@ -68,30 +68,19 @@
     "version": "15.0.2"
   },
   "16": {
-    "alpine": {
-      "jdk": {
-        "arches": {
-          "amd64": {
-            "sha256": "f9ec3071fdea08ca5be7b149d6c2f2689814e3ee86ee15b7981f5eed76280985",
-            "url": "https://download.java.net/java/early_access/alpine/32/binaries/openjdk-16-ea+32_linux-x64-musl_bin.tar.gz"
-          }
-        }
-      },
-      "version": "16-ea+32"
-    },
     "jdk": {
       "arches": {
         "amd64": {
-          "sha256": "11fd069e3a17a17268b9bb0c8bfd440016af686acfe8d3a4bfd71381fbce22dc",
-          "url": "https://download.java.net/java/early_access/jdk16/34/GPL/openjdk-16-ea+34_linux-x64_bin.tar.gz"
+          "sha256": "25f51624a17545a769e97ded5d51075ab31f9a52de925f7292cff951becf8fd2",
+          "url": "https://download.java.net/java/GA/jdk16/7863447f0ab643c585b9bdebf67c69db/35/GPL/openjdk-16_linux-x64_bin.tar.gz"
         },
         "arm64v8": {
-          "sha256": "9c294a8b7c440c45968fc16d3aa3261be71b00a7fad22b7aafa2a7b7381e5f2c",
-          "url": "https://download.java.net/java/early_access/jdk16/34/GPL/openjdk-16-ea+34_linux-aarch64_bin.tar.gz"
+          "sha256": "5afe8561d1c6f777bf0f70bf5d994187ff607b8c4c6ff1194f849a0bb933d805",
+          "url": "https://download.java.net/java/GA/jdk16/7863447f0ab643c585b9bdebf67c69db/35/GPL/openjdk-16_linux-aarch64_bin.tar.gz"
         },
         "windows-amd64": {
-          "sha256": "3a3a6d963036a20df0ce9ed0a0e9eae6ea27ca34279d9f1960390d3cc56b0f0e",
-          "url": "https://download.java.net/java/early_access/jdk16/34/GPL/openjdk-16-ea+34_windows-x64_bin.zip"
+          "sha256": "38aa60e21be0cd20d0ed5078d05f264b02c8b1db5d9e881db43e7de5a623875e",
+          "url": "https://download.java.net/java/GA/jdk16/7863447f0ab643c585b9bdebf67c69db/35/GPL/openjdk-16_windows-x64_bin.zip"
         }
       }
     },
@@ -101,13 +90,11 @@
       "oraclelinux7",
       "buster",
       "slim-buster",
-      "alpine3.13",
-      "alpine3.12",
       "windows/windowsservercore-1809",
       "windows/windowsservercore-ltsc2016",
       "windows/nanoserver-1809"
     ],
-    "version": "16-ea+34"
+    "version": "16"
   },
   "17": {
     "alpine": {

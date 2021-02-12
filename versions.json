@@ -111,16 +111,16 @@
     "jdk": {
       "arches": {
         "amd64": {
-          "sha256": "32fefc461de06e942400e15bb62a13ca94a20b1a55075f1527aa7e93366c5cd8",
-          "url": "https://download.java.net/java/early_access/jdk17/8/GPL/openjdk-17-ea+8_linux-x64_bin.tar.gz"
+          "sha256": "0ed9bba55c54c5949c2f9116ef5bf936b3c55ec39531f317492bdca43a1c1fa8",
+          "url": "https://download.java.net/java/early_access/jdk17/9/GPL/openjdk-17-ea+9_linux-x64_bin.tar.gz"
         },
         "arm64v8": {
-          "sha256": "c009943489d32e0ec1f5ab63623810d88a62119f4503c78e97389c36538fe035",
-          "url": "https://download.java.net/java/early_access/jdk17/8/GPL/openjdk-17-ea+8_linux-aarch64_bin.tar.gz"
+          "sha256": "1922fd3e81bec1b42c8660d990ccc7fdb36210792f59cbe307691b7d3fa4c967",
+          "url": "https://download.java.net/java/early_access/jdk17/9/GPL/openjdk-17-ea+9_linux-aarch64_bin.tar.gz"
         },
         "windows-amd64": {
-          "sha256": "d57b28a46a012f0824fd91db85536a4d08f5f0c744dcbffaf3f0f04449b9f5b5",
-          "url": "https://download.java.net/java/early_access/jdk17/8/GPL/openjdk-17-ea+8_windows-x64_bin.zip"
+          "sha256": "616961fd8286b02167951f1d802bbd9ec3448ea8b9e148c204f778741e73f22a",
+          "url": "https://download.java.net/java/early_access/jdk17/9/GPL/openjdk-17-ea+9_windows-x64_bin.zip"
         }
       }
     },
@@ -136,7 +136,7 @@
       "windows/windowsservercore-ltsc2016",
       "windows/nanoserver-1809"
     ],
-    "version": "17-ea+8"
+    "version": "17-ea+9"
   },
   "8": {
     "jdk": {

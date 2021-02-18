@@ -101,26 +101,26 @@
       "jdk": {
         "arches": {
           "amd64": {
-            "sha256": "709daae3577453dba8e4ea03e8b52daeb11370648d2da1d012df527556c0cda2",
-            "url": "https://download.java.net/java/early_access/alpine/5/binaries/openjdk-17-ea+5_linux-x64-musl_bin.tar.gz"
+            "sha256": "fc3ea4225030a5df6191b6027051e705e6c34b72115dfdb36d170d735cb409d5",
+            "url": "https://download.java.net/java/early_access/alpine/10/binaries/openjdk-17-ea+10_linux-x64-musl_bin.tar.gz"
           }
         }
       },
-      "version": "17-ea+5"
+      "version": "17-ea+10"
     },
     "jdk": {
       "arches": {
         "amd64": {
-          "sha256": "0ed9bba55c54c5949c2f9116ef5bf936b3c55ec39531f317492bdca43a1c1fa8",
-          "url": "https://download.java.net/java/early_access/jdk17/9/GPL/openjdk-17-ea+9_linux-x64_bin.tar.gz"
+          "sha256": "89ed24a42ee151bc720dcc6fd76272404a99b080acf107b8ec42b1270d2f3953",
+          "url": "https://download.java.net/java/early_access/jdk17/10/GPL/openjdk-17-ea+10_linux-x64_bin.tar.gz"
         },
         "arm64v8": {
-          "sha256": "1922fd3e81bec1b42c8660d990ccc7fdb36210792f59cbe307691b7d3fa4c967",
-          "url": "https://download.java.net/java/early_access/jdk17/9/GPL/openjdk-17-ea+9_linux-aarch64_bin.tar.gz"
+          "sha256": "f5dd69285e57325b130f80b5dc62beffa9ccdab08f881bbdb68ecbe7e3b249ab",
+          "url": "https://download.java.net/java/early_access/jdk17/10/GPL/openjdk-17-ea+10_linux-aarch64_bin.tar.gz"
         },
         "windows-amd64": {
-          "sha256": "616961fd8286b02167951f1d802bbd9ec3448ea8b9e148c204f778741e73f22a",
-          "url": "https://download.java.net/java/early_access/jdk17/9/GPL/openjdk-17-ea+9_windows-x64_bin.zip"
+          "sha256": "692da27d3f18d7b05f5df48254b9f6b629184d981e0d47dcfc22800839477b56",
+          "url": "https://download.java.net/java/early_access/jdk17/10/GPL/openjdk-17-ea+10_windows-x64_bin.zip"
         }
       }
     },
@@ -136,7 +136,7 @@
       "windows/windowsservercore-ltsc2016",
       "windows/nanoserver-1809"
     ],
-    "version": "17-ea+9"
+    "version": "17-ea+10"
   },
   "8": {
     "jdk": {

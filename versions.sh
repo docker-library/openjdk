@@ -244,6 +244,11 @@ for version in "${versions[@]}"; do
 		done
 	fi
 
+	if ! jq <<<"$doc" -e '[ .. | objects | select(has("arches")) | .arches | has("amd64") ] | all' &> /dev/null; then
+		echo >&2 "error: missing 'amd64' for '$version'; cowardly refusing to continue! (because this is almost always a scraping flake or similar bug)"
+		exit 1
+	fi
+
 	json="$(jq <<<"$json" -c --argjson doc "$doc" '
 		.[env.version] = $doc + {
 			variants: [

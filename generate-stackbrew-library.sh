@@ -174,7 +174,6 @@ for version; do
 					# see "update.sh" for where these comment lines get embedded
 					parent="$(awk 'toupper($1) == "FROM" { print $2; exit }' "$dir/Dockerfile")"
 					parentArches="${parentRepoToArches[$parent]:-}"
-					export parentArches
 					variantArches="$(
 						comm -12 \
 							<(

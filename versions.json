@@ -2,27 +2,15 @@
   "11": {
     "jdk": {
       "arches": {
-        "amd64": {
-          "url": "https://github.com/AdoptOpenJDK/openjdk11-upstream-binaries/releases/download/jdk-11.0.10%2B9/OpenJDK11U-jdk_x64_linux_11.0.10_9.tar.gz"
-        },
         "arm64v8": {
           "url": "https://github.com/AdoptOpenJDK/openjdk11-upstream-binaries/releases/download/jdk-11.0.10%2B9/OpenJDK11U-jdk_aarch64_linux_11.0.10_9.tar.gz"
-        },
-        "windows-amd64": {
-          "url": "https://github.com/AdoptOpenJDK/openjdk11-upstream-binaries/releases/download/jdk-11.0.10%2B9/OpenJDK11U-jdk_x64_windows_11.0.10_9.zip"
         }
       }
     },
     "jre": {
       "arches": {
-        "amd64": {
-          "url": "https://github.com/AdoptOpenJDK/openjdk11-upstream-binaries/releases/download/jdk-11.0.10%2B9/OpenJDK11U-jre_x64_linux_11.0.10_9.tar.gz"
-        },
         "arm64v8": {
           "url": "https://github.com/AdoptOpenJDK/openjdk11-upstream-binaries/releases/download/jdk-11.0.10%2B9/OpenJDK11U-jre_aarch64_linux_11.0.10_9.tar.gz"
-        },
-        "windows-amd64": {
-          "url": "https://github.com/AdoptOpenJDK/openjdk11-upstream-binaries/releases/download/jdk-11.0.10%2B9/OpenJDK11U-jre_x64_windows_11.0.10_9.zip"
         }
       }
     },
@@ -31,10 +19,7 @@
       "oraclelinux8",
       "oraclelinux7",
       "buster",
-      "slim-buster",
-      "windows/windowsservercore-1809",
-      "windows/windowsservercore-ltsc2016",
-      "windows/nanoserver-1809"
+      "slim-buster"
     ],
     "version": "11.0.10"
   },

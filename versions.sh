@@ -24,7 +24,7 @@ _get() {
 	file="${file//:/_}"
 	file="$tmp/$file"
 	if [ ! -s "$file" ]; then
-		curl -fsSL "$url" -o "$file" || return 1
+		curl -fsSL "$url" -o "$file" --retry 5 || return 1
 	fi
 	cat "$file"
 }

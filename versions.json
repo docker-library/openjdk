@@ -101,26 +101,26 @@
       "jdk": {
         "arches": {
           "amd64": {
-            "sha256": "fc3ea4225030a5df6191b6027051e705e6c34b72115dfdb36d170d735cb409d5",
-            "url": "https://download.java.net/java/early_access/alpine/10/binaries/openjdk-17-ea+10_linux-x64-musl_bin.tar.gz"
+            "sha256": "f07a1ac921333dafac1cd886ad49600ce143be7efebd32e1a02599a8a0829dd4",
+            "url": "https://download.java.net/java/early_access/alpine/14/binaries/openjdk-17-ea+14_linux-x64-musl_bin.tar.gz"
           }
         }
       },
-      "version": "17-ea+10"
+      "version": "17-ea+14"
     },
     "jdk": {
       "arches": {
         "amd64": {
-          "sha256": "d4bfd596e0b4f3eefb416719a5b6ad98ab3f37f27855573e7c94526a4ffad7d2",
-          "url": "https://download.java.net/java/early_access/jdk17/14/GPL/openjdk-17-ea+14_linux-x64_bin.tar.gz"
+          "sha256": "da690c53a8d23b278b4878acf414b0d95ca40dd1533d08ce313589cf1df1c9c3",
+          "url": "https://download.java.net/java/early_access/jdk17/15/GPL/openjdk-17-ea+15_linux-x64_bin.tar.gz"
         },
         "arm64v8": {
-          "sha256": "16646d2498690f98b44f196e74da8361ef05155038a04cb6f62fbb76df08e72f",
-          "url": "https://download.java.net/java/early_access/jdk17/14/GPL/openjdk-17-ea+14_linux-aarch64_bin.tar.gz"
+          "sha256": "93178b313750b38e1bbc811b989dcee27d988cb223b30ba829122ecdbd08f403",
+          "url": "https://download.java.net/java/early_access/jdk17/15/GPL/openjdk-17-ea+15_linux-aarch64_bin.tar.gz"
         },
         "windows-amd64": {
-          "sha256": "bb67e52010e2fcab6f54a97cf4b9124b66ae27bb3f2edc17a77a0a681e6b166e",
-          "url": "https://download.java.net/java/early_access/jdk17/14/GPL/openjdk-17-ea+14_windows-x64_bin.zip"
+          "sha256": "7321412a59f9f5d02db6612cc7d04490508e1899a50fb221334161ac827faf6e",
+          "url": "https://download.java.net/java/early_access/jdk17/15/GPL/openjdk-17-ea+15_windows-x64_bin.zip"
         }
       }
     },
@@ -136,7 +136,7 @@
       "windows/windowsservercore-ltsc2016",
       "windows/nanoserver-1809"
     ],
-    "version": "17-ea+14"
+    "version": "17-ea+15"
   },
   "8": {
     "jdk": {

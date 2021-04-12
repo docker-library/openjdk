@@ -4,23 +4,18 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM oraclelinux:8-slim
+FROM debian:buster-slim
 
 RUN set -eux; \
-	microdnf install \
-		gzip \
-		tar \
-		\
-# jlink --strip-debug on 13+ needs objcopy: https://github.com/docker-library/openjdk/issues/351
-# Error: java.io.IOException: Cannot run program "objcopy": error=2, No such file or directory
-		binutils \
-# java.lang.UnsatisfiedLinkError: /usr/java/openjdk-12/lib/libfontmanager.so: libfreetype.so.6: cannot open shared object file: No such file or directory
-# https://github.com/docker-library/openjdk/pull/235#issuecomment-424466077
-		freetype fontconfig \
+	apt-get update; \
+	apt-get install -y --no-install-recommends \
+# utilities for keeping Debian and OpenJDK CA certificates in sync
+		ca-certificates p11-kit \
 	; \
-	microdnf clean all
+	rm -rf /var/lib/apt/lists/*
 
-ENV JAVA_HOME /usr/java/openjdk-11
+ENV JAVA_HOME /usr/local/openjdk-11
+RUN { echo '#/bin/sh'; echo 'echo "$JAVA_HOME"'; } > /usr/local/bin/docker-java-home && chmod +x /usr/local/bin/docker-java-home && [ "$JAVA_HOME" = "$(docker-java-home)" ] # backwards compatibility
 ENV PATH $JAVA_HOME/bin:$PATH
 
 # Default to UTF-8 file.encoding
@@ -42,19 +37,28 @@ ENV JAVA_VERSION 11.0.10
 
 RUN set -eux; \
 	\
-	arch="$(objdump="$(command -v objdump)" && objdump --file-headers "$objdump" | awk -F '[:,]+[[:space:]]+' '$1 == "architecture" { print $2 }')"; \
+	arch="$(dpkg --print-architecture)"; \
 	case "$arch" in \
-		'i386:x86-64') \
-			downloadUrl='https://github.com/AdoptOpenJDK/openjdk11-upstream-binaries/releases/download/jdk-11.0.10%2B9/OpenJDK11U-jdk_x64_linux_11.0.10_9.tar.gz'; \
+		'amd64') \
+			downloadUrl='https://github.com/AdoptOpenJDK/openjdk11-upstream-binaries/releases/download/jdk-11.0.10%2B9/OpenJDK11U-jre_x64_linux_11.0.10_9.tar.gz'; \
 			;; \
-		'aarch64') \
-			downloadUrl='https://github.com/AdoptOpenJDK/openjdk11-upstream-binaries/releases/download/jdk-11.0.10%2B9/OpenJDK11U-jdk_aarch64_linux_11.0.10_9.tar.gz'; \
+		'arm64') \
+			downloadUrl='https://github.com/AdoptOpenJDK/openjdk11-upstream-binaries/releases/download/jdk-11.0.10%2B9/OpenJDK11U-jre_aarch64_linux_11.0.10_9.tar.gz'; \
 			;; \
 		*) echo >&2 "error: unsupported architecture: '$arch'"; exit 1 ;; \
 	esac; \
 	\
-	curl -fL -o openjdk.tgz "$downloadUrl"; \
-	curl -fL -o openjdk.tgz.asc "$downloadUrl.sign"; \
+	savedAptMark="$(apt-mark showmanual)"; \
+	apt-get update; \
+	apt-get install -y --no-install-recommends \
+		dirmngr \
+		gnupg \
+		wget \
+	; \
+	rm -rf /var/lib/apt/lists/*; \
+	\
+	wget --progress=dot:giga -O openjdk.tgz "$downloadUrl"; \
+	wget --progress=dot:giga -O openjdk.tgz.asc "$downloadUrl.sign"; \
 	\
 	export GNUPGHOME="$(mktemp -d)"; \
 # pre-fetch Andrew Haley's (the OpenJDK 8 and 11 Updates OpenJDK project lead) key so we can verify that the OpenJDK key was signed by it
@@ -69,6 +73,7 @@ RUN set -eux; \
 		| grep '0xA5CD6035332FA671' \
 		| grep 'Andrew Haley'; \
 	gpg --batch --verify openjdk.tgz.asc openjdk.tgz; \
+	gpgconf --kill all; \
 	rm -rf "$GNUPGHOME"; \
 	\
 	mkdir -p "$JAVA_HOME"; \
@@ -80,27 +85,30 @@ RUN set -eux; \
 	; \
 	rm openjdk.tgz*; \
 	\
-	rm -rf "$JAVA_HOME/lib/security/cacerts"; \
-# see "update-ca-trust" script which creates/maintains this cacerts bundle
-	ln -sT /etc/pki/ca-trust/extracted/java/cacerts "$JAVA_HOME/lib/security/cacerts"; \
+	apt-mark auto '.*' > /dev/null; \
+	[ -z "$savedAptMark" ] || apt-mark manual $savedAptMark > /dev/null; \
+	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
 	\
-# https://github.com/oracle/docker-images/blob/a56e0d1ed968ff669d2e2ba8a1483d0f3acc80c0/OracleJava/java-8/Dockerfile#L17-L19
-	ln -sfT "$JAVA_HOME" /usr/java/default; \
-	ln -sfT "$JAVA_HOME" /usr/java/latest; \
-	for bin in "$JAVA_HOME/bin/"*; do \
-		base="$(basename "$bin")"; \
-		[ ! -e "/usr/bin/$base" ]; \
-		alternatives --install "/usr/bin/$base" "$base" "$bin" 20000; \
-	done; \
+# update "cacerts" bundle to use Debian's CA certificates (and make sure it stays up-to-date with changes to Debian's store)
+# see https://github.com/docker-library/openjdk/issues/327
+#     http://rabexc.org/posts/certificates-not-working-java#comment-4099504075
+#     https://salsa.debian.org/java-team/ca-certificates-java/blob/3e51a84e9104823319abeb31f880580e46f45a98/debian/jks-keystore.hook.in
+#     https://git.alpinelinux.org/aports/tree/community/java-cacerts/APKBUILD?id=761af65f38b4570093461e6546dcf6b179d2b624#n29
+	{ \
+		echo '#!/usr/bin/env bash'; \
+		echo 'set -Eeuo pipefail'; \
+		echo 'trust extract --overwrite --format=java-cacerts --filter=ca-anchors --purpose=server-auth "$JAVA_HOME/lib/security/cacerts"'; \
+	} > /etc/ca-certificates/update.d/docker-openjdk; \
+	chmod +x /etc/ca-certificates/update.d/docker-openjdk; \
+	/etc/ca-certificates/update.d/docker-openjdk; \
+	\
+# https://github.com/docker-library/openjdk/issues/331#issuecomment-498834472
+	find "$JAVA_HOME/lib" -name '*.so' -exec dirname '{}' ';' | sort -u > /etc/ld.so.conf.d/docker-openjdk.conf; \
+	ldconfig; \
 	\
 # https://github.com/docker-library/openjdk/issues/212#issuecomment-420979840
 # https://openjdk.java.net/jeps/341
 	java -Xshare:dump; \
 	\
 # basic smoke test
-	fileEncoding="$(echo 'System.out.println(System.getProperty("file.encoding"))' | jshell -s -)"; [ "$fileEncoding" = 'UTF-8' ]; rm -rf ~/.java; \
-	javac --version; \
 	java --version
-
-# "jshell" is an interactive REPL for Java (see https://en.wikipedia.org/wiki/JShell)
-CMD ["jshell"]

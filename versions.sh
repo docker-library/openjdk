@@ -249,9 +249,14 @@ for version in "${versions[@]}"; do
 		exit 1
 	fi
 
-	if [ "$version" = '11' ] && ! jq <<<"$doc" -e '[ .. | objects | select(has("arches")) | .arches | has("arm64v8") ] | all' &> /dev/null; then
-		echo >&2 "error: missing 'arm64v8' for '$version'; cowardly refusing to continue! (because this is almost always a scraping flake or similar bug)"
-		exit 1
+	if [ "$version" = '11' ]; then
+		for arch in arm64v8 windows-amd64; do
+			export arch
+			if ! jq <<<"$doc" -e '[ .. | objects | select(has("arches")) | .arches | has(env.arch) ] | all' &> /dev/null; then
+				echo >&2 "error: missing '$arch' for '$version'; cowardly refusing to continue! (because this is almost always a scraping flake or similar bug)"
+				exit 1
+			fi
+		done
 	fi
 
 	json="$(jq <<<"$json" -c --argjson doc "$doc" '

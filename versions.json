@@ -26,35 +26,6 @@
     ],
     "version": "11.0.10"
   },
-  "15": {
-    "jdk": {
-      "arches": {
-        "amd64": {
-          "sha256": "91ac6fc353b6bf39d995572b700e37a20e119a87034eeb939a6f24356fbcd207",
-          "url": "https://download.java.net/java/GA/jdk15.0.2/0d1cfde4252546c6931946de8db48ee2/7/GPL/openjdk-15.0.2_linux-x64_bin.tar.gz"
-        },
-        "arm64v8": {
-          "sha256": "3958f01858f9290c48c23e7804a0af3624e8eca6749b085c425df4c4f2f7dcbc",
-          "url": "https://download.java.net/java/GA/jdk15.0.2/0d1cfde4252546c6931946de8db48ee2/7/GPL/openjdk-15.0.2_linux-aarch64_bin.tar.gz"
-        },
-        "windows-amd64": {
-          "sha256": "ecbe7f32bc6bff2b6c8e9b68f19cbf4ddf54a492c918ba471f32d645cf1c5cf4",
-          "url": "https://download.java.net/java/GA/jdk15.0.2/0d1cfde4252546c6931946de8db48ee2/7/GPL/openjdk-15.0.2_windows-x64_bin.zip"
-        }
-      }
-    },
-    "source": "oracle",
-    "variants": [
-      "oraclelinux8",
-      "oraclelinux7",
-      "buster",
-      "slim-buster",
-      "windows/windowsservercore-1809",
-      "windows/windowsservercore-ltsc2016",
-      "windows/nanoserver-1809"
-    ],
-    "version": "15.0.2"
-  },
   "16": {
     "jdk": {
       "arches": {

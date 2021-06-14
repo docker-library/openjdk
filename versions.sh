@@ -26,7 +26,11 @@ _get() {
 	if [ ! -s "$file" ]; then
 		curl -fsSL "$url" -o "$file" --retry 5 || return 1
 	fi
-	cat "$file"
+	if [ "$#" -gt 0 ]; then
+		grep "$@" "$file"
+	else
+		cat "$file"
+	fi
 }
 
 abs-url() {
@@ -73,7 +77,7 @@ adopt-sources-url() {
 	local url
 	url="$(
 		_get "$githubUrl" \
-			| grep -oEm1 'href="[^"]+-sources_[^"]+[.]tar[.]gz"' \
+			-oEm1 'href="[^"]+-sources_[^"]+[.]tar[.]gz"' \
 			| cut -d'"' -f2 \
 			|| :
 	)"
@@ -90,7 +94,7 @@ adopt-version() {
 	local version
 	version="$(
 		_get "$githubUrl" \
-			| grep -oE '<title>.+</title>' \
+			-oE '<title>.+</title>' \
 			| grep -oE ' OpenJDK [^ ]+ ' \
 			| cut -d' ' -f3
 	)" || return 1
@@ -102,7 +106,7 @@ jdk-java-net-download-url() {
 	local javaVersion="$1"; shift
 	local fileSuffix="$1"; shift
 	_get "https://jdk.java.net/$javaVersion/" \
-		| grep -Eom1 "https://download.java.net/[^\"]+$fileSuffix"
+		-Eom1 "https://download.java.net/[^\"]+$fileSuffix"
 }
 
 jdk-java-net-download-version() {
@@ -175,7 +179,7 @@ for version in "${versions[@]}"; do
 				esac
 				downloadUrl="${javaUrlBase}${arch}_${javaUrlVersion}${downloadSuffix}"
 				downloadFile="$(basename "$downloadUrl")"
-				if _get "$githubUrl" | grep -qF "$downloadFile"; then
+				if _get "$githubUrl" -qF "$downloadFile"; then
 					case "$arch" in
 						aarch64_*) bashbrewArch+='arm64v8' ;;
 						x64_*) bashbrewArch+='amd64' ;;

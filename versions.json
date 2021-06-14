@@ -109,6 +109,35 @@
     ],
     "version": "17-ea+26"
   },
+  "18": {
+    "jdk": {
+      "arches": {
+        "amd64": {
+          "sha256": "277c0021c542fbda35d2643351148fa6cceac66b5beca24016c75fafeed815de",
+          "url": "https://download.java.net/java/early_access/jdk18/1/GPL/openjdk-18-ea+1_linux-x64_bin.tar.gz"
+        },
+        "arm64v8": {
+          "sha256": "6b615e986bc649e30072f1a7e88986e7a55cad95756c982a2f02f278ec8fe05c",
+          "url": "https://download.java.net/java/early_access/jdk18/1/GPL/openjdk-18-ea+1_linux-aarch64_bin.tar.gz"
+        },
+        "windows-amd64": {
+          "sha256": "61d333fde2accbcc597f2ff7299fa60447279c639108f5bed9c418ec5254e9df",
+          "url": "https://download.java.net/java/early_access/jdk18/1/GPL/openjdk-18-ea+1_windows-x64_bin.zip"
+        }
+      }
+    },
+    "source": "oracle",
+    "variants": [
+      "oraclelinux8",
+      "oraclelinux7",
+      "buster",
+      "slim-buster",
+      "windows/windowsservercore-1809",
+      "windows/windowsservercore-ltsc2016",
+      "windows/nanoserver-1809"
+    ],
+    "version": "18-ea+1"
+  },
   "8": {
     "jdk": {
       "arches": {

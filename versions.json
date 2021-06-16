@@ -101,8 +101,8 @@
       "oraclelinux7",
       "buster",
       "slim-buster",
+      "alpine3.14",
       "alpine3.13",
-      "alpine3.12",
       "windows/windowsservercore-1809",
       "windows/windowsservercore-ltsc2016",
       "windows/nanoserver-1809"

@@ -6,7 +6,7 @@ declare -A aliases=(
 	[16-jre]='jre'
 )
 defaultType='jdk'
-defaultAlpine='3.13'
+defaultAlpine='3.14'
 defaultDebian='buster'
 defaultOracle='8'
 

@@ -24,19 +24,19 @@ ENV LANG C.UTF-8
 # >
 # > Java Development Kit builds, from Oracle
 # >
-ENV JAVA_VERSION 18-ea+1
+ENV JAVA_VERSION 18-ea+2
 
 RUN set -eux; \
 	\
 	arch="$(dpkg --print-architecture)"; \
 	case "$arch" in \
 		'amd64') \
-			downloadUrl='https://download.java.net/java/early_access/jdk18/1/GPL/openjdk-18-ea+1_linux-x64_bin.tar.gz'; \
-			downloadSha256='277c0021c542fbda35d2643351148fa6cceac66b5beca24016c75fafeed815de'; \
+			downloadUrl='https://download.java.net/java/early_access/jdk18/2/GPL/openjdk-18-ea+2_linux-x64_bin.tar.gz'; \
+			downloadSha256='fa0458ce79f954b9271e5ff39815f02b8ccdda67e57791c644b331b59fe3e529'; \
 			;; \
 		'arm64') \
-			downloadUrl='https://download.java.net/java/early_access/jdk18/1/GPL/openjdk-18-ea+1_linux-aarch64_bin.tar.gz'; \
-			downloadSha256='6b615e986bc649e30072f1a7e88986e7a55cad95756c982a2f02f278ec8fe05c'; \
+			downloadUrl='https://download.java.net/java/early_access/jdk18/2/GPL/openjdk-18-ea+2_linux-aarch64_bin.tar.gz'; \
+			downloadSha256='b37a55b5a56bc7edee8b4870576338c53fc930259c630cda44fcd4fed8dc74b5'; \
 			;; \
 		*) echo >&2 "error: unsupported architecture: '$arch'"; exit 1 ;; \
 	esac; \

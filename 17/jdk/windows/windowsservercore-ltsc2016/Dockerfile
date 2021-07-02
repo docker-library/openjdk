@@ -33,9 +33,9 @@ RUN $newPath = ('{0}\bin;{1}' -f $env:JAVA_HOME, $env:PATH); \
 # >
 # > Java Development Kit builds, from Oracle
 # >
-ENV JAVA_VERSION 17-ea+28
-ENV JAVA_URL https://download.java.net/java/early_access/jdk17/28/GPL/openjdk-17-ea+28_windows-x64_bin.zip
-ENV JAVA_SHA256 82fbbd1a079675fe31c09ac43f54c2d203d92272e6e0160cee6f719f1e7da1ae
+ENV JAVA_VERSION 17-ea+29
+ENV JAVA_URL https://download.java.net/java/early_access/jdk17/29/GPL/openjdk-17-ea+29_windows-x64_bin.zip
+ENV JAVA_SHA256 48240d2cb5b81a0cf2b85e8ddbc972daaefd1977c4336ca68fcbd3565a20d49a
 
 RUN Write-Host ('Downloading {0} ...' -f $env:JAVA_URL); \
 	[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; \

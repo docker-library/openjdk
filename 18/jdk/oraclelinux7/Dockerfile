@@ -30,19 +30,19 @@ ENV LANG en_US.UTF-8
 # >
 # > Java Development Kit builds, from Oracle
 # >
-ENV JAVA_VERSION 18-ea+4
+ENV JAVA_VERSION 18-ea+5
 
 RUN set -eux; \
 	\
 	arch="$(objdump="$(command -v objdump)" && objdump --file-headers "$objdump" | awk -F '[:,]+[[:space:]]+' '$1 == "architecture" { print $2 }')"; \
 	case "$arch" in \
 		'i386:x86-64') \
-			downloadUrl='https://download.java.net/java/early_access/jdk18/4/GPL/openjdk-18-ea+4_linux-x64_bin.tar.gz'; \
-			downloadSha256='716cfd996b255bbad0b3d17027e5637bf2cf30bf320339116c661d63e797a324'; \
+			downloadUrl='https://download.java.net/java/early_access/jdk18/5/GPL/openjdk-18-ea+5_linux-x64_bin.tar.gz'; \
+			downloadSha256='a50d2f7309f987ee33cfdfdfbd22c18ea8e6dc8a3bb21b582cd67fb97c906a82'; \
 			;; \
 		'aarch64') \
-			downloadUrl='https://download.java.net/java/early_access/jdk18/4/GPL/openjdk-18-ea+4_linux-aarch64_bin.tar.gz'; \
-			downloadSha256='d2c4885f81f8be83225ef11849eaaa35af6af01337b90435d9abb8b4138d2795'; \
+			downloadUrl='https://download.java.net/java/early_access/jdk18/5/GPL/openjdk-18-ea+5_linux-aarch64_bin.tar.gz'; \
+			downloadSha256='28e3b50e98e75ae64d200ddcf87ba0664229e0659ccba3cd8ee2e25cbe6de24f'; \
 			;; \
 		*) echo >&2 "error: unsupported architecture: '$arch'"; exit 1 ;; \
 	esac; \

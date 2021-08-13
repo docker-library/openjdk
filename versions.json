@@ -100,16 +100,16 @@
     "jdk": {
       "arches": {
         "amd64": {
-          "sha256": "892cb159ff07b80db4ac5b1e3343d740c5113d323aa2485aa2d931203e15af61",
-          "url": "https://download.java.net/java/early_access/jdk18/9/GPL/openjdk-18-ea+9_linux-x64_bin.tar.gz"
+          "sha256": "f02c5e52c193b349688216e85ab6fb67548861e93d96dd454f74881abfb696b2",
+          "url": "https://download.java.net/java/early_access/jdk18/10/GPL/openjdk-18-ea+10_linux-x64_bin.tar.gz"
         },
         "arm64v8": {
-          "sha256": "35862c7271eec4456da50f777dafb216bcd8e9034e0b77ba8ca9cca9b317b3b8",
-          "url": "https://download.java.net/java/early_access/jdk18/9/GPL/openjdk-18-ea+9_linux-aarch64_bin.tar.gz"
+          "sha256": "f6a6ba79485e560d0d7687152a2a1dfa92cbe80871f16eb24b52e01274f9f4f6",
+          "url": "https://download.java.net/java/early_access/jdk18/10/GPL/openjdk-18-ea+10_linux-aarch64_bin.tar.gz"
         },
         "windows-amd64": {
-          "sha256": "a0af7b8be120ff46eec1522875be7e969d43fbee1e06a535ad835f4a57e619d0",
-          "url": "https://download.java.net/java/early_access/jdk18/9/GPL/openjdk-18-ea+9_windows-x64_bin.zip"
+          "sha256": "ebb61201944bef5edd2faa880c947aef2e21db417e501d39e01f2cf473245a02",
+          "url": "https://download.java.net/java/early_access/jdk18/10/GPL/openjdk-18-ea+10_windows-x64_bin.zip"
         }
       }
     },
@@ -123,7 +123,7 @@
       "windows/windowsservercore-ltsc2016",
       "windows/nanoserver-1809"
     ],
-    "version": "18-ea+9"
+    "version": "18-ea+10"
   },
   "8": {
     "jdk": {

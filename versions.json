@@ -30,6 +30,8 @@
     "variants": [
       "oraclelinux8",
       "oraclelinux7",
+      "bullseye",
+      "slim-bullseye",
       "buster",
       "slim-buster",
       "windows/windowsservercore-1809",
@@ -59,6 +61,8 @@
     "variants": [
       "oraclelinux8",
       "oraclelinux7",
+      "bullseye",
+      "slim-bullseye",
       "buster",
       "slim-buster",
       "windows/windowsservercore-1809",
@@ -88,6 +92,8 @@
     "variants": [
       "oraclelinux8",
       "oraclelinux7",
+      "bullseye",
+      "slim-bullseye",
       "buster",
       "slim-buster",
       "windows/windowsservercore-1809",
@@ -117,6 +123,8 @@
     "variants": [
       "oraclelinux8",
       "oraclelinux7",
+      "bullseye",
+      "slim-bullseye",
       "buster",
       "slim-buster",
       "windows/windowsservercore-1809",
@@ -156,6 +164,8 @@
     "variants": [
       "oraclelinux8",
       "oraclelinux7",
+      "bullseye",
+      "slim-bullseye",
       "buster",
       "slim-buster",
       "windows/windowsservercore-1809",

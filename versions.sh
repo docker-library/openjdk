@@ -271,6 +271,7 @@ for version in "${versions[@]}"; do
 					"7"
 				| "oraclelinux" + .),
 				(
+					"bullseye",
 					"buster"
 				| ., "slim-" + .),
 				if $doc.alpine then

@@ -7,7 +7,7 @@ declare -A aliases=(
 )
 defaultType='jdk'
 defaultAlpine='3.14'
-defaultDebian='buster'
+defaultDebian='bullseye'
 defaultOracle='8'
 
 image="${1:-openjdk}"

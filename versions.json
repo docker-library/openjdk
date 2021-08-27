@@ -103,19 +103,30 @@
     "version": "17"
   },
   "18": {
+    "alpine": {
+      "jdk": {
+        "arches": {
+          "amd64": {
+            "sha256": "86fad9069587a5e9dd003e7354a69b2f720a05c12706d2f2345a0c8d90e56c47",
+            "url": "https://download.java.net/java/early_access/alpine/11/binaries/openjdk-18-ea+11_linux-x64-musl_bin.tar.gz"
+          }
+        }
+      },
+      "version": "18-ea+11"
+    },
     "jdk": {
       "arches": {
         "amd64": {
-          "sha256": "593243ad4eb9339cec9d7675ff01fb4d7b816c1b1f68d4e54d0dc4f99d8f55f5",
-          "url": "https://download.java.net/java/early_access/jdk18/11/GPL/openjdk-18-ea+11_linux-x64_bin.tar.gz"
+          "sha256": "a9bc316abb2e03378f35fc574685b8bbdd15cd6803df70c02e71ff8f19ad292b",
+          "url": "https://download.java.net/java/early_access/jdk18/12/GPL/openjdk-18-ea+12_linux-x64_bin.tar.gz"
         },
         "arm64v8": {
-          "sha256": "8efa12ef6e1acab1a4cc5dba5a45dcb828fa0265e409cd0cf2e8e9eec4ad8f0f",
-          "url": "https://download.java.net/java/early_access/jdk18/11/GPL/openjdk-18-ea+11_linux-aarch64_bin.tar.gz"
+          "sha256": "08129b3c4ef9956a14a7112565a185ac9ea7e3b327875089114ce6fe2563f585",
+          "url": "https://download.java.net/java/early_access/jdk18/12/GPL/openjdk-18-ea+12_linux-aarch64_bin.tar.gz"
         },
         "windows-amd64": {
-          "sha256": "ec68ebcdbca228f5360163b7f0c7338764cae1f5ca1b3240726cf23e67e0ab7f",
-          "url": "https://download.java.net/java/early_access/jdk18/11/GPL/openjdk-18-ea+11_windows-x64_bin.zip"
+          "sha256": "fbc4630eded8febff8e0de60f08234eaf6d260e7ab1530292b72d57d2f672670",
+          "url": "https://download.java.net/java/early_access/jdk18/12/GPL/openjdk-18-ea+12_windows-x64_bin.zip"
         }
       }
     },
@@ -127,11 +138,13 @@
       "slim-bullseye",
       "buster",
       "slim-buster",
+      "alpine3.14",
+      "alpine3.13",
       "windows/windowsservercore-1809",
       "windows/windowsservercore-ltsc2016",
       "windows/nanoserver-1809"
     ],
-    "version": "18-ea+11"
+    "version": "18-ea+12"
   },
   "8": {
     "jdk": {

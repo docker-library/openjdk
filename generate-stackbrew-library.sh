@@ -2,8 +2,8 @@
 set -Eeuo pipefail
 
 declare -A aliases=(
-	[16-jdk]='jdk latest'
-	[16-jre]='jre'
+	[17-jdk]='jdk latest'
+	[17-jre]='jre'
 )
 defaultType='jdk'
 defaultAlpine='3.14'

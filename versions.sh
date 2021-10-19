@@ -199,9 +199,8 @@ for version in "${versions[@]}"; do
 			.source = "oracle"
 		')"
 		possibleArches=(
-			# https://jdk.java.net/15/
-			# https://jdk.java.net/16/
 			# https://jdk.java.net/17/
+			# https://jdk.java.net/18/
 			'linux-aarch64'
 			'linux-x64'
 			'linux-x64-musl'

@@ -40,37 +40,6 @@
     ],
     "version": "11.0.12"
   },
-  "16": {
-    "jdk": {
-      "arches": {
-        "amd64": {
-          "sha256": "6c714ded7d881ca54970ec949e283f43d673a142fda1de79b646ddd619da9c0c",
-          "url": "https://download.java.net/java/GA/jdk16.0.2/d4a915d82b4c4fbb9bde534da945d746/7/GPL/openjdk-16.0.2_linux-x64_bin.tar.gz"
-        },
-        "arm64v8": {
-          "sha256": "1ffb9c7748334945d9056b3324de3f797d906fce4dad86beea955153aa1e28fe",
-          "url": "https://download.java.net/java/GA/jdk16.0.2/d4a915d82b4c4fbb9bde534da945d746/7/GPL/openjdk-16.0.2_linux-aarch64_bin.tar.gz"
-        },
-        "windows-amd64": {
-          "sha256": "9df98be05fe674066cc39144467c47b1503cfa3de059c09cc4ccc3da9c253b9a",
-          "url": "https://download.java.net/java/GA/jdk16.0.2/d4a915d82b4c4fbb9bde534da945d746/7/GPL/openjdk-16.0.2_windows-x64_bin.zip"
-        }
-      }
-    },
-    "source": "oracle",
-    "variants": [
-      "oraclelinux8",
-      "oraclelinux7",
-      "bullseye",
-      "slim-bullseye",
-      "buster",
-      "slim-buster",
-      "windows/windowsservercore-1809",
-      "windows/windowsservercore-ltsc2016",
-      "windows/nanoserver-1809"
-    ],
-    "version": "16.0.2"
-  },
   "17": {
     "jdk": {
       "arches": {

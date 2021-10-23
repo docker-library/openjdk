@@ -34,6 +34,7 @@
       "slim-bullseye",
       "buster",
       "slim-buster",
+      "windows/windowsservercore-ltsc2022",
       "windows/windowsservercore-1809",
       "windows/windowsservercore-ltsc2016",
       "windows/nanoserver-1809"
@@ -65,6 +66,7 @@
       "slim-bullseye",
       "buster",
       "slim-buster",
+      "windows/windowsservercore-ltsc2022",
       "windows/windowsservercore-1809",
       "windows/windowsservercore-ltsc2016",
       "windows/nanoserver-1809"
@@ -109,6 +111,7 @@
       "slim-buster",
       "alpine3.14",
       "alpine3.13",
+      "windows/windowsservercore-ltsc2022",
       "windows/windowsservercore-1809",
       "windows/windowsservercore-ltsc2016",
       "windows/nanoserver-1809"
@@ -150,6 +153,7 @@
       "slim-bullseye",
       "buster",
       "slim-buster",
+      "windows/windowsservercore-ltsc2022",
       "windows/windowsservercore-1809",
       "windows/windowsservercore-ltsc2016",
       "windows/nanoserver-1809"

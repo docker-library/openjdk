@@ -74,6 +74,17 @@
     "version": "17.0.1"
   },
   "18": {
+    "alpine": {
+      "jdk": {
+        "arches": {
+          "amd64": {
+            "sha256": "86fad9069587a5e9dd003e7354a69b2f720a05c12706d2f2345a0c8d90e56c47",
+            "url": "https://download.java.net/java/early_access/alpine/11/binaries/openjdk-18-ea+11_linux-x64-musl_bin.tar.gz"
+          }
+        }
+      },
+      "version": "18-ea+11"
+    },
     "jdk": {
       "arches": {
         "amd64": {
@@ -98,6 +109,8 @@
       "slim-bullseye",
       "buster",
       "slim-buster",
+      "alpine3.14",
+      "alpine3.13",
       "windows/windowsservercore-ltsc2022",
       "windows/windowsservercore-1809",
       "windows/windowsservercore-ltsc2016",

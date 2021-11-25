@@ -274,8 +274,8 @@ for version in "${versions[@]}"; do
 					"buster"
 				| ., "slim-" + .),
 				if $doc.alpine then
-					"3.14",
-					"3.13"
+					"3.15",
+					"3.14"
 				| "alpine" + . else empty end,
 				if $doc.jdk.arches | keys | any(startswith("windows-")) then
 					(

@@ -201,6 +201,7 @@ for version in "${versions[@]}"; do
 		possibleArches=(
 			# https://jdk.java.net/17/
 			# https://jdk.java.net/18/
+			# https://jdk.java.net/19/
 			'linux-aarch64'
 			'linux-x64'
 			'linux-x64-musl'

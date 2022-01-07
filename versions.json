@@ -122,16 +122,16 @@
     "jdk": {
       "arches": {
         "amd64": {
-          "sha256": "30e778f7957c2a472df602c7daf108b4cc7994815c5d57bb33a90b55c70e85ca",
-          "url": "https://download.java.net/java/early_access/jdk19/3/GPL/openjdk-19-ea+3_linux-x64_bin.tar.gz"
+          "sha256": "4fe225c20bb97b663163789ee765fd6b4c20a240ef651a62b79b120d06a480a3",
+          "url": "https://download.java.net/java/early_access/jdk19/4/GPL/openjdk-19-ea+4_linux-x64_bin.tar.gz"
         },
         "arm64v8": {
-          "sha256": "b984d67b32bfc13899f25f728f8c8184aac8f9e15f35d6db1f285a714eeb0234",
-          "url": "https://download.java.net/java/early_access/jdk19/3/GPL/openjdk-19-ea+3_linux-aarch64_bin.tar.gz"
+          "sha256": "9daa5ce7b7729b226fa853caef9d97abb7b2b0b485039055b74657c3c9df3e3c",
+          "url": "https://download.java.net/java/early_access/jdk19/4/GPL/openjdk-19-ea+4_linux-aarch64_bin.tar.gz"
         },
         "windows-amd64": {
-          "sha256": "f36c3877bce15485798362efa5043564eda9265027dfb7b42a219fa5659ecda3",
-          "url": "https://download.java.net/java/early_access/jdk19/3/GPL/openjdk-19-ea+3_windows-x64_bin.zip"
+          "sha256": "d76667c6d142d73576ea27adc9849ccd7f116011bbb4f22c7f0a76635d3a2901",
+          "url": "https://download.java.net/java/early_access/jdk19/4/GPL/openjdk-19-ea+4_windows-x64_bin.zip"
         }
       }
     },
@@ -148,7 +148,7 @@
       "windows/windowsservercore-ltsc2016",
       "windows/nanoserver-1809"
     ],
-    "version": "19-ea+3"
+    "version": "19-ea+4"
   },
   "8": {
     "jdk": {

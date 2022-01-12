@@ -281,8 +281,7 @@ for version in "${versions[@]}"; do
 				if $doc.jdk.arches | keys | any(startswith("windows-")) then
 					(
 						"ltsc2022",
-						"1809",
-						"ltsc2016"
+						"1809"
 					| "windows/windowsservercore-" + .),
 					(
 						"1809"

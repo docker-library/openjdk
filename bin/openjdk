@@ -167,7 +167,7 @@ has_item "$command" "${!valid_commands[@]}" || help
 
 cd $BASE_DIR
 
-VERSIONS=($(ls $BASE_DIR/versions))
+VERSIONS=($(ls $BASE_DIR/latest-versions))
 IMAGE="bandsintown/openjdk"
 IMAGE_TEST="$IMAGE-test"
 BUILD_NUM="$(git rev-parse --short HEAD)"

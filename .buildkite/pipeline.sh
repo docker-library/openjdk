@@ -80,15 +80,16 @@ steps:
     command: bin/openjdk release
   - wait
 EOF
-for TRIGGER_PIPELINE in ${TRIGGER_PIPELINES[@]}; do
-cat <<EOF
-  - trigger: "$TRIGGER_PIPELINE"
-    label: "Trigger pipeline $TRIGGER_PIPELINE"
-    async: true
-    build:
-      label: "Build triggered after releasing 'bandsintown/openjdk' images ($RELEASE_NAME)"
-EOF
-done
+### Take this one out where it force builds the other piplines
+#for TRIGGER_PIPELINE in ${TRIGGER_PIPELINES[@]}; do
+#cat <<EOF
+#  - trigger: "$TRIGGER_PIPELINE"
+#    label: "Trigger pipeline $TRIGGER_PIPELINE"
+#    async: true
+#    build:
+#      label: "Build triggered after releasing 'bandsintown/openjdk' images ($RELEASE_NAME)"
+#EOF
+#done
 exit 0
 fi
 

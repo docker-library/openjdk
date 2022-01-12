@@ -1,4 +1,4 @@
-FROM bandsintown/alpine:3.5
+FROM bandsintown/alpine:3.15.0
 
 # A few problems with compiling Java from source:
 #  1. Oracle.  Licensing prevents us from redistributing the official JDK.

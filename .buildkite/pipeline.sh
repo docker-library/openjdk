@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set +x
 
-TRIGGER_PIPELINES=(docker-zookeeper docker-solr)
+# TRIGGER_PIPELINES=(docker-zookeeper docker-solr)
 RELEASE_NAME=$(buildkite-agent meta-data get release-name || echo "n/a")
 
 # Define release hint for Github release

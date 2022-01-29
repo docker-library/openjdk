@@ -116,19 +116,30 @@
     "version": "18-ea+33"
   },
   "19": {
+    "alpine": {
+      "jdk": {
+        "arches": {
+          "amd64": {
+            "sha256": "0ee67a41fe97341f131bd4f065ed6092d55c15de5f00f8ba1e57d21eefb2c787",
+            "url": "https://download.java.net/java/early_access/alpine/5/binaries/openjdk-19-ea+5_linux-x64-musl_bin.tar.gz"
+          }
+        }
+      },
+      "version": "19-ea+5"
+    },
     "jdk": {
       "arches": {
         "amd64": {
-          "sha256": "bb5a59a9573422be1df23754d298fce48e8d530e78af478756f219b2a8df34e1",
-          "url": "https://download.java.net/java/early_access/jdk19/5/GPL/openjdk-19-ea+5_linux-x64_bin.tar.gz"
+          "sha256": "a982fa9bbeef025e84a74f1b1f1e1d5e52f3e93ca630f2bcb82ae04a4ee7bc63",
+          "url": "https://download.java.net/java/early_access/jdk19/7/GPL/openjdk-19-ea+7_linux-x64_bin.tar.gz"
         },
         "arm64v8": {
-          "sha256": "27ef9cda6adaf16f8b57abfbdff8dbfef8a0ece62a0e47c0744f5e8dba8fb354",
-          "url": "https://download.java.net/java/early_access/jdk19/5/GPL/openjdk-19-ea+5_linux-aarch64_bin.tar.gz"
+          "sha256": "f30f8f94a7bda4835eadfa80762dfd17adc878971fb94a1bad48a3fd5272505e",
+          "url": "https://download.java.net/java/early_access/jdk19/7/GPL/openjdk-19-ea+7_linux-aarch64_bin.tar.gz"
         },
         "windows-amd64": {
-          "sha256": "f26cae210cb484a48c086f2207018482162d2dd793fb69cc5575dc575159ee1c",
-          "url": "https://download.java.net/java/early_access/jdk19/5/GPL/openjdk-19-ea+5_windows-x64_bin.zip"
+          "sha256": "c43efb4546907f41aa818fe463c6edfce2fcf3e96f2fb40d594e1860212007f1",
+          "url": "https://download.java.net/java/early_access/jdk19/7/GPL/openjdk-19-ea+7_windows-x64_bin.zip"
         }
       }
     },
@@ -140,11 +151,13 @@
       "slim-bullseye",
       "buster",
       "slim-buster",
+      "alpine3.15",
+      "alpine3.14",
       "windows/windowsservercore-ltsc2022",
       "windows/windowsservercore-1809",
       "windows/nanoserver-1809"
     ],
-    "version": "19-ea+5"
+    "version": "19-ea+7"
   },
   "8": {
     "jdk": {

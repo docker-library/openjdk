@@ -72,30 +72,19 @@
     "version": "17.0.2"
   },
   "18": {
-    "alpine": {
-      "jdk": {
-        "arches": {
-          "amd64": {
-            "sha256": "86fad9069587a5e9dd003e7354a69b2f720a05c12706d2f2345a0c8d90e56c47",
-            "url": "https://download.java.net/java/early_access/alpine/11/binaries/openjdk-18-ea+11_linux-x64-musl_bin.tar.gz"
-          }
-        }
-      },
-      "version": "18-ea+11"
-    },
     "jdk": {
       "arches": {
         "amd64": {
-          "sha256": "62a711fdc1a8f7051551113d62f8cc7e3be42e57335d11d605dab060f29a12e2",
-          "url": "https://download.java.net/java/early_access/jdk18/35/GPL/openjdk-18-ea+35_linux-x64_bin.tar.gz"
+          "sha256": "0f60aef7b8504983d6e374fe94d09a7bedcf05ec559e812d801a33bd4ebd23d0",
+          "url": "https://download.java.net/java/GA/jdk18/43f95e8614114aeaa8e8a5fcf20a682d/36/GPL/openjdk-18_linux-x64_bin.tar.gz"
         },
         "arm64v8": {
-          "sha256": "cf0298eeac8e0d1d93fb1615916e08c12cd1a0e372a132cec2e66b2a30de6815",
-          "url": "https://download.java.net/java/early_access/jdk18/35/GPL/openjdk-18-ea+35_linux-aarch64_bin.tar.gz"
+          "sha256": "dff2860ba24c3f70f32ad3ac9b03f768dd28044bbda87c9607654fd03795c2ab",
+          "url": "https://download.java.net/java/GA/jdk18/43f95e8614114aeaa8e8a5fcf20a682d/36/GPL/openjdk-18_linux-aarch64_bin.tar.gz"
         },
         "windows-amd64": {
-          "sha256": "de188474290055ecb1ca874816a529859bdf60f2818a089b993f712cb7eca55b",
-          "url": "https://download.java.net/java/early_access/jdk18/35/GPL/openjdk-18-ea+35_windows-x64_bin.zip"
+          "sha256": "a5b91d4c12752d44aa75df70ae3e2311287b3e60c288b07dade106376c688277",
+          "url": "https://download.java.net/java/GA/jdk18/43f95e8614114aeaa8e8a5fcf20a682d/36/GPL/openjdk-18_windows-x64_bin.zip"
         }
       }
     },
@@ -107,13 +96,11 @@
       "slim-bullseye",
       "buster",
       "slim-buster",
-      "alpine3.15",
-      "alpine3.14",
       "windows/windowsservercore-ltsc2022",
       "windows/windowsservercore-1809",
       "windows/nanoserver-1809"
     ],
-    "version": "18-ea+35"
+    "version": "18"
   },
   "19": {
     "alpine": {

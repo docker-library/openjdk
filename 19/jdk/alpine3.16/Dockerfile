@@ -4,7 +4,7 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM alpine:3.14
+FROM alpine:3.16
 
 RUN apk add --no-cache java-cacerts
 

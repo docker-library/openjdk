@@ -6,9 +6,6 @@ declare -A aliases=(
 	[18-jre]='jre'
 )
 defaultType='jdk'
-defaultAlpine='3.16'
-defaultDebian='bullseye'
-defaultOracle='8'
 
 image="${1:-openjdk}"
 
@@ -91,12 +88,12 @@ _latest() {
 
 	if [ "$javaVersion" -ge 12 ]; then
 		# version 12+ moves "latest" over to the Oracle-based builds (and includes Windows!)
-		if [ "$variant" = "oraclelinux$defaultOracle" ]; then
+		if [ "$variant" = "$defaultOracleVariant" ]; then
 			return 0
 		fi
 	else
 		# for versions < 12, the Debian variant should be "latest"
-		if [ "$variant" = "$defaultDebian" ]; then
+		if [ "$variant" = "$defaultDebianVariant" ]; then
 			return 0
 		fi
 	fi
@@ -153,6 +150,32 @@ for version; do
 	variants="$(jq -r '.[env.version].variants | map(@sh) | join(" ")' versions.json)"
 	eval "variants=( $variants )"
 
+	defaultOracleVariant="$(jq -r '
+		.[env.version].variants
+		| map(select(
+			startswith("oraclelinux")
+		))
+		| .[0]
+	' versions.json)"
+	defaultDebianVariant="$(jq -r '
+		.[env.version].variants
+		| map(select(
+			startswith("alpine")
+			or startswith("oraclelinux")
+			or startswith("slim-")
+			or startswith("windows/")
+			| not
+		))
+		| .[0]
+	' versions.json)"
+	defaultAlpineVariant="$(jq -r '
+		.[env.version].variants
+		| map(select(
+			startswith("alpine")
+		))
+		| .[0]
+	' versions.json)"
+
 	for javaType in jdk jre; do
 		export javaType
 
@@ -202,9 +225,9 @@ for version; do
 
 			variantAliases=( "$variant" )
 			case "$variant" in
-				"oraclelinux$defaultOracle") variantAliases+=( oracle ) ;;
-				"slim-$defaultDebian") variantAliases+=( slim ) ;;
-				"alpine$defaultAlpine") variantAliases+=( alpine ) ;;
+				"$defaultOracleVariant") variantAliases+=( oracle ) ;;
+				"slim-$defaultDebianVariant") variantAliases+=( slim ) ;;
+				"$defaultAlpineVariant") variantAliases+=( alpine ) ;;
 			esac
 
 			constraints=

@@ -24,19 +24,19 @@ ENV LANG C.UTF-8
 # >
 # > Java Development Kit builds, from Oracle
 # >
-ENV JAVA_VERSION 19-ea+27
+ENV JAVA_VERSION 19-ea+28
 
 RUN set -eux; \
 	\
 	arch="$(dpkg --print-architecture)"; \
 	case "$arch" in \
 		'amd64') \
-			downloadUrl='https://download.java.net/java/early_access/jdk19/27/GPL/openjdk-19-ea+27_linux-x64_bin.tar.gz'; \
-			downloadSha256='d88a9e824ce2c65fd634463856a6af2e8aad09a3b005a6ae9f3529b972d184c4'; \
+			downloadUrl='https://download.java.net/java/early_access/jdk19/28/GPL/openjdk-19-ea+28_linux-x64_bin.tar.gz'; \
+			downloadSha256='4a6c13cb4b548d924142b11ae8fbff7f5a9c2813f7663023389866e8c15cd2ee'; \
 			;; \
 		'arm64') \
-			downloadUrl='https://download.java.net/java/early_access/jdk19/27/GPL/openjdk-19-ea+27_linux-aarch64_bin.tar.gz'; \
-			downloadSha256='7e93f0cde43b50161e5817e8a12907f5a2e74dbd63a4fa99d059ba4afdab02ae'; \
+			downloadUrl='https://download.java.net/java/early_access/jdk19/28/GPL/openjdk-19-ea+28_linux-aarch64_bin.tar.gz'; \
+			downloadSha256='f553cff91a88a315ad6af41f8c7a4a4b7b72a2bec9886e136841f2bedd87421d'; \
 			;; \
 		*) echo >&2 "error: unsupported architecture: '$arch'"; exit 1 ;; \
 	esac; \

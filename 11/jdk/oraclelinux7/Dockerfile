@@ -7,7 +7,8 @@
 FROM oraclelinux:7-slim
 
 RUN set -eux; \
-	yum install -y \
+# https://unix.stackexchange.com/a/477127/153467
+	yum install -y --setopt=skip_missing_names_on_install=False \
 		gzip \
 		tar \
 		\

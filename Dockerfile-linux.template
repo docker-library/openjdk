@@ -37,7 +37,8 @@ FROM oraclelinux:{{ oracle_version }}-slim
 
 RUN set -eux; \
 {{ if oracle_version == "7" then ( -}}
-	yum install -y \
+# https://unix.stackexchange.com/a/477127/153467
+	yum install -y --setopt=skip_missing_names_on_install=False \
 {{ ) else ( -}}
 	microdnf install \
 {{ ) end -}}

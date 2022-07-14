@@ -119,16 +119,16 @@
     "jdk": {
       "arches": {
         "amd64": {
-          "sha256": "a44e8cfbc0b12d7dd11ee56fcae119d3476a744aef02ff1eb7521e61812e1f88",
-          "url": "https://download.java.net/java/early_access/jdk20/5/GPL/openjdk-20-ea+5_linux-x64_bin.tar.gz"
+          "sha256": "5ed42664253f08626aa2346712cecb58a65a08ce3d92d9e00eb39e5964dcbbba",
+          "url": "https://download.java.net/java/early_access/jdk20/6/GPL/openjdk-20-ea+6_linux-x64_bin.tar.gz"
         },
         "arm64v8": {
-          "sha256": "80d9efc90ed72e77f93717d0bdaef68c3403099ff99af300f79aac55cb5fd080",
-          "url": "https://download.java.net/java/early_access/jdk20/5/GPL/openjdk-20-ea+5_linux-aarch64_bin.tar.gz"
+          "sha256": "ad766479ae40cc35e0544ee550825fa8aa41109eae338e297d0e3c6aac0fd3b4",
+          "url": "https://download.java.net/java/early_access/jdk20/6/GPL/openjdk-20-ea+6_linux-aarch64_bin.tar.gz"
         },
         "windows-amd64": {
-          "sha256": "4d35001bc8934fc139c19f7b9d1584aacc81f395d24890094196b54d9f7e787a",
-          "url": "https://download.java.net/java/early_access/jdk20/5/GPL/openjdk-20-ea+5_windows-x64_bin.zip"
+          "sha256": "f9cf879513545add45b0ecf9cf4c7c4544bcd8d11cc93232d3eece67abbf01a5",
+          "url": "https://download.java.net/java/early_access/jdk20/6/GPL/openjdk-20-ea+6_windows-x64_bin.zip"
         }
       }
     },
@@ -144,7 +144,7 @@
       "windows/windowsservercore-1809",
       "windows/nanoserver-1809"
     ],
-    "version": "20-ea+5"
+    "version": "20-ea+6"
   },
   "8": {
     "jdk": {

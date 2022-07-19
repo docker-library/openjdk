@@ -44,16 +44,16 @@
     "jdk": {
       "arches": {
         "amd64": {
-          "sha256": "4f81af7203fa4c8a12c9c53c94304aab69ea1551bc6119189c9883f4266a2b24",
-          "url": "https://download.java.net/java/GA/jdk18.0.1.1/65ae32619e2f40f3a9af3af1851d6e19/2/GPL/openjdk-18.0.1.1_linux-x64_bin.tar.gz"
+          "sha256": "cf06f41a3952038df0550e8cbc2baf0aa877c3ba00cca0dd26f73134f8baf0e6",
+          "url": "https://download.java.net/java/GA/jdk18.0.2/f6ad4b4450fd4d298113270ec84f30ee/9/GPL/openjdk-18.0.2_linux-x64_bin.tar.gz"
         },
         "arm64v8": {
-          "sha256": "e667166c47e90874af3641ad4a3952d3c835627e4301fa1f0d620d9b6e366519",
-          "url": "https://download.java.net/java/GA/jdk18.0.1.1/65ae32619e2f40f3a9af3af1851d6e19/2/GPL/openjdk-18.0.1.1_linux-aarch64_bin.tar.gz"
+          "sha256": "99d994dab3c5ad0e87a3d72dc3be33d5b2f045f0ddda0cb7853dfbf6b5d5d3b0",
+          "url": "https://download.java.net/java/GA/jdk18.0.2/f6ad4b4450fd4d298113270ec84f30ee/9/GPL/openjdk-18.0.2_linux-aarch64_bin.tar.gz"
         },
         "windows-amd64": {
-          "sha256": "a970b922a05a7fc2b077c89bf96c74570f65695b2ba067dc81805107517d7fed",
-          "url": "https://download.java.net/java/GA/jdk18.0.1.1/65ae32619e2f40f3a9af3af1851d6e19/2/GPL/openjdk-18.0.1.1_windows-x64_bin.zip"
+          "sha256": "441f2bfa18f318995d305d06c2326b1145b27dd08521cef5dacc561867cfee5c",
+          "url": "https://download.java.net/java/GA/jdk18.0.2/f6ad4b4450fd4d298113270ec84f30ee/9/GPL/openjdk-18.0.2_windows-x64_bin.zip"
         }
       }
     },
@@ -69,7 +69,7 @@
       "windows/windowsservercore-1809",
       "windows/nanoserver-1809"
     ],
-    "version": "18.0.1.1"
+    "version": "18.0.2"
   },
   "19": {
     "alpine": {

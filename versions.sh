@@ -175,7 +175,7 @@ for version in "${versions[@]}"; do
 				downloadUrl="${javaUrlBase}${arch}_${javaUrlVersion}"
 				case "$arch" in
 					*_linux) downloadUrl+='.tar.gz'; bashbrewArch= ;;
-					*_windows) downloadUrl+='.zip'; downloadUrl="${downloadUrl//OpenJDK11U/OpenJDK11u}"; bashbrewArch='windows-' ;; # "OpenJDK11U/OpenJDK11u" hack for https://github.com/AdoptOpenJDK/openjdk11-upstream-binaries/issues/26#issuecomment-1108710686
+					*_windows) downloadUrl+='.zip'; bashbrewArch='windows-' ;;
 					*) echo >&2 "error: unknown Adopt Upstream arch: '$arch'"; exit 1 ;;
 				esac
 				downloadFile="$(basename "$downloadUrl")"

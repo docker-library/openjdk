@@ -84,12 +84,10 @@ RUN set -eux; \
 		unzip \
 		xz-utils \
 		\
-{{ if env.version | tonumber >= 13 then ( -}}
 # jlink --strip-debug on 13+ needs objcopy: https://github.com/docker-library/openjdk/issues/351
 # Error: java.io.IOException: Cannot run program "objcopy": error=2, No such file or directory
 		binutils \
 		\
-{{ ) else "" end -}}
 # java.lang.UnsatisfiedLinkError: /usr/local/openjdk-11/lib/libfontmanager.so: libfreetype.so.6: cannot open shared object file: No such file or directory
 # java.lang.NoClassDefFoundError: Could not initialize class sun.awt.X11FontManager
 # https://github.com/docker-library/openjdk/pull/235#issuecomment-424466077
@@ -102,9 +100,6 @@ RUN set -eux; \
 	rm -rf /var/lib/apt/lists/*
 
 ENV JAVA_HOME /usr/local/openjdk-{{ env.version }}
-{{ if env.version | tonumber < 16 then ( -}}
-RUN { echo '#/bin/sh'; echo 'echo "$JAVA_HOME"'; } > /usr/local/bin/docker-java-home && chmod +x /usr/local/bin/docker-java-home && [ "$JAVA_HOME" = "$(docker-java-home)" ] # backwards compatibility
-{{ ) else "" end -}}
 {{
 	) end
 -}}
@@ -116,7 +111,6 @@ ENV LANG {{ if is_oracle and oracle_version == "7" then "en_US.UTF-8" else "C.UT
 
 {{ ) end -}}
 {{ def java_version: if is_alpine then .alpine.version else .version end -}}
-{{ if .source == "oracle" then ( -}}
 # https://jdk.java.net/
 # >
 # > Java Development Kit builds, from Oracle
@@ -125,21 +119,6 @@ ENV JAVA_VERSION {{ java_version }}
 {{ if is_alpine then ( -}}
 # "For Alpine Linux, builds are produced on a reduced schedule and may not be in sync with the other platforms."
 {{ ) else "" end -}}
-{{ ) else ( -}}
-# https://adoptopenjdk.net/upstream.html
-# >
-# > What are these binaries?
-# >
-# > These binaries are built by Red Hat on their infrastructure on behalf of the OpenJDK jdk8u and jdk11u projects. The binaries are created from the unmodified source code at OpenJDK. Although no formal support agreement is provided, please report any bugs you may find to https://bugs.java.com/.
-# >
-ENV JAVA_VERSION {{ java_version }}
-# https://github.com/docker-library/openjdk/issues/320#issuecomment-494050246
-# >
-# > I am the OpenJDK 8 and 11 Updates OpenJDK project lead.
-# > ...
-# > While it is true that the OpenJDK Governing Board has not sanctioned those releases, they (or rather we, since I am a member) didn't sanction Oracle's OpenJDK releases either. As far as I am aware, the lead of an OpenJDK project is entitled to release binary builds, and there is clearly a need for them.
-# >
-{{ ) end -}}
 
 {{
 	def arches:
@@ -213,10 +192,6 @@ RUN set -eux; \
 	savedAptMark="$(apt-mark showmanual)"; \
 	apt-get update; \
 	apt-get install -y --no-install-recommends \
-{{ if .source == "adopt" then ( -}}
-		dirmngr \
-		gnupg \
-{{ ) else "" end -}}
 		wget \
 	; \
 	rm -rf /var/lib/apt/lists/*; \
@@ -225,27 +200,6 @@ RUN set -eux; \
 	{{ wget_command }} openjdk.tgz "$downloadUrl"; \
 {{ if [ arches[] ] | any(has("sha256")) then ( -}}
 	echo "$downloadSha256 *openjdk.tgz" | sha256sum {{ if is_alpine then "-c" else "--strict --check" end }} -; \
-{{ ) else "" end -}}
-{{ if .source == "adopt" then ( -}}
-	{{ wget_command }} openjdk.tgz.asc "$downloadUrl.sign"; \
-	\
-	export GNUPGHOME="$(mktemp -d)"; \
-# pre-fetch Andrew Haley's (the OpenJDK 8 and 11 Updates OpenJDK project lead) key so we can verify that the OpenJDK key was signed by it
-# (https://github.com/docker-library/openjdk/pull/322#discussion_r286839190)
-# we pre-fetch this so that the signature it makes on the OpenJDK key can survive "import-clean" in gpg
-	gpg --batch --keyserver keyserver.ubuntu.com --recv-keys EAC843EBD3EFDB98CC772FADA5CD6035332FA671; \
-# TODO find a good link for users to verify this key is right (https://mail.openjdk.java.net/pipermail/jdk-updates-dev/2019-April/000951.html is one of the only mentions of it I can find); perhaps a note added to https://adoptopenjdk.net/upstream.html would make sense?
-# no-self-sigs-only: https://salsa.debian.org/debian/gnupg2/commit/c93ca04a53569916308b369c8b218dad5ae8fe07
-	gpg --batch --keyserver keyserver.ubuntu.com --keyserver-options no-self-sigs-only --recv-keys CA5F11C6CE22644D42C6AC4492EF8D39DC13168F; \
-	gpg --batch --list-sigs --keyid-format 0xLONG CA5F11C6CE22644D42C6AC4492EF8D39DC13168F \
-		| tee /dev/stderr \
-		| grep '0xA5CD6035332FA671' \
-		| grep 'Andrew Haley'; \
-	gpg --batch --verify openjdk.tgz.asc openjdk.tgz; \
-{{ if is_oracle then "" else ( -}}
-	gpgconf --kill all; \
-{{ ) end -}}
-	rm -rf "$GNUPGHOME"; \
 {{ ) else "" end -}}
 	\
 	mkdir -p "$JAVA_HOME"; \
@@ -263,23 +217,14 @@ RUN set -eux; \
 	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
 	\
 {{ ) else "" end -}}
-{{
-	def cacerts_file:
-		# 8-jdk uses "$JAVA_HOME/jre/lib/security/cacerts" and 8-jre and 11+ use "$JAVA_HOME/lib/security/cacerts" directly (no "jre" directory)
-		if env.version == "8" and env.javaType == "jdk" then
-			"$JAVA_HOME/jre/lib/security/cacerts"
-		else
-			"$JAVA_HOME/lib/security/cacerts"
-		end
--}}
 {{ if is_alpine then ( -}}
-	rm -rf "{{ cacerts_file }}"; \
+	rm -rf "$JAVA_HOME/lib/security/cacerts"; \
 # see "java-cacerts" package installed above (which maintains "/etc/ssl/certs/java/cacerts" for us)
-	ln -sT /etc/ssl/certs/java/cacerts "{{ cacerts_file }}"; \
+	ln -sT /etc/ssl/certs/java/cacerts "$JAVA_HOME/lib/security/cacerts"; \
 {{ ) elif is_oracle then ( -}}
-	rm -rf "{{ cacerts_file }}"; \
+	rm -rf "$JAVA_HOME/lib/security/cacerts"; \
 # see "update-ca-trust" script which creates/maintains this cacerts bundle
-	ln -sT /etc/pki/ca-trust/extracted/java/cacerts "{{ cacerts_file }}"; \
+	ln -sT /etc/pki/ca-trust/extracted/java/cacerts "$JAVA_HOME/lib/security/cacerts"; \
 	\
 # https://github.com/oracle/docker-images/blob/a56e0d1ed968ff669d2e2ba8a1483d0f3acc80c0/OracleJava/java-8/Dockerfile#L17-L19
 	ln -sfT "$JAVA_HOME" /usr/java/default; \
@@ -298,7 +243,7 @@ RUN set -eux; \
 	{ \
 		echo '#!/usr/bin/env bash'; \
 		echo 'set -Eeuo pipefail'; \
-		echo 'trust extract --overwrite --format=java-cacerts --filter=ca-anchors --purpose=server-auth "{{ cacerts_file }}"'; \
+		echo 'trust extract --overwrite --format=java-cacerts --filter=ca-anchors --purpose=server-auth "$JAVA_HOME/lib/security/cacerts"'; \
 	} > /etc/ca-certificates/update.d/docker-openjdk; \
 	chmod +x /etc/ca-certificates/update.d/docker-openjdk; \
 	/etc/ca-certificates/update.d/docker-openjdk; \
@@ -308,13 +253,6 @@ RUN set -eux; \
 	ldconfig; \
 {{ ) end -}}
 	\
-{{ if env.version == "8" then ( -}}
-# basic smoke test
-{{ if env.javaType == "jdk" then ( -}}
-	javac -version; \
-{{ ) else "" end -}}
-	java -version
-{{ ) else ( -}}
 # https://github.com/docker-library/openjdk/issues/212#issuecomment-420979840
 # https://openjdk.java.net/jeps/341
 	java -Xshare:dump; \
@@ -329,5 +267,4 @@ RUN set -eux; \
 CMD ["jshell"]
 {{ ) else ( -}}
 	java --version
-{{ ) end -}}
 {{ ) end -}}

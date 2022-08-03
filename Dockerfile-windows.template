@@ -35,19 +35,10 @@ RUN echo Updating PATH: %JAVA_HOME%\bin;%PATH% \
 USER ContainerUser
 {{ ) end -}}
 
-{{ if .source == "oracle" then ( -}}
 # https://jdk.java.net/
 # >
 # > Java Development Kit builds, from Oracle
 # >
-{{ ) else ( -}}
-# https://adoptopenjdk.net/upstream.html
-# >
-# > What are these binaries?
-# >
-# > These binaries are built by Red Hat on their infrastructure on behalf of the OpenJDK jdk8u and jdk11u projects. The binaries are created from the unmodified source code at OpenJDK. Although no formal support agreement is provided, please report any bugs you may find to https://bugs.java.com/.
-# >
-{{ ) end -}}
 ENV JAVA_VERSION {{ .version }}
 {{ if env.windowsVariant == "servercore" then ( -}}
 {{ # TODO $env:PROCESSOR_ARCHITECTURE for arm64v8 someday (https://superuser.com/a/1441469/101945) -}}
@@ -55,14 +46,6 @@ ENV JAVA_URL {{ .[env.javaType].arches["windows-amd64"].url }}
 {{ if .[env.javaType].arches["windows-amd64"] | has("sha256") then ( -}}
 ENV JAVA_SHA256 {{ .[env.javaType].arches["windows-amd64"].sha256 }}
 {{ ) else "" end -}}
-{{ ) else "" end -}}
-{{ if .source == "adopt" then ( -}}
-# https://github.com/docker-library/openjdk/issues/320#issuecomment-494050246
-# >
-# > I am the OpenJDK 8 and 11 Updates OpenJDK project lead.
-# > ...
-# > While it is true that the OpenJDK Governing Board has not sanctioned those releases, they (or rather we, since I am a member) didn't sanction Oracle's OpenJDK releases either. As far as I am aware, the lead of an OpenJDK project is entitled to release binary builds, and there is clearly a need for them.
-# >
 {{ ) else "" end -}}
 
 {{ if env.windowsVariant == "servercore" then ( -}}
@@ -89,11 +72,10 @@ RUN Write-Host ('Downloading {0} ...' -f $env:JAVA_URL); \
 	Remove-Item openjdk.zip -Force; \
 	\
 	Write-Host 'Verifying install ...'; \
-{{ def version_flag: if env.version == "8" then "-version" else "--version" end -}}
 {{ if env.javaType == "jdk" then ( -}}
-	Write-Host '  javac {{ version_flag }}'; javac {{ version_flag }}; \
+	Write-Host '  javac --version'; javac --version; \
 {{ ) else "" end -}}
-	Write-Host '  java {{ version_flag }}'; java {{ version_flag }}; \
+	Write-Host '  java --version'; java --version; \
 	\
 	Write-Host 'Complete.'
 {{ ) else ( -}}
@@ -101,12 +83,12 @@ COPY --from=openjdk:{{ .version | gsub("[+]"; "-") }}-{{ env.javaType }}-windows
 
 RUN echo Verifying install ... \
 {{ if env.javaType == "jdk" then ( -}}
-	&& echo   javac {{ version_flag }} && javac {{ version_flag }} \
+	&& echo   javac --version && javac --version \
 {{ ) else "" end -}}
-	&& echo   java {{ version_flag }} && java {{ version_flag }} \
+	&& echo   java --version && java --version \
 	&& echo Complete.
 {{ ) end -}}
-{{ if env.version != "8" and env.javaType == "jdk" then ( -}}
+{{ if env.javaType == "jdk" then ( -}}
 
 # "jshell" is an interactive REPL for Java (see https://en.wikipedia.org/wiki/JShell)
 CMD ["jshell"]

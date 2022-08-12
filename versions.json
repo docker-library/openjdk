@@ -72,30 +72,19 @@
     "version": "18.0.2"
   },
   "19": {
-    "alpine": {
-      "jdk": {
-        "arches": {
-          "amd64": {
-            "sha256": "0ee67a41fe97341f131bd4f065ed6092d55c15de5f00f8ba1e57d21eefb2c787",
-            "url": "https://download.java.net/java/early_access/alpine/5/binaries/openjdk-19-ea+5_linux-x64-musl_bin.tar.gz"
-          }
-        }
-      },
-      "version": "19-ea+5"
-    },
     "jdk": {
       "arches": {
         "amd64": {
-          "sha256": "719889f7aaf988e7ec5c6edd0c3bd03342294f329a36dd6591af2e64f6aefae7",
-          "url": "https://download.java.net/java/early_access/jdk19/34/GPL/openjdk-19-ea+34_linux-x64_bin.tar.gz"
+          "sha256": "dce3307e59c2dc3cadd9f1e23f89916a1dc88e900507c0ee2677f2f385e9b261",
+          "url": "https://download.java.net/java/GA/jdk19/877d6127e982470ba2a7faa31cc93d04/35/GPL/openjdk-19_linux-x64_bin.tar.gz"
         },
         "arm64v8": {
-          "sha256": "8d5d5327b1a7d35ae2c16ba69701cb58cb5b5df58f5ace295c08fe77d96a688b",
-          "url": "https://download.java.net/java/early_access/jdk19/34/GPL/openjdk-19-ea+34_linux-aarch64_bin.tar.gz"
+          "sha256": "123347c3bbe9840d3701fba42afa336b3a89266613c6365f98a5b9eee363cc39",
+          "url": "https://download.java.net/java/GA/jdk19/877d6127e982470ba2a7faa31cc93d04/35/GPL/openjdk-19_linux-aarch64_bin.tar.gz"
         },
         "windows-amd64": {
-          "sha256": "5d3ac1a89d92a142588bc8546aa737c37d1971bcff17810b5ff947790c97e623",
-          "url": "https://download.java.net/java/early_access/jdk19/34/GPL/openjdk-19-ea+34_windows-x64_bin.zip"
+          "sha256": "6c09bc945b2f88b399a23787607b49d91c5a8511a9421338c6e30ea3a6dbde1e",
+          "url": "https://download.java.net/java/GA/jdk19/877d6127e982470ba2a7faa31cc93d04/35/GPL/openjdk-19_windows-x64_bin.zip"
         }
       }
     },
@@ -107,13 +96,11 @@
       "slim-bullseye",
       "buster",
       "slim-buster",
-      "alpine3.16",
-      "alpine3.15",
       "windows/windowsservercore-ltsc2022",
       "windows/windowsservercore-1809",
       "windows/nanoserver-1809"
     ],
-    "version": "19-ea+34"
+    "version": "19"
   },
   "20": {
     "jdk": {

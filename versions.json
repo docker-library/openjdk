@@ -1,45 +1,4 @@
 {
-  "11": {
-    "jdk": {
-      "arches": {
-        "amd64": {
-          "url": "https://github.com/AdoptOpenJDK/openjdk11-upstream-binaries/releases/download/jdk-11.0.16%2B8/OpenJDK11U-jdk_x64_linux_11.0.16_8.tar.gz"
-        },
-        "arm64v8": {
-          "url": "https://github.com/AdoptOpenJDK/openjdk11-upstream-binaries/releases/download/jdk-11.0.16%2B8/OpenJDK11U-jdk_aarch64_linux_11.0.16_8.tar.gz"
-        },
-        "windows-amd64": {
-          "url": "https://github.com/AdoptOpenJDK/openjdk11-upstream-binaries/releases/download/jdk-11.0.16%2B8/OpenJDK11U-jdk_x64_windows_11.0.16_8.zip"
-        }
-      }
-    },
-    "jre": {
-      "arches": {
-        "amd64": {
-          "url": "https://github.com/AdoptOpenJDK/openjdk11-upstream-binaries/releases/download/jdk-11.0.16%2B8/OpenJDK11U-jre_x64_linux_11.0.16_8.tar.gz"
-        },
-        "arm64v8": {
-          "url": "https://github.com/AdoptOpenJDK/openjdk11-upstream-binaries/releases/download/jdk-11.0.16%2B8/OpenJDK11U-jre_aarch64_linux_11.0.16_8.tar.gz"
-        },
-        "windows-amd64": {
-          "url": "https://github.com/AdoptOpenJDK/openjdk11-upstream-binaries/releases/download/jdk-11.0.16%2B8/OpenJDK11U-jre_x64_windows_11.0.16_8.zip"
-        }
-      }
-    },
-    "source": "adopt",
-    "variants": [
-      "oraclelinux8",
-      "oraclelinux7",
-      "bullseye",
-      "slim-bullseye",
-      "buster",
-      "slim-buster",
-      "windows/windowsservercore-ltsc2022",
-      "windows/windowsservercore-1809",
-      "windows/nanoserver-1809"
-    ],
-    "version": "11.0.16"
-  },
   "18": {
     "jdk": {
       "arches": {
@@ -57,7 +16,6 @@
         }
       }
     },
-    "source": "oracle",
     "variants": [
       "oraclelinux8",
       "oraclelinux7",
@@ -88,7 +46,6 @@
         }
       }
     },
-    "source": "oracle",
     "variants": [
       "oraclelinux8",
       "oraclelinux7",
@@ -119,7 +76,6 @@
         }
       }
     },
-    "source": "oracle",
     "variants": [
       "oraclelinux8",
       "oraclelinux7",
@@ -132,46 +88,5 @@
       "windows/nanoserver-1809"
     ],
     "version": "20-ea+10"
-  },
-  "8": {
-    "jdk": {
-      "arches": {
-        "amd64": {
-          "url": "https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/download/jdk8u342-b07/OpenJDK8U-jdk_x64_linux_8u342b07.tar.gz"
-        },
-        "arm64v8": {
-          "url": "https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/download/jdk8u342-b07/OpenJDK8U-jdk_aarch64_linux_8u342b07.tar.gz"
-        },
-        "windows-amd64": {
-          "url": "https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/download/jdk8u342-b07/OpenJDK8U-jdk_x64_windows_8u342b07.zip"
-        }
-      }
-    },
-    "jre": {
-      "arches": {
-        "amd64": {
-          "url": "https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/download/jdk8u342-b07/OpenJDK8U-jre_x64_linux_8u342b07.tar.gz"
-        },
-        "arm64v8": {
-          "url": "https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/download/jdk8u342-b07/OpenJDK8U-jre_aarch64_linux_8u342b07.tar.gz"
-        },
-        "windows-amd64": {
-          "url": "https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases/download/jdk8u342-b07/OpenJDK8U-jre_x64_windows_8u342b07.zip"
-        }
-      }
-    },
-    "source": "adopt",
-    "variants": [
-      "oraclelinux8",
-      "oraclelinux7",
-      "bullseye",
-      "slim-bullseye",
-      "buster",
-      "slim-buster",
-      "windows/windowsservercore-ltsc2022",
-      "windows/windowsservercore-1809",
-      "windows/nanoserver-1809"
-    ],
-    "version": "8u342"
   }
 }

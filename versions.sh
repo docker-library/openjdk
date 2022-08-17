@@ -56,52 +56,6 @@ abs-url() {
 	echo "$url"
 }
 
-adopt-github-url() {
-	local javaVersion="$1"; shift
-
-	local url
-	url="$(
-		curl -fsS --head "https://github.com/AdoptOpenJDK/openjdk${javaVersion}-upstream-binaries/releases/latest" | tac|tac \
-			| tr -d '\r' \
-			| awk 'tolower($1) == "location:" { print $2; found = 1; exit } END { if (!found) { exit 1 } }'
-	)" || return 1
-
-	url="$(abs-url "$url" 'https://github.com')" || return 1
-
-	echo "$url"
-}
-
-adopt-sources-url() {
-	local githubUrl="$1"; shift
-
-	local url
-	url="$(
-		_get "$githubUrl" \
-			-oEm1 'href="[^"]+-sources_[^"]+[.]tar[.]gz"' \
-			| cut -d'"' -f2 \
-			|| :
-	)"
-	[ -n "$url" ] || return 1
-
-	url="$(abs-url "$url" "$githubUrl")" || return 1
-
-	echo "$url"
-}
-
-adopt-version() {
-	local githubUrl="$1"; shift
-
-	local version
-	version="$(
-		_get "$githubUrl" \
-			-oE '<title>.+</title>' \
-			| grep -oE ' OpenJDK [^ ]+ ' \
-			| cut -d' ' -f3
-	)" || return 1
-
-	echo "$version"
-}
-
 jdk-java-net-download-url() {
 	local javaVersion="$1"; shift
 	local fileSuffix="$1"; shift
@@ -116,11 +70,6 @@ jdk-java-net-download-version() {
 	downloadVersion="$(grep -Eom1 "openjdk-$javaVersion[^_]*_" <<<"$downloadUrl")" || return 1
 	downloadVersion="${downloadVersion%_}"
 	downloadVersion="${downloadVersion#openjdk-}"
-	if [ "$javaVersion" = '11' ]; then
-		# 11 is now GA, so drop any +NN (https://github.com/docker-library/openjdk/pull/235#issuecomment-425378941)
-		# future releases will be 11.0.1, for example
-		downloadVersion="${downloadVersion%%+*}"
-	fi
 
 	echo "$downloadVersion"
 }
@@ -145,121 +94,57 @@ sed_s_pre() {
 for version in "${versions[@]}"; do
 	export version
 	doc='{}'
-	if [ "$version" -le 11 ]; then
-		githubUrl="$(adopt-github-url "$version")"
-		sourcesUrl="$(adopt-sources-url "$githubUrl")"
-		javaUrlBaseBase="${sourcesUrl%%-sources_*}-"
-		javaUrlVersion="${sourcesUrl#${javaUrlBaseBase}sources_}"
-		javaUrlVersion="${javaUrlVersion%.tar.gz}"
-
-		adoptVersion="$(adopt-version "$githubUrl")"
-		echo "$version: $adoptVersion"
-		export adoptVersion
-		doc="$(jq <<<"$doc" -c '
-			.version = env.adoptVersion
-			| .source = "adopt"
-		')"
-
-		possibleArches=(
-			# https://github.com/AdoptOpenJDK/openjdk8-upstream-binaries/releases
-			# https://github.com/AdoptOpenJDK/openjdk11-upstream-binaries/releases
-			'aarch64_linux'
-			'x64_linux'
-			'x64_windows'
-		)
-
-		for javaType in jdk jre; do
-			export javaType
-			javaUrlBase="${javaUrlBaseBase}${javaType}_" # "jre_", "jdk_", etc
-			for arch in "${possibleArches[@]}"; do
-				downloadUrl="${javaUrlBase}${arch}_${javaUrlVersion}"
-				case "$arch" in
-					*_linux) downloadUrl+='.tar.gz'; bashbrewArch= ;;
-					*_windows) downloadUrl+='.zip'; bashbrewArch='windows-' ;;
-					*) echo >&2 "error: unknown Adopt Upstream arch: '$arch'"; exit 1 ;;
-				esac
-				downloadFile="$(basename "$downloadUrl")"
-				if _get "$githubUrl" -qF "$downloadFile"; then
-					case "$arch" in
-						aarch64_*) bashbrewArch+='arm64v8' ;;
-						x64_*) bashbrewArch+='amd64' ;;
-						*) echo >&2 "error: unknown Adopt Upstream arch: '$arch'"; exit 1 ;;
-					esac
-					export bashbrewArch downloadUrl
-					doc="$(jq <<<"$doc" -c '
-						.[env.javaType].arches[env.bashbrewArch] = {
-							url: env.downloadUrl,
-						}
-					')"
-				fi
-			done
-		done
-	else
-		doc="$(jq <<<"$doc" -c '
-			.source = "oracle"
-		')"
-		possibleArches=(
-			# https://jdk.java.net/18/
-			# https://jdk.java.net/19/
-			'linux-aarch64'
-			'linux-x64'
-			'linux-x64-musl'
-			'windows-x64'
-		)
-		for arch in "${possibleArches[@]}"; do
-			downloadSuffix="_${arch}_bin"
+	possibleArches=(
+		# https://jdk.java.net/18/
+		# https://jdk.java.net/19/
+		'linux-aarch64'
+		'linux-x64'
+		'linux-x64-musl'
+		'windows-x64'
+	)
+	for arch in "${possibleArches[@]}"; do
+		downloadSuffix="_${arch}_bin"
+		case "$arch" in
+			linux-*) downloadSuffix+='.tar.gz'; bashbrewArch= ;;
+			windows-*) downloadSuffix+='.zip'; bashbrewArch='windows-' ;;
+			*) echo >&2 "error: unknown Oracle arch: '$arch'"; exit 1 ;;
+		esac
+		jqExprPrefix=
+		if [[ "$arch" == *-musl ]]; then
+			jqExprPrefix='.alpine'
+		fi
+		if downloadUrl="$(jdk-java-net-download-url "$version" "$downloadSuffix")" \
+			&& [ -n "$downloadUrl" ] \
+			&& downloadSha256="$(_get "$downloadUrl.sha256")" \
+			&& [ -n "$downloadSha256" ] \
+		; then
+			downloadVersion="$(jdk-java-net-download-version "$version" "$downloadUrl")"
+			currentVersion="$(jq <<<"$doc" -r "$jqExprPrefix.version // \"\"")"
+			if [ -n "$currentVersion" ] && [ "$currentVersion" != "$downloadVersion" ]; then
+				echo >&2 "error: Oracle version mismatch: '$currentVersion' vs '$downloadVersion'"
+				exit 1
+			elif [ -z "$currentVersion" ]; then
+				echo "$version: $downloadVersion${jqExprPrefix:+ (alpine)}"
+			fi
 			case "$arch" in
-				linux-*) downloadSuffix+='.tar.gz'; bashbrewArch= ;;
-				windows-*) downloadSuffix+='.zip'; bashbrewArch='windows-' ;;
+				*-aarch64*) bashbrewArch+='arm64v8' ;;
+				*-x64*) bashbrewArch+='amd64' ;;
 				*) echo >&2 "error: unknown Oracle arch: '$arch'"; exit 1 ;;
 			esac
-			jqExprPrefix=
-			if [[ "$arch" == *-musl ]]; then
-				jqExprPrefix='.alpine'
-			fi
-			if downloadUrl="$(jdk-java-net-download-url "$version" "$downloadSuffix")" \
-				&& [ -n "$downloadUrl" ] \
-				&& downloadSha256="$(_get "$downloadUrl.sha256")" \
-				&& [ -n "$downloadSha256" ] \
-			; then
-				downloadVersion="$(jdk-java-net-download-version "$version" "$downloadUrl")"
-				currentVersion="$(jq <<<"$doc" -r "$jqExprPrefix.version // \"\"")"
-				if [ -n "$currentVersion" ] && [ "$currentVersion" != "$downloadVersion" ]; then
-					echo >&2 "error: Oracle version mismatch: '$currentVersion' vs '$downloadVersion'"
-					exit 1
-				elif [ -z "$currentVersion" ]; then
-					echo "$version: $downloadVersion${jqExprPrefix:+ (alpine)}"
-				fi
-				case "$arch" in
-					*-aarch64*) bashbrewArch+='arm64v8' ;;
-					*-x64*) bashbrewArch+='amd64' ;;
-					*) echo >&2 "error: unknown Oracle arch: '$arch'"; exit 1 ;;
-				esac
-				export arch bashbrewArch downloadUrl downloadSha256 downloadVersion
-				doc="$(jq <<<"$doc" -c '
-					'"$jqExprPrefix"'.version = env.downloadVersion
-					| '"$jqExprPrefix"'.jdk.arches[env.bashbrewArch] = {
-						url: env.downloadUrl,
-						sha256: env.downloadSha256,
-					}
-				')"
-			fi
-		done
-	fi
+			export arch bashbrewArch downloadUrl downloadSha256 downloadVersion
+			doc="$(jq <<<"$doc" -c '
+				'"$jqExprPrefix"'.version = env.downloadVersion
+				| '"$jqExprPrefix"'.jdk.arches[env.bashbrewArch] = {
+					url: env.downloadUrl,
+					sha256: env.downloadSha256,
+				}
+			')"
+		fi
+	done
 
 	if ! jq <<<"$doc" -e '[ .. | objects | select(has("arches")) | .arches | has("amd64") ] | all' &> /dev/null; then
 		echo >&2 "error: missing 'amd64' for '$version'; cowardly refusing to continue! (because this is almost always a scraping flake or similar bug)"
 		exit 1
-	fi
-
-	if [ "$version" = '11' ]; then
-		for arch in arm64v8 windows-amd64; do
-			export arch
-			if ! jq <<<"$doc" -e '[ .. | objects | select(has("arches")) | .arches | has(env.arch) ] | all' &> /dev/null; then
-				echo >&2 "error: missing '$arch' for '$version'; cowardly refusing to continue! (because this is almost always a scraping flake or similar bug)"
-				exit 1
-			fi
-		done
 	fi
 
 	json="$(jq <<<"$json" -c --argjson doc "$doc" '

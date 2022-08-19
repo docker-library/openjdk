@@ -107,6 +107,11 @@ aliases() {
 	local fullVersion="$1"; shift
 	local variants=( "$@" )
 
+	if [[ "$fullVersion" =~ ^[0-9]+$ ]]; then
+		# if fullVersion is only digits, add "-rc" to the end (because we're probably in the final-phases of pre-release before GA when we drop support from the image)
+		fullVersion="$fullVersion-rc"
+	fi
+
 	local bases=()
 	while [ "${fullVersion%[.-]*}" != "$fullVersion" ]; do
 		bases+=( $fullVersion )

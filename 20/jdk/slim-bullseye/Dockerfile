@@ -24,19 +24,19 @@ ENV LANG C.UTF-8
 # >
 # > Java Development Kit builds, from Oracle
 # >
-ENV JAVA_VERSION 20-ea+10
+ENV JAVA_VERSION 20-ea+11
 
 RUN set -eux; \
 	\
 	arch="$(dpkg --print-architecture)"; \
 	case "$arch" in \
 		'amd64') \
-			downloadUrl='https://download.java.net/java/early_access/jdk20/10/GPL/openjdk-20-ea+10_linux-x64_bin.tar.gz'; \
-			downloadSha256='4033b0e25de02cb25c0701b58350eef56af5bd90922dc551f996323be4bde247'; \
+			downloadUrl='https://download.java.net/java/early_access/jdk20/11/GPL/openjdk-20-ea+11_linux-x64_bin.tar.gz'; \
+			downloadSha256='9a0afe9f1c3ef50968060fe8d70d7b27d93b5515479846193de809127f0d427f'; \
 			;; \
 		'arm64') \
-			downloadUrl='https://download.java.net/java/early_access/jdk20/10/GPL/openjdk-20-ea+10_linux-aarch64_bin.tar.gz'; \
-			downloadSha256='0cc50649a10b49dc7f0f6e05d2588bc4885243124a424c72251c1c7ce3e93d02'; \
+			downloadUrl='https://download.java.net/java/early_access/jdk20/11/GPL/openjdk-20-ea+11_linux-aarch64_bin.tar.gz'; \
+			downloadSha256='d7e80f5000f66440c34073bdb0e443b941ef11209ca30f0e698f07a3fce08118'; \
 			;; \
 		*) echo >&2 "error: unsupported architecture: '$arch'"; exit 1 ;; \
 	esac; \

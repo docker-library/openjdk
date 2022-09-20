@@ -29,36 +29,6 @@
     ],
     "version": "18.0.2.1"
   },
-  "19": {
-    "jdk": {
-      "arches": {
-        "amd64": {
-          "sha256": "f47aba585cfc9ecff1ed8e023524e8309f4315ed8b80100b40c7dcc232c12f96",
-          "url": "https://download.java.net/java/GA/jdk19/877d6127e982470ba2a7faa31cc93d04/36/GPL/openjdk-19_linux-x64_bin.tar.gz"
-        },
-        "arm64v8": {
-          "sha256": "682bfb48158ca198393c4b7fd38f873e8d6316b0bc6511a07e917f7f0f3afb03",
-          "url": "https://download.java.net/java/GA/jdk19/877d6127e982470ba2a7faa31cc93d04/36/GPL/openjdk-19_linux-aarch64_bin.tar.gz"
-        },
-        "windows-amd64": {
-          "sha256": "8fabcee7c4e8d3b53486777ecd27bb906d67d7c1efd1bf22a8290cf659afa487",
-          "url": "https://download.java.net/java/GA/jdk19/877d6127e982470ba2a7faa31cc93d04/36/GPL/openjdk-19_windows-x64_bin.zip"
-        }
-      }
-    },
-    "variants": [
-      "oraclelinux8",
-      "oraclelinux7",
-      "bullseye",
-      "slim-bullseye",
-      "buster",
-      "slim-buster",
-      "windows/windowsservercore-ltsc2022",
-      "windows/windowsservercore-1809",
-      "windows/nanoserver-1809"
-    ],
-    "version": "19"
-  },
   "20": {
     "jdk": {
       "arches": {

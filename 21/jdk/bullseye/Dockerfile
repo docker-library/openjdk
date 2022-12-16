@@ -37,19 +37,19 @@ ENV LANG C.UTF-8
 # >
 # > Java Development Kit builds, from Oracle
 # >
-ENV JAVA_VERSION 21-ea+1
+ENV JAVA_VERSION 21-ea+2
 
 RUN set -eux; \
 	\
 	arch="$(dpkg --print-architecture)"; \
 	case "$arch" in \
 		'amd64') \
-			downloadUrl='https://download.java.net/java/early_access/jdk21/1/GPL/openjdk-21-ea+1_linux-x64_bin.tar.gz'; \
-			downloadSha256='46d9f514e49067eebb9e3bf5033195e2ca1b834be98f3910ea1726c40e97dc22'; \
+			downloadUrl='https://download.java.net/java/early_access/jdk21/2/GPL/openjdk-21-ea+2_linux-x64_bin.tar.gz'; \
+			downloadSha256='8070902e5bfbb71a4e7c723bb0439faeb9f3127e1fb048f7ed4e6a5abc5a3505'; \
 			;; \
 		'arm64') \
-			downloadUrl='https://download.java.net/java/early_access/jdk21/1/GPL/openjdk-21-ea+1_linux-aarch64_bin.tar.gz'; \
-			downloadSha256='950a4a33ac9737bc7ecf824d2292f4fea92b1d9301a4f89d3c32e86f4d04bd23'; \
+			downloadUrl='https://download.java.net/java/early_access/jdk21/2/GPL/openjdk-21-ea+2_linux-aarch64_bin.tar.gz'; \
+			downloadSha256='011358a514a8d4030c36bbd5b7d7fb5c404f326498f4c832ee5f890fff8709db'; \
 			;; \
 		*) echo >&2 "error: unsupported architecture: '$arch'"; exit 1 ;; \
 	esac; \

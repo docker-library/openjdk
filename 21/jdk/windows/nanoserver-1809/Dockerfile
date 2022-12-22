@@ -20,9 +20,9 @@ USER ContainerUser
 # >
 # > Java Development Kit builds, from Oracle
 # >
-ENV JAVA_VERSION 21-ea+2
+ENV JAVA_VERSION 21-ea+3
 
-COPY --from=openjdk:21-ea-2-jdk-windowsservercore-1809 $JAVA_HOME $JAVA_HOME
+COPY --from=openjdk:21-ea-3-jdk-windowsservercore-1809 $JAVA_HOME $JAVA_HOME
 
 RUN echo Verifying install ... \
 	&& echo   javac --version && javac --version \

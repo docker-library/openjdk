@@ -2,8 +2,13 @@
 set -Eeuo pipefail
 
 declare -A aliases=(
-	[18-jdk]='jdk latest'
-	[18-jre]='jre'
+	# https://github.com/docker-library/openjdk/issues/505
+	# https://github.com/docker-library/openjdk/pull/510#issue-1327751730
+	# > Once Oracle stops publishing OpenJDK 18 builds, those will be removed
+	# > 19+ will be removed as soon as each release hits GA 
+	# To prevent user breakage, we are not moving "latest", "jre" or "jdk" to early access builds; the last non-ea was 18
+	#[18-jdk]='jdk latest'
+	#[18-jre]='jre'
 )
 defaultType='jdk'
 

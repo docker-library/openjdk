@@ -30,19 +30,19 @@ ENV LANG C.UTF-8
 # >
 # > Java Development Kit builds, from Oracle
 # >
-ENV JAVA_VERSION 21-ea+16
+ENV JAVA_VERSION 21-ea+17
 
 RUN set -eux; \
 	\
 	arch="$(objdump="$(command -v objdump)" && objdump --file-headers "$objdump" | awk -F '[:,]+[[:space:]]+' '$1 == "architecture" { print $2 }')"; \
 	case "$arch" in \
 		'i386:x86-64') \
-			downloadUrl='https://download.java.net/java/early_access/jdk21/16/GPL/openjdk-21-ea+16_linux-x64_bin.tar.gz'; \
-			downloadSha256='8b74ac1059c78a2abf829bd3b88c0c95c609e961af90f380a4032af52f2db0a3'; \
+			downloadUrl='https://download.java.net/java/early_access/jdk21/17/GPL/openjdk-21-ea+17_linux-x64_bin.tar.gz'; \
+			downloadSha256='98dcda513be6f72005f9b52c79d88f7e6bef066baddf0b89d9847c125b6d9bed'; \
 			;; \
 		'aarch64') \
-			downloadUrl='https://download.java.net/java/early_access/jdk21/16/GPL/openjdk-21-ea+16_linux-aarch64_bin.tar.gz'; \
-			downloadSha256='f81acca52a81f2739b9a8c5c69bd066666a024c1e072b7f8b7646fb69ca25b31'; \
+			downloadUrl='https://download.java.net/java/early_access/jdk21/17/GPL/openjdk-21-ea+17_linux-aarch64_bin.tar.gz'; \
+			downloadSha256='795231d9254753b31583afabc08fb092c00cc2459962cfdd3e0b0bd32edcad92'; \
 			;; \
 		*) echo >&2 "error: unsupported architecture: '$arch'"; exit 1 ;; \
 	esac; \

@@ -3,16 +3,16 @@
     "jdk": {
       "arches": {
         "amd64": {
-          "sha256": "218aa2d9ef829851d8eafe470922cefd372aa31b68cdab3aa0691c0492e6adde",
-          "url": "https://download.java.net/java/early_access/jdk21/21/GPL/openjdk-21-ea+21_linux-x64_bin.tar.gz"
+          "sha256": "6ae3958a32809960b925b0fc4fae2236b5640c92b015274035fe3fb3ceb94f98",
+          "url": "https://download.java.net/java/early_access/jdk21/22/GPL/openjdk-21-ea+22_linux-x64_bin.tar.gz"
         },
         "arm64v8": {
-          "sha256": "449a26a88e27c331c9565a95892533f33792094f23f28a71b880a60588ddf0c2",
-          "url": "https://download.java.net/java/early_access/jdk21/21/GPL/openjdk-21-ea+21_linux-aarch64_bin.tar.gz"
+          "sha256": "c9afb1a0be1b35ed1e61bab79d5fec466f7e5c42b65bd8a65595d6699d0e77cb",
+          "url": "https://download.java.net/java/early_access/jdk21/22/GPL/openjdk-21-ea+22_linux-aarch64_bin.tar.gz"
         },
         "windows-amd64": {
-          "sha256": "956977cb5020e6f7b75a2e06336cf858b8b131d6a57f9b0ca0b7f9b62b4e82be",
-          "url": "https://download.java.net/java/early_access/jdk21/21/GPL/openjdk-21-ea+21_windows-x64_bin.zip"
+          "sha256": "e921526323541a07a661b85c88a4f45541c235f65483d1e9156910733f322fee",
+          "url": "https://download.java.net/java/early_access/jdk21/22/GPL/openjdk-21-ea+22_windows-x64_bin.zip"
         }
       }
     },
@@ -27,6 +27,6 @@
       "windows/windowsservercore-1809",
       "windows/nanoserver-1809"
     ],
-    "version": "21-ea+21"
+    "version": "21-ea+22"
   }
 }

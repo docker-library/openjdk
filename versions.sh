@@ -151,23 +151,28 @@ for version in "${versions[@]}"; do
 			variants: [
 				(
 					"8",
-					"7"
+					"7",
+					empty
 				| "oraclelinux" + .),
 				(
+					"bookworm",
 					"bullseye",
-					"buster"
+					empty
 				| ., "slim-" + .),
 				if $doc.alpine then
+					"3.18",
 					"3.17",
-					"3.16"
+					empty
 				| "alpine" + . else empty end,
 				if $doc.jdk.arches | keys | any(startswith("windows-")) then
 					(
 						"ltsc2022",
-						"1809"
+						"1809",
+						empty
 					| "windows/windowsservercore-" + .),
 					(
-						"1809"
+						"1809",
+						empty
 					| "windows/nanoserver-" + .)
 				else empty end
 			],

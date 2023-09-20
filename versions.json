@@ -1,34 +1,4 @@
 {
-  "21": {
-    "jdk": {
-      "arches": {
-        "amd64": {
-          "sha256": "a30c454a9bef8f46d5f1bf3122830014a8fbe7ac03b5f8729bc3add4b92a1d0a",
-          "url": "https://download.java.net/java/GA/jdk21/fd2272bbf8e04c3dbaee13770090416c/35/GPL/openjdk-21_linux-x64_bin.tar.gz"
-        },
-        "arm64v8": {
-          "sha256": "e8f4ed1a69815ddf56d7da365116eefc1e5a1159396dffee3dd21616a86d5d28",
-          "url": "https://download.java.net/java/GA/jdk21/fd2272bbf8e04c3dbaee13770090416c/35/GPL/openjdk-21_linux-aarch64_bin.tar.gz"
-        },
-        "windows-amd64": {
-          "sha256": "5434faaf029e66e7ce6e75770ca384de476750984a7d2881ef7686894c4b4944",
-          "url": "https://download.java.net/java/GA/jdk21/fd2272bbf8e04c3dbaee13770090416c/35/GPL/openjdk-21_windows-x64_bin.zip"
-        }
-      }
-    },
-    "variants": [
-      "oraclelinux8",
-      "oraclelinux7",
-      "bookworm",
-      "slim-bookworm",
-      "bullseye",
-      "slim-bullseye",
-      "windows/windowsservercore-ltsc2022",
-      "windows/windowsservercore-1809",
-      "windows/nanoserver-1809"
-    ],
-    "version": "21"
-  },
   "22": {
     "jdk": {
       "arches": {

@@ -22,6 +22,9 @@ USER ContainerUser
 # >
 ENV JAVA_VERSION 22-ea+18
 
+# JVM by default only uses 25% of container memory, since we are running only one JVM we can safely boost this with a bit of extra room for agents/sidecars.
+ENV JAVA_TOOL_OPTIONS "-XX:InitialRAMPercentage=60.0 -XX:MaxRAMPercentage=80.0"
+
 COPY --from=openjdk:22-ea-18-jdk-windowsservercore-1809 $JAVA_HOME $JAVA_HOME
 
 RUN echo Verifying install ... \

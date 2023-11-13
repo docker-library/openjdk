@@ -3,16 +3,16 @@
     "jdk": {
       "arches": {
         "amd64": {
-          "sha256": "d6c2ae7f19a6ac9f7621d63fd978e6858b099a707b7d3e2a709cd18ebb0b9f61",
-          "url": "https://download.java.net/java/early_access/jdk22/22/GPL/openjdk-22-ea+22_linux-x64_bin.tar.gz"
+          "sha256": "fd781d8f07801adbe2c55425b595cf97d4652de7f27a56d90a5daabd8d899a22",
+          "url": "https://download.java.net/java/early_access/jdk22/23/GPL/openjdk-22-ea+23_linux-x64_bin.tar.gz"
         },
         "arm64v8": {
-          "sha256": "8ab5ab05cfca072f17b60158a4fb90db6e34a08bc815348729d0965e6bdf983a",
-          "url": "https://download.java.net/java/early_access/jdk22/22/GPL/openjdk-22-ea+22_linux-aarch64_bin.tar.gz"
+          "sha256": "5480254852c4d9b56987eab704922c5174895ef4b11407a0e79c887bf89ffe24",
+          "url": "https://download.java.net/java/early_access/jdk22/23/GPL/openjdk-22-ea+23_linux-aarch64_bin.tar.gz"
         },
         "windows-amd64": {
-          "sha256": "0372b2b4ac120b8b7b3cdf4a890449348d97633a699d14ea769a9a31de6de19d",
-          "url": "https://download.java.net/java/early_access/jdk22/22/GPL/openjdk-22-ea+22_windows-x64_bin.zip"
+          "sha256": "25e3fa403b5e501bf5e66189205dd806161aeef87a3a35b861fa3f46ab286852",
+          "url": "https://download.java.net/java/early_access/jdk22/23/GPL/openjdk-22-ea+23_windows-x64_bin.zip"
         }
       }
     },
@@ -27,6 +27,6 @@
       "windows/windowsservercore-1809",
       "windows/nanoserver-1809"
     ],
-    "version": "22-ea+22"
+    "version": "22-ea+23"
   }
 }

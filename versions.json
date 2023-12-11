@@ -28,5 +28,35 @@
       "windows/nanoserver-1809"
     ],
     "version": "22-ea+27"
+  },
+  "23": {
+    "jdk": {
+      "arches": {
+        "amd64": {
+          "sha256": "740a84253d35402b9213bf187ee4f058817c614f8cc47cb3414e02760f05099f",
+          "url": "https://download.java.net/java/early_access/jdk23/1/GPL/openjdk-23-ea+1_linux-x64_bin.tar.gz"
+        },
+        "arm64v8": {
+          "sha256": "74fe7c8e67c5b80f868ec20daecb112fc090fb91c58bf4ce5297cf77c9935fa5",
+          "url": "https://download.java.net/java/early_access/jdk23/1/GPL/openjdk-23-ea+1_linux-aarch64_bin.tar.gz"
+        },
+        "windows-amd64": {
+          "sha256": "b60d20ad423ec31c88a18679854a31bdef66003224227d86dcbd10781fe14db1",
+          "url": "https://download.java.net/java/early_access/jdk23/1/GPL/openjdk-23-ea+1_windows-x64_bin.zip"
+        }
+      }
+    },
+    "variants": [
+      "oraclelinux8",
+      "oraclelinux7",
+      "bookworm",
+      "slim-bookworm",
+      "bullseye",
+      "slim-bullseye",
+      "windows/windowsservercore-ltsc2022",
+      "windows/windowsservercore-1809",
+      "windows/nanoserver-1809"
+    ],
+    "version": "23-ea+1"
   }
 }

@@ -33,16 +33,16 @@
     "jdk": {
       "arches": {
         "amd64": {
-          "sha256": "740a84253d35402b9213bf187ee4f058817c614f8cc47cb3414e02760f05099f",
-          "url": "https://download.java.net/java/early_access/jdk23/1/GPL/openjdk-23-ea+1_linux-x64_bin.tar.gz"
+          "sha256": "c10168b0639ae5a316fb20444202e82fabe5908be7241f1cd42e34ed9d1eca76",
+          "url": "https://download.java.net/java/early_access/jdk23/2/GPL/openjdk-23-ea+2_linux-x64_bin.tar.gz"
         },
         "arm64v8": {
-          "sha256": "74fe7c8e67c5b80f868ec20daecb112fc090fb91c58bf4ce5297cf77c9935fa5",
-          "url": "https://download.java.net/java/early_access/jdk23/1/GPL/openjdk-23-ea+1_linux-aarch64_bin.tar.gz"
+          "sha256": "84b416aba4f3578138dd0d27f570dbaee9123528c4d45d13a338278c3d7136c1",
+          "url": "https://download.java.net/java/early_access/jdk23/2/GPL/openjdk-23-ea+2_linux-aarch64_bin.tar.gz"
         },
         "windows-amd64": {
-          "sha256": "b60d20ad423ec31c88a18679854a31bdef66003224227d86dcbd10781fe14db1",
-          "url": "https://download.java.net/java/early_access/jdk23/1/GPL/openjdk-23-ea+1_windows-x64_bin.zip"
+          "sha256": "bf19a08c126e820eb3d622dbae9c2928853561d1227235461046491413e7f649",
+          "url": "https://download.java.net/java/early_access/jdk23/2/GPL/openjdk-23-ea+2_windows-x64_bin.zip"
         }
       }
     },
@@ -57,6 +57,6 @@
       "windows/windowsservercore-1809",
       "windows/nanoserver-1809"
     ],
-    "version": "23-ea+1"
+    "version": "23-ea+2"
   }
 }

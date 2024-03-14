@@ -17,8 +17,8 @@
       }
     },
     "variants": [
+      "oraclelinux9",
       "oraclelinux8",
-      "oraclelinux7",
       "bookworm",
       "slim-bookworm",
       "bullseye",
@@ -47,8 +47,8 @@
       }
     },
     "variants": [
+      "oraclelinux9",
       "oraclelinux8",
-      "oraclelinux7",
       "bookworm",
       "slim-bookworm",
       "bullseye",

@@ -4,11 +4,10 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM oraclelinux:7-slim
+FROM oraclelinux:9-slim
 
 RUN set -eux; \
-# https://unix.stackexchange.com/a/477127/153467
-	yum install -y --setopt=skip_missing_names_on_install=False \
+	microdnf install \
 		gzip \
 		tar \
 		\
@@ -19,13 +18,13 @@ RUN set -eux; \
 # https://github.com/docker-library/openjdk/pull/235#issuecomment-424466077
 		freetype fontconfig \
 	; \
-	rm -rf /var/cache/yum
+	microdnf clean all
 
 ENV JAVA_HOME /usr/java/openjdk-22
 ENV PATH $JAVA_HOME/bin:$PATH
 
 # Default to UTF-8 file.encoding
-ENV LANG en_US.UTF-8
+ENV LANG C.UTF-8
 
 # https://jdk.java.net/
 # >

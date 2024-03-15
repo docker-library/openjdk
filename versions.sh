@@ -150,8 +150,8 @@ for version in "${versions[@]}"; do
 		.[env.version] = $doc + {
 			variants: [
 				(
+					"9",
 					"8",
-					"7",
 					empty
 				| "oraclelinux" + .),
 				(
@@ -160,8 +160,8 @@ for version in "${versions[@]}"; do
 					empty
 				| ., "slim-" + .),
 				if $doc.alpine then
+					"3.19",
 					"3.18",
-					"3.17",
 					empty
 				| "alpine" + . else empty end,
 				if $doc.jdk.arches | keys | any(startswith("windows-")) then

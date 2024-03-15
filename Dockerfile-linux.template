@@ -36,12 +36,7 @@ ENV JAVA_HOME /opt/openjdk-{{ env.version }}
 FROM oraclelinux:{{ oracle_version }}-slim
 
 RUN set -eux; \
-{{ if oracle_version == "7" then ( -}}
-# https://unix.stackexchange.com/a/477127/153467
-	yum install -y --setopt=skip_missing_names_on_install=False \
-{{ ) else ( -}}
 	microdnf install \
-{{ ) end -}}
 		gzip \
 		tar \
 		\
@@ -52,11 +47,7 @@ RUN set -eux; \
 # https://github.com/docker-library/openjdk/pull/235#issuecomment-424466077
 		freetype fontconfig \
 	; \
-{{ if oracle_version == "7" then ( -}}
-	rm -rf /var/cache/yum
-{{ ) else ( -}}
 	microdnf clean all
-{{ ) end -}}
 
 ENV JAVA_HOME /usr/java/openjdk-{{ env.version }}
 {{
@@ -107,7 +98,7 @@ ENV PATH $JAVA_HOME/bin:$PATH
 
 {{ if is_alpine then "" else ( -}}
 # Default to UTF-8 file.encoding
-ENV LANG {{ if is_oracle and oracle_version == "7" then "en_US.UTF-8" else "C.UTF-8" end }}
+ENV LANG C.UTF-8
 
 {{ ) end -}}
 {{ def java_version: if is_alpine then .alpine.version else .version end -}}

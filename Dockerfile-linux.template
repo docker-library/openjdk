@@ -120,7 +120,7 @@ ENV JAVA_VERSION {{ java_version }}
 		if is_alpine then
 			"apk --print-arch"
 		elif is_oracle then
-			"objdump=\"$(command -v objdump)\" && objdump --file-headers \"$objdump\" | awk -F '[:,]+[[:space:]]+' '$1 == \"architecture\" { print $2 }'"
+			"rpm --query --queryformat='%{ARCH}' rpm"
 		else
 			"dpkg --print-architecture"
 		end
@@ -129,13 +129,13 @@ ENV JAVA_VERSION {{ java_version }}
 		# input is a bashbrew arch
 		# - "amd64", "arm64v8", etc
 		# output is a shell "case" expression for matching the output of running "get_arch_command"
-		# - "amd64 | i386:x86-64", etc
+		# - "i[3456]86", "aarch64", "x86_64", etc
 		. as $bashbrewArch
 		| if is_alpine then {
 			amd64: "x86_64",
 			arm64v8: "aarch64",
 		} elif is_oracle then {
-			amd64: "i386:x86-64",
+			amd64: "x86_64",
 			arm64v8: "aarch64",
 		} else {
 			amd64: "amd64",

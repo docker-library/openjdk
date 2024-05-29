@@ -34,9 +34,9 @@ ENV JAVA_VERSION 23-ea+24
 
 RUN set -eux; \
 	\
-	arch="$(objdump="$(command -v objdump)" && objdump --file-headers "$objdump" | awk -F '[:,]+[[:space:]]+' '$1 == "architecture" { print $2 }')"; \
+	arch="$(rpm --query --queryformat='%{ARCH}' rpm)"; \
 	case "$arch" in \
-		'i386:x86-64') \
+		'x86_64') \
 			downloadUrl='https://download.java.net/java/early_access/jdk23/24/GPL/openjdk-23-ea+24_linux-x64_bin.tar.gz'; \
 			downloadSha256='eebed7702933983781b97d468d8772f419c150d1c7354f82f15dd07d79be2b17'; \
 			;; \

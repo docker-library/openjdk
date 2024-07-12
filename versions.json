@@ -33,16 +33,16 @@
     "jdk": {
       "arches": {
         "amd64": {
-          "sha256": "d5fd5e0ac45ddcd18eec430e5207bd8df7290aa292c8cd2b11a1e8d694894514",
-          "url": "https://download.java.net/java/early_access/jdk24/5/GPL/openjdk-24-ea+5_linux-x64_bin.tar.gz"
+          "sha256": "85969884f11f2863595c13dff1cb6f6d94149bbe5188c34f0a7aaa284a545a27",
+          "url": "https://download.java.net/java/early_access/jdk24/6/GPL/openjdk-24-ea+6_linux-x64_bin.tar.gz"
         },
         "arm64v8": {
-          "sha256": "7d765a014b298ef58010d0fc0e0159c942ca789fcce81ac6ca12d8d149d5288d",
-          "url": "https://download.java.net/java/early_access/jdk24/5/GPL/openjdk-24-ea+5_linux-aarch64_bin.tar.gz"
+          "sha256": "3c719648382b7e5d564dc1d39d4408890d92ce5484fd46a5ef338da7380684ca",
+          "url": "https://download.java.net/java/early_access/jdk24/6/GPL/openjdk-24-ea+6_linux-aarch64_bin.tar.gz"
         },
         "windows-amd64": {
-          "sha256": "6311a1a2de647471859f4eda1f035e7da59a26882c2bc3e456a97e88b9e9647b",
-          "url": "https://download.java.net/java/early_access/jdk24/5/GPL/openjdk-24-ea+5_windows-x64_bin.zip"
+          "sha256": "de012f73dcdc78f7014626b96cb7a381e0bed5be0c8ffac72b7be101bf3d3087",
+          "url": "https://download.java.net/java/early_access/jdk24/6/GPL/openjdk-24-ea+6_windows-x64_bin.zip"
         }
       }
     },
@@ -57,6 +57,6 @@
       "windows/windowsservercore-1809",
       "windows/nanoserver-1809"
     ],
-    "version": "24-ea+5"
+    "version": "24-ea+6"
   }
 }

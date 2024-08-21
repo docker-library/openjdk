@@ -3,16 +3,16 @@
     "jdk": {
       "arches": {
         "amd64": {
-          "sha256": "d8d169ae7a0285e09872565bc3044ad97697d3780e678d2a5ae9f8451c207cfc",
-          "url": "https://download.java.net/java/GA/jdk23/3c5b90190c68498b986a97f276efd28a/36/GPL/openjdk-23_linux-x64_bin.tar.gz"
+          "sha256": "08fea92724127c6fa0f2e5ea0b07ff4951ccb1e2f22db3c21eebbd7347152a67",
+          "url": "https://download.java.net/java/GA/jdk23/3c5b90190c68498b986a97f276efd28a/37/GPL/openjdk-23_linux-x64_bin.tar.gz"
         },
         "arm64v8": {
-          "sha256": "5cad336e22d64a4a578f59d089223c226d67455c410cbaeb91f5fa0503ce2f96",
-          "url": "https://download.java.net/java/GA/jdk23/3c5b90190c68498b986a97f276efd28a/36/GPL/openjdk-23_linux-aarch64_bin.tar.gz"
+          "sha256": "076dcf7078cdf941951587bf92733abacf489a6570f1df97ee35945ffebec5b7",
+          "url": "https://download.java.net/java/GA/jdk23/3c5b90190c68498b986a97f276efd28a/37/GPL/openjdk-23_linux-aarch64_bin.tar.gz"
         },
         "windows-amd64": {
-          "sha256": "b18897bec6b1c6e0f639d95757eb0e3b0ec3d69720f6e4631874f2f9408075c5",
-          "url": "https://download.java.net/java/GA/jdk23/3c5b90190c68498b986a97f276efd28a/36/GPL/openjdk-23_windows-x64_bin.zip"
+          "sha256": "cba5013874ba50cae543c86fe6423453816c77281e2751a8a9a633d966f1dc04",
+          "url": "https://download.java.net/java/GA/jdk23/3c5b90190c68498b986a97f276efd28a/37/GPL/openjdk-23_windows-x64_bin.zip"
         }
       }
     },

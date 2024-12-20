@@ -30,19 +30,19 @@ ENV LANG C.UTF-8
 # >
 # > Java Development Kit builds, from Oracle
 # >
-ENV JAVA_VERSION 25-ea+2
+ENV JAVA_VERSION 25-ea+3
 
 RUN set -eux; \
 	\
 	arch="$(rpm --query --queryformat='%{ARCH}' rpm)"; \
 	case "$arch" in \
 		'x86_64') \
-			downloadUrl='https://download.java.net/java/early_access/jdk25/2/GPL/openjdk-25-ea+2_linux-x64_bin.tar.gz'; \
-			downloadSha256='00d23f37267bee9e859091c506e986262ad9b7fc9f7818d3e9d602191252626a'; \
+			downloadUrl='https://download.java.net/java/early_access/jdk25/3/GPL/openjdk-25-ea+3_linux-x64_bin.tar.gz'; \
+			downloadSha256='e0be94ff2f63987f53db1576a75eb5f65acdaf3e6da40bacfbe954b209d5c751'; \
 			;; \
 		'aarch64') \
-			downloadUrl='https://download.java.net/java/early_access/jdk25/2/GPL/openjdk-25-ea+2_linux-aarch64_bin.tar.gz'; \
-			downloadSha256='c3b55a9e0597d7942cadec32e1e920bdc4022d893bb4501ef8b54eb6a9ff2bd7'; \
+			downloadUrl='https://download.java.net/java/early_access/jdk25/3/GPL/openjdk-25-ea+3_linux-aarch64_bin.tar.gz'; \
+			downloadSha256='000df52fbaee8b551f7cb9295c8fc1339663b84067ae63a21f7176a18b020bef'; \
 			;; \
 		*) echo >&2 "error: unsupported architecture: '$arch'"; exit 1 ;; \
 	esac; \

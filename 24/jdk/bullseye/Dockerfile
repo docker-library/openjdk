@@ -37,19 +37,19 @@ ENV LANG C.UTF-8
 # >
 # > Java Development Kit builds, from Oracle
 # >
-ENV JAVA_VERSION 24-ea+30
+ENV JAVA_VERSION 24-ea+31
 
 RUN set -eux; \
 	\
 	arch="$(dpkg --print-architecture)"; \
 	case "$arch" in \
 		'amd64') \
-			downloadUrl='https://download.java.net/java/early_access/jdk24/30/GPL/openjdk-24-ea+30_linux-x64_bin.tar.gz'; \
-			downloadSha256='613ff61d4553e9e8c17793cec42c93db99b73ee18bb41d5ceefcdcdfee0d826b'; \
+			downloadUrl='https://download.java.net/java/early_access/jdk24/31/GPL/openjdk-24-ea+31_linux-x64_bin.tar.gz'; \
+			downloadSha256='fc69771e3af411ad5be33bf328a73b32318264a7aef1f28d1e6339cbf609819b'; \
 			;; \
 		'arm64') \
-			downloadUrl='https://download.java.net/java/early_access/jdk24/30/GPL/openjdk-24-ea+30_linux-aarch64_bin.tar.gz'; \
-			downloadSha256='2f89ccf3b004d95bdedd0fdd10cee362f00be006ebe79a394b0539057e8d8ff6'; \
+			downloadUrl='https://download.java.net/java/early_access/jdk24/31/GPL/openjdk-24-ea+31_linux-aarch64_bin.tar.gz'; \
+			downloadSha256='5c35cd6370cdbe71bda96ccae35f3a74972b83dc6958e783b803f730b24f9a0a'; \
 			;; \
 		*) echo >&2 "error: unsupported architecture: '$arch'"; exit 1 ;; \
 	esac; \

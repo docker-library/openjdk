@@ -3,16 +3,16 @@
     "jdk": {
       "arches": {
         "amd64": {
-          "sha256": "613ff61d4553e9e8c17793cec42c93db99b73ee18bb41d5ceefcdcdfee0d826b",
-          "url": "https://download.java.net/java/early_access/jdk24/30/GPL/openjdk-24-ea+30_linux-x64_bin.tar.gz"
+          "sha256": "fc69771e3af411ad5be33bf328a73b32318264a7aef1f28d1e6339cbf609819b",
+          "url": "https://download.java.net/java/early_access/jdk24/31/GPL/openjdk-24-ea+31_linux-x64_bin.tar.gz"
         },
         "arm64v8": {
-          "sha256": "2f89ccf3b004d95bdedd0fdd10cee362f00be006ebe79a394b0539057e8d8ff6",
-          "url": "https://download.java.net/java/early_access/jdk24/30/GPL/openjdk-24-ea+30_linux-aarch64_bin.tar.gz"
+          "sha256": "5c35cd6370cdbe71bda96ccae35f3a74972b83dc6958e783b803f730b24f9a0a",
+          "url": "https://download.java.net/java/early_access/jdk24/31/GPL/openjdk-24-ea+31_linux-aarch64_bin.tar.gz"
         },
         "windows-amd64": {
-          "sha256": "d71df74a22fe12237dff1469d7adae9469331d0c68bbb3dc7145af17fd85cc76",
-          "url": "https://download.java.net/java/early_access/jdk24/30/GPL/openjdk-24-ea+30_windows-x64_bin.zip"
+          "sha256": "72536bad2fa20c7ead0367944940a684a359e43649870d3cdbccd46bcc3b4009",
+          "url": "https://download.java.net/java/early_access/jdk24/31/GPL/openjdk-24-ea+31_windows-x64_bin.zip"
         }
       }
     },
@@ -27,7 +27,7 @@
       "windows/windowsservercore-1809",
       "windows/nanoserver-1809"
     ],
-    "version": "24-ea+30"
+    "version": "24-ea+31"
   },
   "25": {
     "jdk": {

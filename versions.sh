@@ -172,6 +172,8 @@ for version in "${versions[@]}"; do
 						empty
 					| "windows/windowsservercore-" + .),
 					(
+						"ltsc2025",
+						"ltsc2022",
 						"1809",
 						empty
 					| "windows/nanoserver-" + .)

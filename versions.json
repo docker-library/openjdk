@@ -36,16 +36,16 @@
     "jdk": {
       "arches": {
         "amd64": {
-          "sha256": "1463f6f26464b27899d02c4bba0e2eb7f8b8dda88afb590c31c882a4ee3aeb68",
-          "url": "https://download.java.net/java/early_access/jdk25/8/GPL/openjdk-25-ea+8_linux-x64_bin.tar.gz"
+          "sha256": "7c57d59eebec0a42a9bca9611b79759eaaeee24f115a9503f4977e5f089eca90",
+          "url": "https://download.java.net/java/early_access/jdk25/9/GPL/openjdk-25-ea+9_linux-x64_bin.tar.gz"
         },
         "arm64v8": {
-          "sha256": "fa9c00fcd40d033dce2058b91f5c8b689fc492bd1f0c6062729915d333b82ff1",
-          "url": "https://download.java.net/java/early_access/jdk25/8/GPL/openjdk-25-ea+8_linux-aarch64_bin.tar.gz"
+          "sha256": "7297335988877649a1eebd21261a54e3d96e4f82038766b1a8dfae4fc177ea02",
+          "url": "https://download.java.net/java/early_access/jdk25/9/GPL/openjdk-25-ea+9_linux-aarch64_bin.tar.gz"
         },
         "windows-amd64": {
-          "sha256": "3ea9473d90c2a51f51d40081e60eb97a8fd26b8f787d9b44a51f102714942cf6",
-          "url": "https://download.java.net/java/early_access/jdk25/8/GPL/openjdk-25-ea+8_windows-x64_bin.zip"
+          "sha256": "422ffa84afebca61d5ff96e0459231633ad47f082eb11fbecdb64c76e37b35ea",
+          "url": "https://download.java.net/java/early_access/jdk25/9/GPL/openjdk-25-ea+9_windows-x64_bin.zip"
         }
       }
     },
@@ -63,6 +63,6 @@
       "windows/nanoserver-ltsc2022",
       "windows/nanoserver-1809"
     ],
-    "version": "25-ea+8"
+    "version": "25-ea+9"
   }
 }

@@ -3,16 +3,16 @@
     "jdk": {
       "arches": {
         "amd64": {
-          "sha256": "42cb8d0281909a790e94c154ae2a4492b990bca08ce399f8a431c58d92bebb37",
-          "url": "https://download.java.net/java/early_access/jdk25/30/GPL/openjdk-25-ea+30_linux-x64_bin.tar.gz"
+          "sha256": "4c51d8b8a01121cdd3dd7c661afe7439238210199758c431aecb991c6395df99",
+          "url": "https://download.java.net/java/early_access/jdk25/31/GPL/openjdk-25-ea+31_linux-x64_bin.tar.gz"
         },
         "arm64v8": {
-          "sha256": "95be885f2e12ffb9ba3745dc29d8699a388c89f6826955aa9eb0c2f44a2d789b",
-          "url": "https://download.java.net/java/early_access/jdk25/30/GPL/openjdk-25-ea+30_linux-aarch64_bin.tar.gz"
+          "sha256": "5c29a950c006b9e27387ee4648f8f336ca68e89861b279bbdb93ad231088908e",
+          "url": "https://download.java.net/java/early_access/jdk25/31/GPL/openjdk-25-ea+31_linux-aarch64_bin.tar.gz"
         },
         "windows-amd64": {
-          "sha256": "917fc8ab9ae5f7aa7aa1d45bd5a8612a2fd33d6835b9a42728532d0a14f8b42e",
-          "url": "https://download.java.net/java/early_access/jdk25/30/GPL/openjdk-25-ea+30_windows-x64_bin.zip"
+          "sha256": "836aae7dfaa07d9f7657146c6f5348253d7ed98a7754cc5148ea306de54d8eb8",
+          "url": "https://download.java.net/java/early_access/jdk25/31/GPL/openjdk-25-ea+31_windows-x64_bin.zip"
         }
       }
     },
@@ -28,7 +28,7 @@
       "windows/nanoserver-ltsc2025",
       "windows/nanoserver-ltsc2022"
     ],
-    "version": "25-ea+30"
+    "version": "25-ea+31"
   },
   "26": {
     "jdk": {

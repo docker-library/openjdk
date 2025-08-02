@@ -37,19 +37,19 @@ ENV LANG C.UTF-8
 # >
 # > Java Development Kit builds, from Oracle
 # >
-ENV JAVA_VERSION 26-ea+8
+ENV JAVA_VERSION 26-ea+9
 
 RUN set -eux; \
 	\
 	arch="$(dpkg --print-architecture)"; \
 	case "$arch" in \
 		'amd64') \
-			downloadUrl='https://download.java.net/java/early_access/jdk26/8/GPL/openjdk-26-ea+8_linux-x64_bin.tar.gz'; \
-			downloadSha256='b3288c0a71d0d2c9b9644dbddef837aaf6421b38fe76f5a030b55cf63066b611'; \
+			downloadUrl='https://download.java.net/java/early_access/jdk26/9/GPL/openjdk-26-ea+9_linux-x64_bin.tar.gz'; \
+			downloadSha256='2c08143f0e1bd1037328073e8947c24cff866610998c1ab2ed36c2c661f4937e'; \
 			;; \
 		'arm64') \
-			downloadUrl='https://download.java.net/java/early_access/jdk26/8/GPL/openjdk-26-ea+8_linux-aarch64_bin.tar.gz'; \
-			downloadSha256='96059708c0e1118ec9351aabc4ac5853fd60a0d06be95af195096567fabda3b6'; \
+			downloadUrl='https://download.java.net/java/early_access/jdk26/9/GPL/openjdk-26-ea+9_linux-aarch64_bin.tar.gz'; \
+			downloadSha256='1b3daf38e26446401cbf9b5c0eb7506a8c7a46231916e74c3a39c7fad1ba8645'; \
 			;; \
 		*) echo >&2 "error: unsupported architecture: '$arch'"; exit 1 ;; \
 	esac; \

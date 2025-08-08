@@ -4,7 +4,7 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM buildpack-deps:bullseye-scm
+FROM buildpack-deps:trixie-scm
 
 RUN set -eux; \
 	apt-get update; \
@@ -27,7 +27,7 @@ RUN set -eux; \
 	; \
 	rm -rf /var/lib/apt/lists/*
 
-ENV JAVA_HOME /usr/local/openjdk-25
+ENV JAVA_HOME /usr/local/openjdk-26
 ENV PATH $JAVA_HOME/bin:$PATH
 
 # Default to UTF-8 file.encoding
@@ -37,19 +37,19 @@ ENV LANG C.UTF-8
 # >
 # > Java Development Kit builds, from Oracle
 # >
-ENV JAVA_VERSION 25-ea+34
+ENV JAVA_VERSION 26-ea+9
 
 RUN set -eux; \
 	\
 	arch="$(dpkg --print-architecture)"; \
 	case "$arch" in \
 		'amd64') \
-			downloadUrl='https://download.java.net/java/early_access/jdk25/34/GPL/openjdk-25-ea+34_linux-x64_bin.tar.gz'; \
-			downloadSha256='e8424103dce5e96460091df569c5fbd874c357e86cad7ad6164c71abf7c33319'; \
+			downloadUrl='https://download.java.net/java/early_access/jdk26/9/GPL/openjdk-26-ea+9_linux-x64_bin.tar.gz'; \
+			downloadSha256='2c08143f0e1bd1037328073e8947c24cff866610998c1ab2ed36c2c661f4937e'; \
 			;; \
 		'arm64') \
-			downloadUrl='https://download.java.net/java/early_access/jdk25/34/GPL/openjdk-25-ea+34_linux-aarch64_bin.tar.gz'; \
-			downloadSha256='97ec261f623f97266972374bfc02851323f4e2145e1b96f5309810ecdcfbfeaf'; \
+			downloadUrl='https://download.java.net/java/early_access/jdk26/9/GPL/openjdk-26-ea+9_linux-aarch64_bin.tar.gz'; \
+			downloadSha256='1b3daf38e26446401cbf9b5c0eb7506a8c7a46231916e74c3a39c7fad1ba8645'; \
 			;; \
 		*) echo >&2 "error: unsupported architecture: '$arch'"; exit 1 ;; \
 	esac; \

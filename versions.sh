@@ -160,8 +160,8 @@ for version in "${versions[@]}"; do
 					empty
 				| ., "slim-" + .),
 				if $doc.alpine then
-					"3.19",
-					"3.18",
+					"3.22",
+					"3.21",
 					empty
 				| "alpine" + . else empty end,
 				if $doc.jdk.arches | keys | any(startswith("windows-")) then

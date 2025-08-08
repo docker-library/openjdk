@@ -4,30 +4,17 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM buildpack-deps:bullseye-scm
+FROM debian:trixie-slim
 
 RUN set -eux; \
 	apt-get update; \
 	apt-get install -y --no-install-recommends \
-		bzip2 \
-		unzip \
-		xz-utils \
-		\
-# jlink --strip-debug on 13+ needs objcopy: https://github.com/docker-library/openjdk/issues/351
-# Error: java.io.IOException: Cannot run program "objcopy": error=2, No such file or directory
-		binutils \
-		\
-# java.lang.UnsatisfiedLinkError: /usr/local/openjdk-11/lib/libfontmanager.so: libfreetype.so.6: cannot open shared object file: No such file or directory
-# java.lang.NoClassDefFoundError: Could not initialize class sun.awt.X11FontManager
-# https://github.com/docker-library/openjdk/pull/235#issuecomment-424466077
-		fontconfig libfreetype6 \
-		\
 # utilities for keeping Debian and OpenJDK CA certificates in sync
 		ca-certificates p11-kit \
 	; \
 	rm -rf /var/lib/apt/lists/*
 
-ENV JAVA_HOME /usr/local/openjdk-26
+ENV JAVA_HOME /usr/local/openjdk-25
 ENV PATH $JAVA_HOME/bin:$PATH
 
 # Default to UTF-8 file.encoding
@@ -37,22 +24,29 @@ ENV LANG C.UTF-8
 # >
 # > Java Development Kit builds, from Oracle
 # >
-ENV JAVA_VERSION 26-ea+9
+ENV JAVA_VERSION 25-ea+34
 
 RUN set -eux; \
 	\
 	arch="$(dpkg --print-architecture)"; \
 	case "$arch" in \
 		'amd64') \
-			downloadUrl='https://download.java.net/java/early_access/jdk26/9/GPL/openjdk-26-ea+9_linux-x64_bin.tar.gz'; \
-			downloadSha256='2c08143f0e1bd1037328073e8947c24cff866610998c1ab2ed36c2c661f4937e'; \
+			downloadUrl='https://download.java.net/java/early_access/jdk25/34/GPL/openjdk-25-ea+34_linux-x64_bin.tar.gz'; \
+			downloadSha256='e8424103dce5e96460091df569c5fbd874c357e86cad7ad6164c71abf7c33319'; \
 			;; \
 		'arm64') \
-			downloadUrl='https://download.java.net/java/early_access/jdk26/9/GPL/openjdk-26-ea+9_linux-aarch64_bin.tar.gz'; \
-			downloadSha256='1b3daf38e26446401cbf9b5c0eb7506a8c7a46231916e74c3a39c7fad1ba8645'; \
+			downloadUrl='https://download.java.net/java/early_access/jdk25/34/GPL/openjdk-25-ea+34_linux-aarch64_bin.tar.gz'; \
+			downloadSha256='97ec261f623f97266972374bfc02851323f4e2145e1b96f5309810ecdcfbfeaf'; \
 			;; \
 		*) echo >&2 "error: unsupported architecture: '$arch'"; exit 1 ;; \
 	esac; \
+	\
+	savedAptMark="$(apt-mark showmanual)"; \
+	apt-get update; \
+	apt-get install -y --no-install-recommends \
+		wget \
+	; \
+	rm -rf /var/lib/apt/lists/*; \
 	\
 	wget --progress=dot:giga -O openjdk.tgz "$downloadUrl"; \
 	echo "$downloadSha256 *openjdk.tgz" | sha256sum --strict --check -; \
@@ -65,6 +59,10 @@ RUN set -eux; \
 		--no-same-owner \
 	; \
 	rm openjdk.tgz*; \
+	\
+	apt-mark auto '.*' > /dev/null; \
+	[ -z "$savedAptMark" ] || apt-mark manual $savedAptMark > /dev/null; \
+	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
 	\
 # update "cacerts" bundle to use Debian's CA certificates (and make sure it stays up-to-date with changes to Debian's store)
 # see https://github.com/docker-library/openjdk/issues/327

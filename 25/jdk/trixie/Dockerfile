@@ -4,7 +4,7 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM buildpack-deps:bullseye-scm
+FROM buildpack-deps:trixie-scm
 
 RUN set -eux; \
 	apt-get update; \

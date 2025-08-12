@@ -155,8 +155,8 @@ for version in "${versions[@]}"; do
 					empty
 				| "oraclelinux" + .),
 				(
+					"trixie",
 					"bookworm",
-					"bullseye",
 					empty
 				| ., "slim-" + .),
 				if $doc.alpine then

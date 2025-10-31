@@ -4,7 +4,7 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM mcr.microsoft.com/windows/nanoserver:ltsc2025
+FROM mcr.microsoft.com/windows/nanoserver:ltsc2022
 
 SHELL ["cmd", "/s", "/c"]
 
@@ -22,7 +22,7 @@ USER ContainerUser
 # >
 ENV JAVA_VERSION 26-ea+22
 
-COPY --from=openjdk:26-ea-22-jdk-windowsservercore-ltsc2025 $JAVA_HOME $JAVA_HOME
+COPY --from=openjdk:26-ea-22-windowsservercore-ltsc2022 $JAVA_HOME $JAVA_HOME
 
 RUN echo Verifying install ... \
 	&& echo   javac --version && javac --version \

@@ -35,44 +35,27 @@ for version; do
 	variants="$(jq -r '.[env.version].variants | map(@sh) | join(" ")' versions.json)"
 	eval "variants=( $variants )"
 
-	for javaType in jdk jre; do
-		export javaType
+	for variant in "${variants[@]}"; do
+		export variant
 
-		if ! hasJavaType="$(jq -r '.[env.version] | if has(env.javaType) then "1" else "" end' versions.json)" || [ -z "$hasJavaType" ]; then
-			continue
-		fi
+		dir="$version/$variant"
+		mkdir -p "$dir"
 
-		for variant in "${variants[@]}"; do
-			export variant
+		case "$variant" in
+			windows/*)
+				template='Dockerfile-windows.template'
+				;;
 
-			if [ "$javaType" = 'jre' ] && [[ "$variant" == oraclelinux* ]]; then
-				continue # no Oracle-based JRE images (for now? gotta figure a few things out to do that)
-			fi
+			*)
+				template='Dockerfile-linux.template'
+				;;
+		esac
 
-			dir="$version/$javaType/$variant"
-			mkdir -p "$dir"
+		echo "processing $dir ..."
 
-			case "$variant" in
-				windows/*)
-					variant="$(basename "$dir")" # "buster", "windowsservercore-1809", etc
-					windowsVariant="${variant%%-*}" # "windowsservercore", "nanoserver"
-					windowsRelease="${variant#$windowsVariant-}" # "ltsc2022", "1809", etc
-					windowsVariant="${windowsVariant#windows}" # "servercore", "nanoserver"
-					export windowsVariant windowsRelease
-					template='Dockerfile-windows.template'
-					;;
-
-				*)
-					template='Dockerfile-linux.template'
-					;;
-			esac
-
-			echo "processing $dir ..."
-
-			{
-				generated_warning
-				gawk -f "$jqt" "$template"
-			} > "$dir/Dockerfile"
-		done
+		{
+			generated_warning
+			gawk -f "$jqt" "$template"
+		} > "$dir/Dockerfile"
 	done
 done

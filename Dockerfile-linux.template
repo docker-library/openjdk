@@ -1,37 +1,18 @@
 {{
-	def is_alpine:
-		env.variant | startswith("alpine")
-	;
-	def alpine_version:
-		env.variant | ltrimstr("alpine")
--}}
-{{
 	def is_oracle:
 		env.variant | startswith("oraclelinux")
 	;
 	def oracle_version:
 		env.variant | ltrimstr("oraclelinux")
--}}
-{{
-	def is_debian:
-		is_alpine or is_oracle | not
 	;
 	def is_debian_slim:
-		is_debian and (env.variant | startswith("slim-"))
+		env.variant | startswith("slim-")
 	;
 	def debian_suite:
 		env.variant | ltrimstr("slim-")
 -}}
 {{
-	if is_alpine then (
--}}
-FROM alpine:{{ alpine_version }}
-
-RUN apk add --no-cache java-cacerts
-
-ENV JAVA_HOME /opt/openjdk-{{ env.version }}
-{{
-	) elif is_oracle then (
+	if is_oracle then (
 -}}
 FROM oraclelinux:{{ oracle_version }}-slim
 
@@ -57,13 +38,7 @@ FROM {{
 	if is_debian_slim then
 		"debian:" + debian_suite + "-slim"
 	else
-		"buildpack-deps:" + debian_suite + (
-			if env.javaType == "jdk" then
-				"-scm"
-			else
-				"-curl"
-			end
-		)
+		"buildpack-deps:" + debian_suite + "-scm"
 	end
 }}
 
@@ -96,30 +71,18 @@ ENV JAVA_HOME /usr/local/openjdk-{{ env.version }}
 -}}
 ENV PATH $JAVA_HOME/bin:$PATH
 
-{{ if is_alpine then "" else ( -}}
 # Default to UTF-8 file.encoding
 ENV LANG C.UTF-8
 
-{{ ) end -}}
-{{ def java_version: if is_alpine then .alpine.version else .version end -}}
 # https://jdk.java.net/
 # >
 # > Java Development Kit builds, from Oracle
 # >
-ENV JAVA_VERSION {{ java_version }}
-{{ if is_alpine then ( -}}
-# "For Alpine Linux, builds are produced on a reduced schedule and may not be in sync with the other platforms."
-{{ ) else "" end -}}
+ENV JAVA_VERSION {{ .version }}
 
 {{
-	def arches:
-		if is_alpine then .alpine else . end
-		| .[env.javaType].arches
-	;
 	def get_arch_command:
-		if is_alpine then
-			"apk --print-arch"
-		elif is_oracle then
+		if is_oracle then
 			"rpm --query --queryformat='%{ARCH}' rpm"
 		else
 			"dpkg --print-architecture"
@@ -131,10 +94,7 @@ ENV JAVA_VERSION {{ java_version }}
 		# output is a shell "case" expression for matching the output of running "get_arch_command"
 		# - "i[3456]86", "aarch64", "x86_64", etc
 		. as $bashbrewArch
-		| if is_alpine then {
-			amd64: "x86_64",
-			arm64v8: "aarch64",
-		} elif is_oracle then {
+		| if is_oracle then {
 			amd64: "x86_64",
 			arm64v8: "aarch64",
 		} else {
@@ -148,11 +108,7 @@ ENV JAVA_VERSION {{ java_version }}
 		if is_oracle then
 			"curl -fL -o"
 		else
-			[
-				"wget",
-				if is_alpine then empty else "--progress=dot:giga" end,
-				"-O"
-			] | join(" ")
+			"wget --progress=dot:giga -O"
 		end
 -}}
 RUN set -eux; \
@@ -161,7 +117,8 @@ RUN set -eux; \
 	case "$arch" in \
 {{
 	[
-		arches | to_entries[]
+		.arches
+		| to_entries[]
 		| select(.key | startswith("windows-") | not)
 		| .key as $bashbrewArch | .value
 		| (
@@ -189,8 +146,8 @@ RUN set -eux; \
 	\
 {{ ) else "" end -}}
 	{{ wget_command }} openjdk.tgz "$downloadUrl"; \
-{{ if [ arches[] ] | any(has("sha256")) then ( -}}
-	echo "$downloadSha256 *openjdk.tgz" | sha256sum {{ if is_alpine then "-c" else "--strict --check" end }} -; \
+{{ if .arches | any(has("sha256")) then ( -}}
+	echo "$downloadSha256 *openjdk.tgz" | sha256sum --strict --check -; \
 {{ ) else "" end -}}
 	\
 	mkdir -p "$JAVA_HOME"; \
@@ -208,11 +165,7 @@ RUN set -eux; \
 	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
 	\
 {{ ) else "" end -}}
-{{ if is_alpine then ( -}}
-	rm -rf "$JAVA_HOME/lib/security/cacerts"; \
-# see "java-cacerts" package installed above (which maintains "/etc/ssl/certs/java/cacerts" for us)
-	ln -sT /etc/ssl/certs/java/cacerts "$JAVA_HOME/lib/security/cacerts"; \
-{{ ) elif is_oracle then ( -}}
+{{ if is_oracle then ( -}}
 	rm -rf "$JAVA_HOME/lib/security/cacerts"; \
 # see "update-ca-trust" script which creates/maintains this cacerts bundle
 	ln -sT /etc/pki/ca-trust/extracted/java/cacerts "$JAVA_HOME/lib/security/cacerts"; \
@@ -249,13 +202,9 @@ RUN set -eux; \
 	java -Xshare:dump; \
 	\
 # basic smoke test
-{{ if env.javaType == "jdk" then ( -}}
 	fileEncoding="$(echo 'System.out.println(System.getProperty("file.encoding"))' | jshell -s -)"; [ "$fileEncoding" = 'UTF-8' ]; rm -rf ~/.java; \
 	javac --version; \
 	java --version
 
 # "jshell" is an interactive REPL for Java (see https://en.wikipedia.org/wiki/JShell)
 CMD ["jshell"]
-{{ ) else ( -}}
-	java --version
-{{ ) end -}}

@@ -96,9 +96,8 @@ for version in "${versions[@]}"; do
 	doc='{}'
 	possibleArches=(
 		# https://jdk.java.net/26/
-		'linux-aarch64'
 		'linux-x64'
-		'linux-x64-musl'
+		'linux-aarch64'
 		'windows-x64'
 	)
 	for arch in "${possibleArches[@]}"; do
@@ -108,22 +107,18 @@ for version in "${versions[@]}"; do
 			windows-*) downloadSuffix+='.zip'; bashbrewArch='windows-' ;;
 			*) echo >&2 "error: unknown Oracle arch: '$arch'"; exit 1 ;;
 		esac
-		jqExprPrefix=
-		if [[ "$arch" == *-musl ]]; then
-			jqExprPrefix='.alpine'
-		fi
 		if downloadUrl="$(jdk-java-net-download-url "$version" "$downloadSuffix")" \
 			&& [ -n "$downloadUrl" ] \
 			&& downloadSha256="$(_get "$downloadUrl.sha256")" \
 			&& [ -n "$downloadSha256" ] \
 		; then
 			downloadVersion="$(jdk-java-net-download-version "$version" "$downloadUrl")"
-			currentVersion="$(jq <<<"$doc" -r "$jqExprPrefix.version // \"\"")"
+			currentVersion="$(jq <<<"$doc" -r '.version // ""')"
 			if [ -n "$currentVersion" ] && [ "$currentVersion" != "$downloadVersion" ]; then
 				echo >&2 "error: Oracle version mismatch: '$currentVersion' vs '$downloadVersion'"
 				exit 1
 			elif [ -z "$currentVersion" ]; then
-				echo "$version: $downloadVersion${jqExprPrefix:+ (alpine)}"
+				echo "$version: $downloadVersion"
 			fi
 			case "$arch" in
 				*-aarch64*) bashbrewArch+='arm64v8' ;;
@@ -132,8 +127,8 @@ for version in "${versions[@]}"; do
 			esac
 			export arch bashbrewArch downloadUrl downloadSha256 downloadVersion
 			doc="$(jq <<<"$doc" -c '
-				'"$jqExprPrefix"'.version = env.downloadVersion
-				| '"$jqExprPrefix"'.jdk.arches[env.bashbrewArch] = {
+				.version = env.downloadVersion
+				| .arches[env.bashbrewArch] = {
 					url: env.downloadUrl,
 					sha256: env.downloadSha256,
 				}
@@ -159,12 +154,7 @@ for version in "${versions[@]}"; do
 					"bookworm",
 					empty
 				| ., "slim-" + .),
-				if $doc.alpine then
-					"3.22",
-					"3.21",
-					empty
-				| "alpine" + . else empty end,
-				if $doc.jdk.arches | keys | any(startswith("windows-")) then
+				if $doc.arches | keys | any(startswith("windows-")) then
 					(
 						"ltsc2025",
 						"ltsc2022",
@@ -181,4 +171,4 @@ for version in "${versions[@]}"; do
 	')"
 done
 
-jq <<<"$json" -S . > versions.json
+jq <<<"$json" . > versions.json

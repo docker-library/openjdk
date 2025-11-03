@@ -1,6 +1,17 @@
-FROM mcr.microsoft.com/windows/{{ env.windowsVariant }}:{{ env.windowsRelease }}
+{{
+def windows_variant: # "servercore", "nanoserver"
+	env.variant
+	| split("/")[-1]
+	| split("-")[0]
+	| ltrimstr("windows")
+;
+def windows_release: # "ltsc2025", "ltsc2022"
+	env.variant
+	| split("-")[-1]
+-}}
+FROM mcr.microsoft.com/windows/{{ windows_variant }}:{{ windows_release }}
 
-{{ if env.windowsVariant == "servercore" then ( -}}
+{{ if windows_variant == "servercore" then ( -}}
 # $ProgressPreference: https://github.com/PowerShell/PowerShell/issues/2138#issuecomment-251261324
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
@@ -40,19 +51,19 @@ USER ContainerUser
 # > Java Development Kit builds, from Oracle
 # >
 ENV JAVA_VERSION {{ .version }}
-{{ if env.windowsVariant == "servercore" then ( -}}
+{{ if windows_variant == "servercore" then ( -}}
 {{ # TODO $env:PROCESSOR_ARCHITECTURE for arm64v8 someday (https://superuser.com/a/1441469/101945) -}}
-ENV JAVA_URL {{ .[env.javaType].arches["windows-amd64"].url }}
-{{ if .[env.javaType].arches["windows-amd64"] | has("sha256") then ( -}}
-ENV JAVA_SHA256 {{ .[env.javaType].arches["windows-amd64"].sha256 }}
+ENV JAVA_URL {{ .arches["windows-amd64"].url }}
+{{ if .arches["windows-amd64"] | has("sha256") then ( -}}
+ENV JAVA_SHA256 {{ .arches["windows-amd64"].sha256 }}
 {{ ) else "" end -}}
 {{ ) else "" end -}}
 
-{{ if env.windowsVariant == "servercore" then ( -}}
+{{ if windows_variant == "servercore" then ( -}}
 RUN Write-Host ('Downloading {0} ...' -f $env:JAVA_URL); \
 	[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; \
 	Invoke-WebRequest -Uri $env:JAVA_URL -OutFile 'openjdk.zip'; \
-{{ if .[env.javaType].arches["windows-amd64"] | has("sha256") then ( -}}
+{{ if .arches["windows-amd64"] | has("sha256") then ( -}}
 	Write-Host ('Verifying sha256 ({0}) ...' -f $env:JAVA_SHA256); \
 	if ((Get-FileHash openjdk.zip -Algorithm sha256).Hash -ne $env:JAVA_SHA256) { \
 		Write-Host 'FAILED!'; \
@@ -72,24 +83,18 @@ RUN Write-Host ('Downloading {0} ...' -f $env:JAVA_URL); \
 	Remove-Item openjdk.zip -Force; \
 	\
 	Write-Host 'Verifying install ...'; \
-{{ if env.javaType == "jdk" then ( -}}
 	Write-Host '  javac --version'; javac --version; \
-{{ ) else "" end -}}
 	Write-Host '  java --version'; java --version; \
 	\
 	Write-Host 'Complete.'
 {{ ) else ( -}}
-COPY --from=openjdk:{{ .version | gsub("[+]"; "-") }}-{{ env.javaType }}-windowsservercore-{{ env.windowsRelease }} $JAVA_HOME $JAVA_HOME
+COPY --from=openjdk:{{ .version | gsub("[+]"; "-") }}-windowsservercore-{{ windows_release }} $JAVA_HOME $JAVA_HOME
 
 RUN echo Verifying install ... \
-{{ if env.javaType == "jdk" then ( -}}
 	&& echo   javac --version && javac --version \
-{{ ) else "" end -}}
 	&& echo   java --version && java --version \
 	&& echo Complete.
 {{ ) end -}}
-{{ if env.javaType == "jdk" then ( -}}
 
 # "jshell" is an interactive REPL for Java (see https://en.wikipedia.org/wiki/JShell)
 CMD ["jshell"]
-{{ ) else "" end -}}

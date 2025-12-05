@@ -27,5 +27,34 @@
       "windows/nanoserver-ltsc2025",
       "windows/nanoserver-ltsc2022"
     ]
+  },
+  "27": {
+    "version": "27-ea+1",
+    "arches": {
+      "amd64": {
+        "url": "https://download.java.net/java/early_access/jdk27/1/GPL/openjdk-27-ea+1_linux-x64_bin.tar.gz",
+        "sha256": "1aa364bd43fc19955536763cfbf4ed9019a9766283b6b00c7813301c229ac2ff"
+      },
+      "arm64v8": {
+        "url": "https://download.java.net/java/early_access/jdk27/1/GPL/openjdk-27-ea+1_linux-aarch64_bin.tar.gz",
+        "sha256": "48552e3ba3f4c8a08d0078fe9af2c25a1145a36e3cccdc56f61aa90786cade22"
+      },
+      "windows-amd64": {
+        "url": "https://download.java.net/java/early_access/jdk27/1/GPL/openjdk-27-ea+1_windows-x64_bin.zip",
+        "sha256": "77d566459162b6597396e779186334a870aeee1837fe453aac80662b023659c1"
+      }
+    },
+    "variants": [
+      "oraclelinux9",
+      "oraclelinux8",
+      "trixie",
+      "slim-trixie",
+      "bookworm",
+      "slim-bookworm",
+      "windows/windowsservercore-ltsc2025",
+      "windows/windowsservercore-ltsc2022",
+      "windows/nanoserver-ltsc2025",
+      "windows/nanoserver-ltsc2022"
+    ]
   }
 }

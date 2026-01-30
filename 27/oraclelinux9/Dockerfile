@@ -30,19 +30,19 @@ ENV LANG C.UTF-8
 # >
 # > Java Development Kit builds, from Oracle
 # >
-ENV JAVA_VERSION 27-ea+6
+ENV JAVA_VERSION 27-ea+7
 
 RUN set -eux; \
 	\
 	arch="$(rpm --query --queryformat='%{ARCH}' rpm)"; \
 	case "$arch" in \
 		'x86_64') \
-			downloadUrl='https://download.java.net/java/early_access/jdk27/6/GPL/openjdk-27-ea+6_linux-x64_bin.tar.gz'; \
-			downloadSha256='394c8962532cfeb8e27701615449f453f090145d33f7d24947aa6ceed07dcce6'; \
+			downloadUrl='https://download.java.net/java/early_access/jdk27/7/GPL/openjdk-27-ea+7_linux-x64_bin.tar.gz'; \
+			downloadSha256='951349bfcc6bf08d72f89175460216f0560a6c238848d93c2e194313a78b130e'; \
 			;; \
 		'aarch64') \
-			downloadUrl='https://download.java.net/java/early_access/jdk27/6/GPL/openjdk-27-ea+6_linux-aarch64_bin.tar.gz'; \
-			downloadSha256='e516f107cd78b8abf3500494b93d20718e0779fa79a12399f30928c615593789'; \
+			downloadUrl='https://download.java.net/java/early_access/jdk27/7/GPL/openjdk-27-ea+7_linux-aarch64_bin.tar.gz'; \
+			downloadSha256='3a3b7bac8a0432795430d519edf6eb790b6a3423b00516b74c85e1b7edb053a7'; \
 			;; \
 		*) echo >&2 "error: unsupported architecture: '$arch'"; exit 1 ;; \
 	esac; \

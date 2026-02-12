@@ -3,7 +3,7 @@ def tag_version:
 	| . as $ver
 	| gsub("[+]"; "-")
 	# if fullVersion is only digits, add "-rc" to the end (because we're probably in the final-phases of pre-release before GA when we drop support from the image)
-	| if test("^[0-9.]+$") then
+	| if test("^[0-9]+$") then
 		. + "-rc"
 	else . end
 	| if contains("-ea") or contains("-rc") then . else

@@ -1,3 +1,4 @@
+include "shared";
 to_entries
 
 | .[]
@@ -8,17 +9,7 @@ to_entries
 	select(IN($major; $ARGS.positional[]))
 else . end
 
-| (
-	.version
-	| gsub("[+]"; "-")
-	# if fullVersion is only digits, add "-rc" to the end (because we're probably in the final-phases of pre-release before GA when we drop support from the image)
-	| if test("^[0-9.]+$") then
-		. + "-rc"
-	else . end
-	| if contains("-ea") or contains("-rc") then . else
-		error("invalid version; too GA: \(.) (\($major))")
-	end
-) as $version
+| tag_version as $version
 
 # generate a list of "version tags", stopping the vector at the first "-ea" or "-rc" component suffix
 # "AA-ea-BB.CC" -> [ "AA-ea-BB.CC", "AA-ea-BB", "AA-ea" ]
@@ -94,8 +85,9 @@ else . end
 	"Architectures: \($arches | join(", "))",
 	if $variant | startswith("windows/") then
 		$variant
-		| split("-")[-1] as $winver
+		| windows_release as $winver
 		| [
+			# TODO use windows_variant from shared.jq?
 			if startswith("windows/nanoserver-") then
 				"nanoserver-" + $winver
 			else empty end,

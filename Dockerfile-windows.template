@@ -1,13 +1,5 @@
 {{
-def windows_variant: # "servercore", "nanoserver"
-	env.variant
-	| split("/")[-1]
-	| split("-")[0]
-	| ltrimstr("windows")
-;
-def windows_release: # "ltsc2025", "ltsc2022"
-	env.variant
-	| split("-")[-1]
+	include "shared"
 -}}
 FROM mcr.microsoft.com/windows/{{ windows_variant }}:{{ windows_release }}
 
@@ -88,7 +80,7 @@ RUN Write-Host ('Downloading {0} ...' -f $env:JAVA_URL); \
 	\
 	Write-Host 'Complete.'
 {{ ) else ( -}}
-COPY --from=openjdk:{{ .version | gsub("[+]"; "-") }}-windowsservercore-{{ windows_release }} $JAVA_HOME $JAVA_HOME
+COPY --from=openjdk:{{ tag_version }}-windowsservercore-{{ windows_release }} $JAVA_HOME $JAVA_HOME
 
 RUN echo Verifying install ... \
 	&& echo   javac --version && javac --version \

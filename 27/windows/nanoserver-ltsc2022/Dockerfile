@@ -20,9 +20,9 @@ USER ContainerUser
 # >
 # > Java Development Kit builds, from Oracle
 # >
-ENV JAVA_VERSION 27-ea+8
+ENV JAVA_VERSION 27-ea+9
 
-COPY --from=openjdk:27-ea-8-windowsservercore-ltsc2022 $JAVA_HOME $JAVA_HOME
+COPY --from=openjdk:27-ea-9-windowsservercore-ltsc2022 $JAVA_HOME $JAVA_HOME
 
 RUN echo Verifying install ... \
 	&& echo   javac --version && javac --version \

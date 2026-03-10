@@ -4,7 +4,7 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM oraclelinux:8-slim
+FROM oraclelinux:10-slim
 
 RUN set -eux; \
 	microdnf install \

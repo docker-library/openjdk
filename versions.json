@@ -16,8 +16,8 @@
       }
     },
     "variants": [
+      "oraclelinux10",
       "oraclelinux9",
-      "oraclelinux8",
       "trixie",
       "slim-trixie",
       "bookworm",

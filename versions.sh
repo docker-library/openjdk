@@ -145,8 +145,8 @@ for version in "${versions[@]}"; do
 		.[env.version] = $doc + {
 			variants: [
 				(
+					"10",
 					"9",
-					"8",
 					empty
 				| "oraclelinux" + .),
 				(

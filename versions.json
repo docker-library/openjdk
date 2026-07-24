@@ -29,19 +29,19 @@
     ]
   },
   "28": {
-    "version": "28-ea+7",
+    "version": "28-ea+8",
     "arches": {
       "amd64": {
-        "url": "https://download.java.net/java/early_access/jdk28/7/GPL/openjdk-28-ea+7_linux-x64_bin.tar.gz",
-        "sha256": "dd4e1eccff978244037ccc2f0cc2bbc5a8763edd9734aaf4276e32df4a758fac"
+        "url": "https://download.java.net/java/early_access/jdk28/8/GPL/openjdk-28-ea+8_linux-x64_bin.tar.gz",
+        "sha256": "0c37484b9bf3ce38623554e745b5cdc6ca63fada65ff05f5501d2e2bd0d8537c"
       },
       "arm64v8": {
-        "url": "https://download.java.net/java/early_access/jdk28/7/GPL/openjdk-28-ea+7_linux-aarch64_bin.tar.gz",
-        "sha256": "27f51da33f338b8f7fceaed8bd13c79b9c19a07cfd33f2f6cf03750f56debeca"
+        "url": "https://download.java.net/java/early_access/jdk28/8/GPL/openjdk-28-ea+8_linux-aarch64_bin.tar.gz",
+        "sha256": "ef65a3451add63cf9a1a5c1c28b1e6655f94df9ecd2570b23323133521d4a6b2"
       },
       "windows-amd64": {
-        "url": "https://download.java.net/java/early_access/jdk28/7/GPL/openjdk-28-ea+7_windows-x64_bin.zip",
-        "sha256": "56a8a125b887851f551dc2ce7d575aabd074617d3ff3df2775e1522ff3d23510"
+        "url": "https://download.java.net/java/early_access/jdk28/8/GPL/openjdk-28-ea+8_windows-x64_bin.zip",
+        "sha256": "73033cd867f9fb63fcddc062e24a357accf6c852fcd71ceb609bd410fbdf1bfd"
       }
     },
     "variants": [

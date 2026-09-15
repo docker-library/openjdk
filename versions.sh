@@ -95,7 +95,7 @@ for version in "${versions[@]}"; do
 	export version
 	doc='{}'
 	possibleArches=(
-		# https://jdk.java.net/27/
+		# https://jdk.java.net/28/
 		'linux-x64'
 		'linux-aarch64'
 		'windows-x64'

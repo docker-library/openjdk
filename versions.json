@@ -1,33 +1,4 @@
 {
-  "27": {
-    "version": "27",
-    "arches": {
-      "amd64": {
-        "url": "https://download.java.net/java/GA/jdk27/55ce5470a6294008af0057ff4626d0e5/35/GPL/openjdk-27_linux-x64_bin.tar.gz",
-        "sha256": "95fc37eb3a18a27a26d5904c2d89d52bace8dafa9a078ca27f4747fbc4bf070b"
-      },
-      "arm64v8": {
-        "url": "https://download.java.net/java/GA/jdk27/55ce5470a6294008af0057ff4626d0e5/35/GPL/openjdk-27_linux-aarch64_bin.tar.gz",
-        "sha256": "da4e9dde1fff90204739e969187bab4751bd59a2a1c479672e1a1810f7dd23ea"
-      },
-      "windows-amd64": {
-        "url": "https://download.java.net/java/GA/jdk27/55ce5470a6294008af0057ff4626d0e5/35/GPL/openjdk-27_windows-x64_bin.zip",
-        "sha256": "41172837168dd25a8d9fe5eb253ac1efc568c5f9ff608144bcacadfdf50f876c"
-      }
-    },
-    "variants": [
-      "oraclelinux10",
-      "oraclelinux9",
-      "trixie",
-      "slim-trixie",
-      "bookworm",
-      "slim-bookworm",
-      "windows/windowsservercore-ltsc2025",
-      "windows/windowsservercore-ltsc2022",
-      "windows/nanoserver-ltsc2025",
-      "windows/nanoserver-ltsc2022"
-    ]
-  },
   "28": {
     "version": "28-ea+15",
     "arches": {

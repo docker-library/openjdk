@@ -17,6 +17,10 @@ RUN set -eux; \
 # java.lang.UnsatisfiedLinkError: /usr/java/openjdk-12/lib/libfontmanager.so: libfreetype.so.6: cannot open shared object file: No such file or directory
 # https://github.com/docker-library/openjdk/pull/235#issuecomment-424466077
 		freetype fontconfig \
+# java.lang.RuntimeException: Fontconfig head is null, check your fonts or fonts configuration
+# OL10 only has variable fonts by default, and the JDK skips those for the primary font slot (as of 28-ea+24)
+# https://github.com/openjdk/jdk/commit/c678ea9b0a412f9a435e9f6f84402c0479645f3c (JDK-8396849)
+		dejavu-sans-fonts \
 	; \
 	microdnf clean all
 
